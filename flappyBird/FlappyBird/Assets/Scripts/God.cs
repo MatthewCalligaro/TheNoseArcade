@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class God : MonoBehaviour
 {
+    public GameObject Ground;
+    public GameObject Sky;
+    public GameObject ObstacleBottom;
+    public GameObject ObstacleTop;
+
     public const float ScrollSpeed = 3;
 
     public const float BoundaryY = 4.5f;
@@ -22,7 +27,7 @@ public class God : MonoBehaviour
     {
         get
         {
-            return Mathf.Max(ObstacleXSpaceMax - transform.position.x * ObstacleXSpaceMultiplier, ObstacleXSpaceMin);
+            return Mathf.Max(ObstacleXSpaceMax - this.transform.position.x * ObstacleXSpaceMultiplier, ObstacleXSpaceMin);
         }
     }
 
@@ -33,7 +38,7 @@ public class God : MonoBehaviour
     {
         get
         {
-            return Mathf.Max(ObstacleYSpaceMax - transform.position.x * ObstacleYSpaceMultiplier, ObstacleYSpaceMin);
+            return Mathf.Max(ObstacleYSpaceMax - this.transform.position.x * ObstacleYSpaceMultiplier, ObstacleYSpaceMin);
         }
     }
 
@@ -44,14 +49,18 @@ public class God : MonoBehaviour
     {
         get
         {
-            return Mathf.Min(ObstacleYSdevMin + transform.position.x * ObstacleYSdevMultiplier, ObstacleYSdevMax);
+            return Mathf.Min(ObstacleYSdevMin + this.transform.position.x * ObstacleYSdevMultiplier, ObstacleYSdevMax);
         }
     }
 
-    public GameObject Ground;
-    public GameObject Sky;
-    public GameObject ObstacleBottom;
-    public GameObject ObstacleTop;
+    public static God instance;
+    public static God Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     GameObject[] curBoundaries;
     GameObject[] nextBoundaries;
@@ -61,31 +70,41 @@ public class God : MonoBehaviour
     int obstacleIndex = 0;
     float rightmostObstacleX = firstObstacleX - ObstacleXSpaceMax;
     float lastObstacleY = 0;
+    Camera camera;
 
-	private void Start ()
+    public static bool InCamera(Vector3 position)
     {
-        curBoundaries = SpawnBoundary(0);
-        rightmostBoundaryX = BoundaryLength;
-        nextBoundaries = SpawnBoundary(rightmostBoundaryX);
+        Vector3 viewPos = Instance.camera.WorldToViewportPoint(position);
+        return 0 <= viewPos.x && viewPos.x <= 1 && 0 <= viewPos.y && viewPos.y <= 1;
+    }
+
+    private void Start ()
+    {
+        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
+        camera = this.GetComponentInChildren<Camera>();
+
+        this.curBoundaries = SpawnBoundary(0);
+        this.rightmostBoundaryX = BoundaryLength;
+        this.nextBoundaries = SpawnBoundary(rightmostBoundaryX);
     }
 
 	private void Update ()
     {
-        transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
+        this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
 
-        if (transform.position.x > rightmostBoundaryX)
+        if (this.transform.position.x > this.rightmostBoundaryX)
         {
-            Destroy(curBoundaries[0]);
-            Destroy(curBoundaries[1]);
-            rightmostBoundaryX += BoundaryLength;
-            curBoundaries = nextBoundaries;
-            nextBoundaries = SpawnBoundary(rightmostBoundaryX);
+            Destroy(this.curBoundaries[0]);
+            Destroy(this.curBoundaries[1]);
+            this.rightmostBoundaryX += BoundaryLength;
+            this.curBoundaries = this.nextBoundaries;
+            this.nextBoundaries = this.SpawnBoundary(this.rightmostBoundaryX);
         }
 
-        if (transform.position.x > rightmostObstacleX - ObstacleXLead)
+        if (this.transform.position.x > this.rightmostObstacleX - ObstacleXLead)
         {
-            rightmostObstacleX += ObstacleXSpace;
-            SpawnObstacles(rightmostObstacleX);
+            this.rightmostObstacleX += ObstacleXSpace;
+            SpawnObstacles(this.rightmostObstacleX);
         }
     }
 
@@ -99,20 +118,20 @@ public class God : MonoBehaviour
     
     private void SpawnObstacles(float xOffset)
     {
-        if (obstacles[obstacleIndex] != null)
+        if (this.obstacles[this.obstacleIndex] != null)
         {
-            Destroy(obstacles[obstacleIndex]);
-            Destroy(obstacles[obstacleIndex + 1]);
+            Destroy(this.obstacles[this.obstacleIndex]);
+            Destroy(this.obstacles[this.obstacleIndex + 1]);
         }
 
         float spacing = ObstacleYSpace / 2;
-        float y = lastObstacleY + Utilities.NormalDist(0, ObstacleYSdev);
+        float y = this.lastObstacleY + Utilities.NormalDist(0, ObstacleYSdev);
         y = y > BoundaryY ? 2 * BoundaryY - y : y;
         y = y < -BoundaryY ? 2 * -BoundaryY - y : y;
 
-        obstacles[obstacleIndex] = Instantiate(ObstacleBottom, new Vector3(xOffset, y - spacing, ObstacleZ), new Quaternion());
-        obstacles[obstacleIndex + 1] = Instantiate(ObstacleTop, new Vector3(xOffset, y + spacing, ObstacleZ), new Quaternion());
+        this.obstacles[this.obstacleIndex] = Instantiate(ObstacleBottom, new Vector3(xOffset, y - spacing, ObstacleZ), new Quaternion());
+        this.obstacles[this.obstacleIndex + 1] = Instantiate(ObstacleTop, new Vector3(xOffset, y + spacing, ObstacleZ), new Quaternion());
 
-        obstacleIndex = (obstacleIndex + 2) % MaxObstacles;
+        this.obstacleIndex = (this.obstacleIndex + 2) % MaxObstacles;
     }
 }

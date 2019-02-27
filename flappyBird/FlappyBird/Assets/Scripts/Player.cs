@@ -1,39 +1,65 @@
 ﻿using UnityEngine;
 
-public enum JumpStyle
-{
-    Velocity,
-    Force
-}
-
 public class Player : MonoBehaviour
 {
     public const float JumpVelocity = 6;
     public const float JumpForce = 500;
-    public const JumpStyle Style = JumpStyle.Velocity;
+    public const float JumpJetpack = 500;
+
+    private int score = 0;
 	
 	private void Update ()
     {
+        this.transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (Style == JumpStyle.Velocity)
+            switch(Settings.JumpStyle)
             {
-                this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, JumpVelocity);
-            }
-            else
-            {
-                this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpForce));
+                case JumpStyle.Velocity:
+                    this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, JumpVelocity);
+                    break;
+
+                case JumpStyle.Force:
+                    this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpForce));
+                    break;
             }
         }
 
-        transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
+        if (Settings.JumpStyle == JumpStyle.Jetpack && Input.GetKey(KeyCode.Space))
+        {
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpForce * Time.deltaTime));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenu.Pause();
+        }
+
+        if (Settings.PlayStyle == PlayStyle.Runner && !God.InCamera(this.transform.position))
+        {
+            this.HandleLoss();
+        }
 	}
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.GetComponent<Obstacle>())
         {
-            print("Handle Collision");
+            switch (collision.gameObject.GetComponent<Obstacle>().ObstacleType)
+            {
+                case ObstacleType.Environment:
+                    if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
+                    break;
+
+                case ObstacleType.Death:
+                    this.HandleLoss();
+                    break;
+            }
         }
+    }
+
+    private void HandleLoss()
+    {
+        LossMenu.HandleLoss(this.score);
     }
 }
