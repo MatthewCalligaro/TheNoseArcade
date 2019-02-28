@@ -8,4 +8,4 @@
 2. Switch the the GitHub tab.
 3. Paste in the GitHub link for the notebook you want to open and click search.
 4. If necessary, select the notebook you want to open.
-5. Go to Edit→Notebook Settings and under Hardware Accelerator choose GPU
+5. Go to Edit→Notebook Settings and under Hardware Accelerator choose GPU.
