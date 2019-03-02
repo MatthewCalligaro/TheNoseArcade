@@ -20,9 +20,6 @@ function setup() {
   video = createCapture(VIDEO);
   video.size(width, height);
 
-  pixelDensity(1);
-  pg = createGraphics(width, height);
-
   // Create a new poseNet method with a single detection
   poseNet = ml5.poseNet(video, function() {});
 
@@ -30,20 +27,17 @@ function setup() {
     poses = results;
   });
 
-  // Hide the video element, and just show the canvas
   video.hide();
-  // balloon = 200;
   jumpCooldown = 0;
 }
 
 function findNose() {
   jumpCooldown = max(0, jumpCooldown - 1);
   var yDiff = 0; // By default don't register movement
-  // Only detect first pose
   if(poses.length > 0) {
-    // Look at nose keypoint
+    // Only detect nose keypoint of first pose
     let nose = poses[0].pose.keypoints[0];
-    // Only recognize if nose probability is bigger than 0.2
+    // Only recognize if probability is bigger than 0.2
     if (nose.score > 0.2) {
       noseX = nose.position.x;
       noseY = nose.position.y;
@@ -63,5 +57,6 @@ function findNose() {
 }
 
 function registerNoseFinder() {
+  // Locate nose at max frequency possible
   setInterval(function() { findNose() }, 0);
 }
