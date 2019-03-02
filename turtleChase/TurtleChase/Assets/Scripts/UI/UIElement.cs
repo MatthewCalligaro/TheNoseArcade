@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public abstract class Menu : MonoBehaviour
+public abstract class UIElement : MonoBehaviour
 {
     protected bool defaultActive;
     protected Button[] buttons;

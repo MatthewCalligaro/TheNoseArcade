@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HUD : MonoBehaviour
+public class HUD : UIElement
 {
-    public Text Score;
+    private enum Texts
+    {
+        Score
+    }
 
     public static HUD instance;
     public static HUD Instance
@@ -14,13 +17,14 @@ public class HUD : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected void Awake()
     {
+        this.defaultActive = true;
         instance = GameObject.FindGameObjectsWithTag("HUD")[0].GetComponent<HUD>();
     }
 
-    public void UpdateScore(int score)
+    public static void UpdateScore(int score)
     {
-        this.Score.text = "Score: " + score;
+        Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 }

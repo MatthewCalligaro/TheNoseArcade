@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PauseMenu : Menu
+public class PauseMenu : UIElement
 {
     private enum Buttons
     {
@@ -10,8 +10,8 @@ public class PauseMenu : Menu
         Exit
     }
 
-    public static Menu instance;
-    public static Menu Instance
+    public static PauseMenu instance;
+    public static PauseMenu Instance
     {
         get
         {
@@ -35,7 +35,7 @@ public class PauseMenu : Menu
     protected void Awake()
     {
         this.defaultActive = false;
-        instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<Menu>();
+        instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
     }
 
     protected override void Start()

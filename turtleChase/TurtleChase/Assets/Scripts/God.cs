@@ -1,13 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class God : MonoBehaviour
 {
-    public GameObject Ground;
-    public GameObject Sky;
-    public GameObject ObstacleBottom;
-    public GameObject ObstacleTop;
+    public GameObject[] EnvironmentPrefabs;
+    public GameObject[] ScorePrefabs;
+
+    private enum Environments
+    {
+        Ground,
+        Sky,
+        PipeBottom,
+        PipeTop
+    }
+
+    private enum Scores
+    {
+        Pipe,
+        Silver,
+        Gold
+    }
 
     public const float ScrollSpeed = 3;
 
@@ -18,7 +30,6 @@ public class God : MonoBehaviour
     public const float firstObstacleX = 15;
     public const float ObstacleZ = 2;
     public const float ObstacleXLead = 15;
-    public const int MaxObstacles = 25*2;
 
     public const float ObstacleXSpaceMax = 5;
     public const float ObstacleXSpaceMin = 3;
@@ -66,22 +77,28 @@ public class God : MonoBehaviour
     GameObject[] nextBoundaries;
     float rightmostBoundaryX;
 
-    GameObject[] obstacles = new GameObject[MaxObstacles];
-    int obstacleIndex = 0;
+    List<GameObject> environmentObjs = new List<GameObject>();
     float rightmostObstacleX = firstObstacleX - ObstacleXSpaceMax;
     float lastObstacleY = 0;
-    Camera camera;
+
+    Camera gameCamera;
 
     public static bool InCamera(Vector3 position)
     {
-        Vector3 viewPos = Instance.camera.WorldToViewportPoint(position);
+        Vector3 viewPos = Instance.gameCamera.WorldToViewportPoint(position);
         return 0 <= viewPos.x && viewPos.x <= 1 && 0 <= viewPos.y && viewPos.y <= 1;
+    }
+
+    public static void RemoveEnvironmentObj(GameObject obj)
+    {
+        Destroy(obj);
+        Instance.environmentObjs.Remove(obj);
     }
 
     private void Start ()
     {
         instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
-        camera = this.GetComponentInChildren<Camera>();
+        this.gameCamera = this.GetComponentInChildren<Camera>();
 
         this.curBoundaries = SpawnBoundary(0);
         this.rightmostBoundaryX = BoundaryLength;
@@ -108,30 +125,62 @@ public class God : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.GetComponent<Obstacle>() != null && 
+            collider.gameObject.GetComponent<Obstacle>().ObstacleType != ObstacleType.Boundary)
+        {
+            Destroy(collider.gameObject);
+            this.environmentObjs.Remove(collider.gameObject);
+        }
+    }
+
+
     private GameObject[] SpawnBoundary(float xOffset)
     {
         GameObject[] boundaries = new GameObject[2];
-        boundaries[0] = Instantiate(Ground, new Vector3(xOffset, -BoundaryY, BoundaryZ), new Quaternion());
-        boundaries[1] = Instantiate(Sky, new Vector3(xOffset, BoundaryY, BoundaryZ), new Quaternion());
+
+        boundaries[0] = Instantiate(
+            this.EnvironmentPrefabs[Environments.Ground.GetHashCode()], 
+            new Vector3(xOffset, -BoundaryY, BoundaryZ), 
+            new Quaternion());
+
+        boundaries[1] = Instantiate(
+            this.EnvironmentPrefabs[Environments.Sky.GetHashCode()], 
+            new Vector3(xOffset, BoundaryY, BoundaryZ), 
+            new Quaternion());
+
         return boundaries;
     }
     
     private void SpawnObstacles(float xOffset)
     {
-        if (this.obstacles[this.obstacleIndex] != null)
-        {
-            Destroy(this.obstacles[this.obstacleIndex]);
-            Destroy(this.obstacles[this.obstacleIndex + 1]);
-        }
-
         float spacing = ObstacleYSpace / 2;
         float y = this.lastObstacleY + Utilities.NormalDist(0, ObstacleYSdev);
         y = y > BoundaryY ? 2 * BoundaryY - y : y;
         y = y < -BoundaryY ? 2 * -BoundaryY - y : y;
 
-        this.obstacles[this.obstacleIndex] = Instantiate(ObstacleBottom, new Vector3(xOffset, y - spacing, ObstacleZ), new Quaternion());
-        this.obstacles[this.obstacleIndex + 1] = Instantiate(ObstacleTop, new Vector3(xOffset, y + spacing, ObstacleZ), new Quaternion());
+        this.environmentObjs.Add(Instantiate(
+            this.EnvironmentPrefabs[Environments.PipeBottom.GetHashCode()], 
+            new Vector3(xOffset, y - spacing, ObstacleZ), 
+            new Quaternion()));
 
-        this.obstacleIndex = (this.obstacleIndex + 2) % MaxObstacles;
+       this.environmentObjs.Add(Instantiate(
+            this.EnvironmentPrefabs[Environments.PipeTop.GetHashCode()],
+            new Vector3(xOffset, y + spacing, ObstacleZ), 
+            new Quaternion()));
+
+        this.environmentObjs.Add(Instantiate(
+            this.ScorePrefabs[Scores.Pipe.GetHashCode()],
+            new Vector3(xOffset, 0, ObstacleZ),
+            new Quaternion()));
+
+        if (Random.value < 0.1f)
+        {
+            this.environmentObjs.Add(Instantiate(
+                this.ScorePrefabs[Scores.Gold.GetHashCode()],
+                new Vector3(xOffset + 2, 0, ObstacleZ),
+                new Quaternion()));
+        }
     }
 }

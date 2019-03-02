@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class LossMenu : Menu
+public class LossMenu : UIElement
 {
     private enum Buttons
     {
@@ -16,8 +16,8 @@ public class LossMenu : Menu
         Score
     }
 
-    public static Menu instance;
-    public static Menu Instance
+    public static LossMenu instance;
+    public static LossMenu Instance
     {
         get
         {
@@ -29,12 +29,12 @@ public class LossMenu : Menu
     {
         Time.timeScale = 0;
         Instance.gameObject.SetActive(true);
-        ((LossMenu)Instance).texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+        Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
     protected void Awake()
     {
         this.defaultActive = false;
-        instance = GameObject.FindGameObjectsWithTag("LossMenu")[0].GetComponent<Menu>();
+        instance = GameObject.FindGameObjectsWithTag("LossMenu")[0].GetComponent<LossMenu>();
     }
 }

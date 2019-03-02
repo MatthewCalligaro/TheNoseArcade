@@ -7,12 +7,12 @@
 
 public enum PlayStyle
 {
-    Classic,
-    Runner,
+    Chase,
+    Classic
 }
 
 public class Settings
 {
-    public static JumpStyle JumpStyle = JumpStyle.Velocity;
-    public static PlayStyle PlayStyle = PlayStyle.Classic;
+    public static JumpStyle JumpStyle = JumpStyle.Jetpack;
+    public static PlayStyle PlayStyle = PlayStyle.Chase;
 }

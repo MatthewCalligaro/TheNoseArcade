@@ -4,7 +4,7 @@ public class Player : MonoBehaviour
 {
     public const float JumpVelocity = 6;
     public const float JumpForce = 500;
-    public const float JumpJetpack = 500;
+    public const float JumpJetpack = 1500;
 
     private int score = 0;
 	
@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
 
         if (Settings.JumpStyle == JumpStyle.Jetpack && Input.GetKey(KeyCode.Space))
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpForce * Time.deltaTime));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpJetpack * Time.deltaTime));
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
             PauseMenu.Pause();
         }
 
-        if (Settings.PlayStyle == PlayStyle.Runner && !God.InCamera(this.transform.position))
+        if (Settings.PlayStyle == PlayStyle.Chase && !God.InCamera(this.transform.position))
         {
             this.HandleLoss();
         }
@@ -49,6 +49,12 @@ public class Player : MonoBehaviour
             {
                 case ObstacleType.Environment:
                     if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
+                    break;
+
+                case ObstacleType.Score:
+                    this.score += collision.gameObject.GetComponent<Obstacle>().Score;
+                    HUD.UpdateScore(this.score);
+                    God.RemoveEnvironmentObj(collision.gameObject);
                     break;
 
                 case ObstacleType.Death:
