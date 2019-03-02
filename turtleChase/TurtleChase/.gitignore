@@ -407,4 +407,4 @@ crashlytics-build.properties
 #########
 
 # Unignore WebGL templates
-![Aa]ssets/WebGL\ Templates/**/*
+![Aa]ssets/WebGLTemplates/**/*
