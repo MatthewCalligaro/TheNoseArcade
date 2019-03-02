@@ -7,12 +7,21 @@ public class Player : MonoBehaviour
     public const float JumpJetpack = 500;
 
     private int score = 0;
+
+    private bool jump = false;
+
+    public void Jump ()
+    {
+        jump = true;
+    }
+
 	
 	private void Update ()
     {
         this.transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (jump || Input.GetKeyDown(KeyCode.Space))
         {
+            jump = false;
             switch(Settings.JumpStyle)
             {
                 case JumpStyle.Velocity:
