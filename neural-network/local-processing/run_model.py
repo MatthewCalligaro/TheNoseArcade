@@ -68,8 +68,8 @@ def process_video(learn):
             pts = pts[1:]
 
         # Draw the last 10 points
-        for pt in pts:
-            cv2.circle(frame, pt, 2, (0,0,255), -1)
+        for i in range(len(pts) - 1):
+            cv2.line(frame, pts[i], pts[i+1], (0,0,255), 2)
 
         # Display the resulting frame
         cv2.imshow('frame',frame)
