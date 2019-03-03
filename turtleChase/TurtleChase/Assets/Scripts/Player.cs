@@ -43,18 +43,28 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.GetComponent<Obstacle>())
+        this.HandleCollision(collision.gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        this.HandleCollision(collision.gameObject);
+    }
+
+    private void HandleCollision(GameObject other)
+    {
+        if (other.gameObject.GetComponent<Obstacle>())
         {
-            switch (collision.gameObject.GetComponent<Obstacle>().ObstacleType)
+            switch (other.gameObject.GetComponent<Obstacle>().ObstacleType)
             {
                 case ObstacleType.Environment:
                     if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
                     break;
 
                 case ObstacleType.Score:
-                    this.score += collision.gameObject.GetComponent<Obstacle>().Score;
+                    this.score += other.gameObject.GetComponent<Obstacle>().Score;
                     HUD.UpdateScore(this.score);
-                    God.RemoveEnvironmentObj(collision.gameObject);
+                    God.RemoveEnvironmentObj(other.gameObject);
                     break;
 
                 case ObstacleType.Death:

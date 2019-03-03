@@ -6,12 +6,18 @@ public class God : MonoBehaviour
     public GameObject[] EnvironmentPrefabs;
     public GameObject[] ScorePrefabs;
 
+    public GameObject Ground;
+    public GameObject Sky;
+
     private enum Environments
     {
-        Ground,
-        Sky,
         PipeBottom,
-        PipeTop
+        PipeTop,
+        Rock,
+        LedgeS,
+        LedgeM,
+        LedgeL,
+        Cloud
     }
 
     private enum Scores
@@ -21,46 +27,99 @@ public class God : MonoBehaviour
         Gold
     }
 
-    public const float ScrollSpeed = 3;
-
-    public const float BoundaryY = 4.5f;
-    public const float BoundaryZ = 1;
-    public const float BoundaryLength = 100;
-
-    public const float firstObstacleX = 15;
-    public const float ObstacleZ = 2;
-    public const float ObstacleXLead = 15;
-
-    public const float ObstacleXSpaceMax = 5;
-    public const float ObstacleXSpaceMin = 3;
-    public const float ObstacleXSpaceMultiplier = 0.01f;
-    public float ObstacleXSpace
+    public static float ScrollSpeed
     {
         get
         {
-            return Mathf.Max(ObstacleXSpaceMax - this.transform.position.x * ObstacleXSpaceMultiplier, ObstacleXSpaceMin);
+            return 2 + Settings.Difficulty.GetHashCode();
         }
     }
 
-    public const float ObstacleYSpaceMax = 4;
-    public const float ObstacleYSpaceMin = 1.5f;
-    public const float ObstacleYSpaceMultiplier = 0.02f;
-    public float ObstacleYSpace
-    {
-        get
-        {
-            return Mathf.Max(ObstacleYSpaceMax - this.transform.position.x * ObstacleYSpaceMultiplier, ObstacleYSpaceMin);
-        }
-    }
+    /// <summary>
+    /// X length, +/- Y position, and Z position of boundary objects
+    /// </summary>
+    private static readonly Vector3 BoundaryStats = new Vector3(100, 4.5f, 1);
 
-    public const float ObstacleYSdevMin = 1.5f;
-    public const float ObstacleYSdevMax = 4;
-    public const float ObstacleYSdevMultiplier = 0.02f;
-    public float ObstacleYSdev
+    /// <summary>
+    /// X distance before the first environment object
+    /// </summary>
+    private const float FirstEnvX = 20;
+
+    /// <summary>
+    /// Amount that objects spawn ahead of the player in the x direction
+    /// </summary>
+    private const float EnvXLead = 15;
+
+    /// <summary>
+    /// Z position of environment objects
+    /// </summary>
+    private const float EnvZ = 2;
+
+    private static readonly VariableDistance YSdev = new VariableDistance(1.5f, 4, 0.02f);
+
+    private static readonly EnvironmentStats[] envStats =
+    {
+        // Pipe Bottom
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(3, 6, 0.03f),
+            YGap = new VariableDistance(0.75f, 2, 0.01f),
+            YMax = 4.25f,
+            YBlock = 0
+        },
+
+        // Pipe Top
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(3, 6, 0.03f),
+            YGap = new VariableDistance(0.75f, 2, 0.01f),
+            YMax = 4.25f,
+            YBlock = 0
+        },
+
+        // Rock
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(3, 4, 0.02f),
+            YGap =  new VariableDistance(0.5f, 3, 0.01f),
+            YMax = 4.25f,
+            YBlock = 0
+        },
+
+        // LedgeS
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(2, 5, 0.1f),
+            YGap = new VariableDistance(3, 5, 0.1f),
+            YMax = 3.0f,
+            YBlock = 2
+        },
+
+        // LedgeM
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(3, 8, 0.1f),
+            YGap = new VariableDistance(3, 5, 0.1f),
+            YMax = 3.0f,
+            YBlock = 5
+        },
+
+        // LedgeL
+        new EnvironmentStats
+        {
+            XDelay = new VariableDistance(3, 8, 0.1f),
+            YGap = new VariableDistance(3, 5, 0.1f),
+            YMax = 3.0f,
+            YBlock = 10
+        }
+    };
+
+    private static readonly float[] DifficultyDecays = { 1.0f, 1.5f, 2.0f };
+    private float Decay
     {
         get
         {
-            return Mathf.Min(ObstacleYSdevMin + this.transform.position.x * ObstacleYSdevMultiplier, ObstacleYSdevMax);
+            return this.transform.position.x * DifficultyDecays[Settings.Difficulty.GetHashCode()];
         }
     }
 
@@ -73,15 +132,15 @@ public class God : MonoBehaviour
         }
     }
 
-    GameObject[] curBoundaries;
-    GameObject[] nextBoundaries;
-    float rightmostBoundaryX;
+    private GameObject[] curBoundaries;
+    private GameObject[] nextBoundaries;
+    private float rightmostBoundaryX;
 
-    List<GameObject> environmentObjs = new List<GameObject>();
-    float rightmostObstacleX = firstObstacleX - ObstacleXSpaceMax;
-    float lastObstacleY = 0;
+    private List<GameObject> environmentObjs = new List<GameObject>();
+    private Vector3 nextEnv = new Vector3(FirstEnvX / DifficultyDecays[Settings.Difficulty.GetHashCode()], 0, EnvZ);
+    private List<Vector2> curYBlocks = new List<Vector2>();
 
-    Camera gameCamera;
+    private Camera gameCamera;
 
     public static bool InCamera(Vector3 position)
     {
@@ -101,7 +160,7 @@ public class God : MonoBehaviour
         this.gameCamera = this.GetComponentInChildren<Camera>();
 
         this.curBoundaries = SpawnBoundary(0);
-        this.rightmostBoundaryX = BoundaryLength;
+        this.rightmostBoundaryX = BoundaryStats.x;
         this.nextBoundaries = SpawnBoundary(rightmostBoundaryX);
     }
 
@@ -113,74 +172,100 @@ public class God : MonoBehaviour
         {
             Destroy(this.curBoundaries[0]);
             Destroy(this.curBoundaries[1]);
-            this.rightmostBoundaryX += BoundaryLength;
+            this.rightmostBoundaryX += BoundaryStats.x;
             this.curBoundaries = this.nextBoundaries;
             this.nextBoundaries = this.SpawnBoundary(this.rightmostBoundaryX);
         }
 
-        if (this.transform.position.x > this.rightmostObstacleX - ObstacleXLead)
+        if (this.transform.position.x > this.nextEnv.x - EnvXLead)
         {
-            this.rightmostObstacleX += ObstacleXSpace;
-            SpawnObstacles(this.rightmostObstacleX);
+            SpawnEnv();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collider.gameObject.GetComponent<Obstacle>() != null && 
-            collider.gameObject.GetComponent<Obstacle>().ObstacleType != ObstacleType.Boundary)
+        if (collision.gameObject.GetComponent<Obstacle>() != null && 
+            collision.gameObject.GetComponent<Obstacle>().ObstacleType != ObstacleType.Boundary)
         {
-            Destroy(collider.gameObject);
-            this.environmentObjs.Remove(collider.gameObject);
+            Destroy(collision.gameObject);
+            this.environmentObjs.Remove(collision.gameObject);
         }
     }
 
 
-    private GameObject[] SpawnBoundary(float xOffset)
+    private GameObject[] SpawnBoundary(float x)
     {
         GameObject[] boundaries = new GameObject[2];
-
-        boundaries[0] = Instantiate(
-            this.EnvironmentPrefabs[Environments.Ground.GetHashCode()], 
-            new Vector3(xOffset, -BoundaryY, BoundaryZ), 
-            new Quaternion());
-
-        boundaries[1] = Instantiate(
-            this.EnvironmentPrefabs[Environments.Sky.GetHashCode()], 
-            new Vector3(xOffset, BoundaryY, BoundaryZ), 
-            new Quaternion());
-
+        boundaries[0] = Instantiate(Ground, new Vector3(x, -BoundaryStats.y, BoundaryStats.z), new Quaternion());
+        boundaries[1] = Instantiate(Sky, new Vector3(x, BoundaryStats.y, BoundaryStats.z), new Quaternion());
         return boundaries;
     }
     
-    private void SpawnObstacles(float xOffset)
+    private void SpawnEnv()
     {
-        float spacing = ObstacleYSpace / 2;
-        float y = this.lastObstacleY + Utilities.NormalDist(0, ObstacleYSdev);
-        y = y > BoundaryY ? 2 * BoundaryY - y : y;
-        y = y < -BoundaryY ? 2 * -BoundaryY - y : y;
+        int index = (int)(Random.value * (EnvironmentPrefabs.Length - 2));
+        EnvironmentStats stats = envStats[index];
 
-        this.environmentObjs.Add(Instantiate(
-            this.EnvironmentPrefabs[Environments.PipeBottom.GetHashCode()], 
-            new Vector3(xOffset, y - spacing, ObstacleZ), 
-            new Quaternion()));
-
-       this.environmentObjs.Add(Instantiate(
-            this.EnvironmentPrefabs[Environments.PipeTop.GetHashCode()],
-            new Vector3(xOffset, y + spacing, ObstacleZ), 
-            new Quaternion()));
-
-        this.environmentObjs.Add(Instantiate(
-            this.ScorePrefabs[Scores.Pipe.GetHashCode()],
-            new Vector3(xOffset, 0, ObstacleZ),
-            new Quaternion()));
-
-        if (Random.value < 0.1f)
+        do
         {
+            this.nextEnv.y += Utilities.NormalDist(0, YSdev.GetDistance(this.Decay));
+            this.nextEnv.y = this.nextEnv.y > stats.YMax ? 2 * stats.YMax - this.nextEnv.y : this.nextEnv.y;
+            this.nextEnv.y = this.nextEnv.y < -stats.YMax ? 2 * -stats.YMax - this.nextEnv.y : this.nextEnv.y;
+        }
+        while (!VerifyY(this.nextEnv.y));
+
+        if (index <= 1)
+        {
+            float spacing = stats.YGap.GetDistance(Decay);
             this.environmentObjs.Add(Instantiate(
-                this.ScorePrefabs[Scores.Gold.GetHashCode()],
-                new Vector3(xOffset + 2, 0, ObstacleZ),
+                this.EnvironmentPrefabs[Environments.PipeBottom.GetHashCode()],
+                new Vector3(this.nextEnv.x, this.nextEnv.y - spacing, this.nextEnv.z),
+                new Quaternion()));
+
+            this.environmentObjs.Add(Instantiate(
+                 this.EnvironmentPrefabs[Environments.PipeTop.GetHashCode()],
+                 new Vector3(this.nextEnv.x, this.nextEnv.y + spacing, this.nextEnv.z),
+                 new Quaternion()));
+
+            this.environmentObjs.Add(Instantiate(
+                this.ScorePrefabs[Scores.Pipe.GetHashCode()],
+                new Vector3(this.nextEnv.x, 0, this.nextEnv.z),
                 new Quaternion()));
         }
+        else
+        {
+            GameObject newEnv = Instantiate(this.EnvironmentPrefabs[index], this.nextEnv, new Quaternion());
+            newEnv.GetComponent<Obstacle>().Speed = Random.value > 0.6 ? 1 : 0;
+            this.environmentObjs.Add(newEnv);
+        }
+
+        if (stats.YBlock > 0)
+        {
+            this.curYBlocks.Add(new Vector2(stats.YBlock + this.nextEnv.x, this.nextEnv.y));
+        }
+
+        this.nextEnv.x += stats.XDelay.GetDistance(this.Decay);
+    }
+
+    private bool VerifyY(float y)
+    {
+        for (int i = 0; i < this.curYBlocks.Count; ++i)
+        {
+            if (this.transform.position.x > this.curYBlocks[i].x)
+            {
+                this.curYBlocks.RemoveAt(i);
+                i--;
+            }
+            else
+            {
+                if (Mathf.Abs(y - this.curYBlocks[i].y) < 1.0f)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
