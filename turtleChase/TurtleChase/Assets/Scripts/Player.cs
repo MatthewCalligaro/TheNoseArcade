@@ -2,32 +2,71 @@
 
 public class Player : MonoBehaviour
 {
-    public const float JumpVelocity = 6;
-    public const float JumpForce = 500;
-    public const float JumpJetpack = 1500;
+    private const float jumpVelocity = 6;
+    private const float jumpForce = 500;
+    private const float jumpJetpackForce = 1500;
 
     private int score = 0;
+    private bool isJetpacking = false;
 	
+    public void JumpDiscrete()
+    {
+        if (Settings.JumpStyle == JumpStyle.Velocity)
+        {
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity);
+        }
+        else
+        {
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce));
+        }
+    }
+
+    public void JumpContinuousEnter()
+    {
+        this.isJetpacking = true;
+    }
+
+    public void JumpContinuousExit()
+    {
+        this.isJetpacking = false;
+    }
+
+    public void JumpWithMagnitude(float magnitude)
+    {
+        if (Settings.JumpStyle == JumpStyle.Velocity)
+        {
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude);
+        }
+        else
+        {
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude));
+        }
+    }
+
 	private void Update ()
     {
         this.transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
+
+        if (isJetpacking)
+        {
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime));
+        }
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            switch(Settings.JumpStyle)
+            if (Settings.JumpStyle == JumpStyle.Jetpack)
             {
-                case JumpStyle.Velocity:
-                    this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, JumpVelocity);
-                    break;
-
-                case JumpStyle.Force:
-                    this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpForce));
-                    break;
+                this.JumpContinuousEnter();
+            }
+            else
+            {
+                this.JumpDiscrete();
             }
         }
 
-        if (Settings.JumpStyle == JumpStyle.Jetpack && Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, JumpJetpack * Time.deltaTime));
+            this.JumpContinuousExit();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))

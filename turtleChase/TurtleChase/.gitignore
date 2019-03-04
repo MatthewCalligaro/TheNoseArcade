@@ -406,6 +406,5 @@ crashlytics-build.properties
 # Custom
 #########
 
-# Unignore assets for JS integration
-![Aa]ssets/WebGL\ Templates/**/*
-![Aa]ssets/Plugins/*
+# Unignore WebGL templates
+![Aa]ssets/WebGLTemplates/**/*
