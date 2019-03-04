@@ -14,6 +14,7 @@ let pNoseX;
 let pNoseY;
 
 let jumpCooldown;
+let threshold;
 
 function setup() {
   createCanvas(640, 480);
@@ -29,11 +30,13 @@ function setup() {
 
   video.hide();
   jumpCooldown = 0;
+  threshold = 150; // TODO: tune this
 }
 
 function findNose() {
   jumpCooldown = max(0, jumpCooldown - 1);
-  var yDiff = 0; // By default don't register movement
+  // var yDiff = 0; // By default don't register movement
+  var active = 0; // By default don't register movement
   if(poses.length > 0) {
     // Only detect nose keypoint of first pose
     let nose = poses[0].pose.keypoints[0];
@@ -42,14 +45,19 @@ function findNose() {
       noseX = nose.position.x;
       noseY = nose.position.y;
 
-      yDiff = pNoseY - noseY;
+      // // Difference
+      // yDiff = pNoseY - noseY; 
+
+      // Active zone
+      active = pNoseY > thresh && noseY < thresh;
 
       pNoseX = noseX;
       pNoseY = noseY;
     }
   }
 
-  if (jumpCooldown == 0 && yDiff > 20) {
+  // if (jumpCooldown == 0 && yDiff > 20) {
+  if (jumpCooldown == 0 && active) {
     jumpCooldown = 7; // Reset jump cooldown
     console.log("JUMP");
     gameInstance.SendMessage("Player", "JumpDiscrete");
