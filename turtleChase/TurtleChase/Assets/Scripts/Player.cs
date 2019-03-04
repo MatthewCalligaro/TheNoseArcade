@@ -2,7 +2,7 @@
 
 public class Player : MonoBehaviour
 {
-    private const float jumpVelocity = 6;
+    private const float jumpVelocity = 8;
     private const float jumpForce = 500;
     private const float jumpJetpackForce = 1500;
 
@@ -13,11 +13,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpMultiplier);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpMultiplier));
         }
     }
 
@@ -35,11 +35,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude * Settings.JumpMultiplier);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude * Settings.JumpMultiplier));
         }
     }
 
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
 
         if (isJetpacking)
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpMultiplier));
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
