@@ -49,7 +49,7 @@ function findNose() {
       // yDiff = pNoseY - noseY; 
 
       // Active zone
-      active = pNoseY > thresh && noseY < thresh;
+      active = pNoseY > threshold && noseY < threshold;
 
       pNoseX = noseX;
       pNoseY = noseY;
