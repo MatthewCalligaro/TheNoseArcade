@@ -5,14 +5,14 @@ using UnityEngine;
 public class EnvironmentStats
 {
     /// <summary>
-    /// X distance before the next environment object is spawned
+    /// X distance before the next obstacle is spawned
     /// </summary>
-    public VariableDistance XDelay { get; set; }
+    public VariableValue XDelay { get; set; }
 
     /// <summary>
     /// Y distance between multiple of these environment objects at the same x position
     /// </summary>
-    public VariableDistance YGap { get; set; }
+    public VariableValue YGap { get; set; }
 
     /// <summary>
     /// Maximum y position
@@ -23,4 +23,12 @@ public class EnvironmentStats
     /// Distance for which future environment objects cannot be spawned at this y position
     /// </summary>
     public float YBlock { get; set; }
+
+    public int SpawnProb { get; set; }
+
+    public VariableValue MovementProb { get; set; }
+
+    public Vector2 Movement { get; set; }
+
+    public VariableValue Speed { get; set; }
 }

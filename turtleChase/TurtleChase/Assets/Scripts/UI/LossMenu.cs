@@ -32,8 +32,9 @@ public class LossMenu : UIElement
         Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         this.defaultActive = false;
         instance = GameObject.FindGameObjectsWithTag("LossMenu")[0].GetComponent<LossMenu>();
     }
