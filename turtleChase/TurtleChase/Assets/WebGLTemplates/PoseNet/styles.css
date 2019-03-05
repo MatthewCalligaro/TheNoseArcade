@@ -1,0 +1,7 @@
+canvas, video {
+    position: absolute;
+}
+#videoContainer {
+    width: 640px;
+    height: 480px;
+}
