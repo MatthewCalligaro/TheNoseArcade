@@ -17,8 +17,9 @@ public class HUD : UIElement
         }
     }
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         this.defaultActive = true;
         instance = GameObject.FindGameObjectsWithTag("HUD")[0].GetComponent<HUD>();
     }

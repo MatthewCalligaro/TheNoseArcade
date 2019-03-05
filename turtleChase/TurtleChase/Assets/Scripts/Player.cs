@@ -5,10 +5,26 @@ public class Player : MonoBehaviour
     private const float jumpVelocity = 8;
     private const float jumpForce = 500;
     private const float jumpJetpackForce = 1500;
+    private const float speedMultiplierTime = 1.5f;
 
     private int score = 0;
     private bool isJetpacking = false;
-	
+
+    private float speedMultiplier = 1.0f;
+    private float speedCounter = 0;
+    public float SpeedMultiplier
+    {
+        get
+        {
+            return this.speedMultiplier;
+        }
+        set
+        {
+            this.speedMultiplier = value;
+            this.speedCounter = speedMultiplierTime;
+        }
+    }
+
     public void JumpDiscrete()
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
@@ -43,13 +59,31 @@ public class Player : MonoBehaviour
         }
     }
 
-	private void Update ()
+    public void ApplyForce(Vector2 force)
     {
-        this.transform.Translate(new Vector3(God.ScrollSpeed * Time.deltaTime, 0, 0));
+        this.GetComponent<Rigidbody2D>().AddForce(force);
+    }
 
+    private void Start()
+    {
+        HUD.UpdateScore(this.score);
+    }
+
+    private void Update()
+    {
         if (isJetpacking)
         {
             this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpMultiplier));
+        }
+
+        if (speedCounter > 0)
+        {
+            speedCounter -= Time.deltaTime;
+            if (speedCounter <= 0)
+            {
+                this.speedMultiplier = 1.0f;
+                this.speedCounter = 0;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -78,7 +112,14 @@ public class Player : MonoBehaviour
         {
             this.HandleLoss();
         }
-	}
+
+        if (God.CameraCoords(this.transform.position).x > 0.75f)
+        {
+            God.Skip(1 / (1 - God.CameraCoords(this.transform.position).x));
+        }
+
+        this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -97,17 +138,17 @@ public class Player : MonoBehaviour
             switch (other.gameObject.GetComponent<Obstacle>().ObstacleType)
             {
                 case ObstacleType.Environment:
+                case ObstacleType.Boundary:
                     if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
                     break;
 
-                case ObstacleType.Score:
-                    this.score += other.gameObject.GetComponent<Obstacle>().Score;
+                case ObstacleType.Consumable:
+                    Obstacle otherObs = other.gameObject.GetComponent<Obstacle>();
+                    this.score += otherObs.Score;
                     HUD.UpdateScore(this.score);
+                    this.GetComponent<Rigidbody2D>().AddForce(otherObs.Force);
+                    this.SpeedMultiplier *= otherObs.SpeedMultiplier;
                     God.RemoveEnvironmentObj(other.gameObject);
-                    break;
-
-                case ObstacleType.Death:
-                    this.HandleLoss();
                     break;
             }
         }

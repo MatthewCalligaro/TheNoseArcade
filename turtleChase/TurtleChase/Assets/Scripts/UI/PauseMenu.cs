@@ -32,8 +32,9 @@ public class PauseMenu : UIElement
         Pause();
     }
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         this.defaultActive = false;
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
     }

@@ -8,10 +8,14 @@ public abstract class UIElement : MonoBehaviour
     protected Button[] buttons;
     protected Text[] texts;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         this.buttons = this.GetComponentsInChildren<Button>();
         this.texts = this.GetComponentsInChildren<Text>();
+    }
+
+    protected virtual void Start()
+    {
         this.gameObject.SetActive(defaultActive);
     }
 
