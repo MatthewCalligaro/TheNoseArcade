@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+import time
 import torch
 
 from fastai.vision import *
@@ -54,15 +55,18 @@ def process_video(learn):
     '''
     cap = cv2.VideoCapture(0)
     pts = []
+    tm = time.time()
 
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
 
+        frame = cv2.resize(frame, (160, 120))
+
         # Process the frame
         point = predict_img(learn, frame)
 
-        # Add the point to our list
+        # # Add the point to our list
         pts.append(point)
         if (len(pts) > 10):
             pts = pts[1:]
@@ -71,11 +75,14 @@ def process_video(learn):
         for i in range(len(pts) - 1):
             cv2.line(frame, pts[i], pts[i+1], (0,0,255), 2)
 
-        # Display the resulting frame
+        # # Display the resulting frame
         cv2.imshow('frame',frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        print(time.time() - tm)
+        tm = time.time()
 
     # When everything done, release the capture
     cap.release()
@@ -85,6 +92,7 @@ if __name__ == '__main__':
 
     learn = create_learner('models', 'vanilla_model.pkl')
     process_video(learn)
+    
     
     # Then to display one point, run this
     # img_fn = 'data/nandeeka_test.png'
