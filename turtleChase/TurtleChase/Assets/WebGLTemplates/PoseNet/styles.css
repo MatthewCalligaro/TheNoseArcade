@@ -4,4 +4,6 @@ canvas, video {
 #videoContainer {
     width: 640px;
     height: 480px;
+
+    transform: scale(0.5, 0.5); /* Scale the display; try to make this not obnoxiously large while still preserving params */
 }
