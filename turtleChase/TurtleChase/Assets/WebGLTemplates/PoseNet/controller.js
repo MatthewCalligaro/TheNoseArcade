@@ -15,6 +15,8 @@ let noseY;
 let pNoseX;
 let pNoseY;
 
+let magnitude;
+
 let jumpCooldown;
 let threshold;
 let mode;
@@ -78,6 +80,7 @@ function findNose() {
         console.log(sensitivity);
         trigger = (pNoseY - noseY) > sensitivity; 
         console.log(trigger);
+        magnitude = pNoseY - noseY;
       }
 
       pNoseX = noseX;
@@ -89,6 +92,13 @@ function findNose() {
     jumpCooldown = delay; // Reset jump cooldown
     console.log("JUMP");
     gameInstance.SendMessage("Player", "JumpDiscrete");
+    // TODO: Make sure this hook-in works properly; use Magnitude (but ignore depending on game settings) in velocity mode
+    // if (mode == "active") {
+    //   gameInstance.SendMessage("Player", "JumpDiscrete");
+    // }
+    // else {
+    //   gameInstance.SendMessage("Player", "JumpWithMagnitude", magnitude);
+    // }
   }
 }
 
