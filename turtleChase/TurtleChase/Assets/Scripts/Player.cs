@@ -2,6 +2,8 @@
 
 public class Player : MonoBehaviour
 {
+    public static int BlockingPause = 0;
+
     private const float jumpVelocity = 8;
     private const float jumpForce = 500;
     private const float jumpJetpackForce = 1500;
@@ -29,11 +31,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpMultiplier);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpPower);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpMultiplier));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpPower));
         }
     }
 
@@ -51,11 +53,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude * Settings.JumpMultiplier);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude * Settings.JumpPower);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude * Settings.JumpMultiplier));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude * Settings.JumpPower));
         }
     }
 
@@ -73,7 +75,7 @@ public class Player : MonoBehaviour
     {
         if (isJetpacking)
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpMultiplier));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpPower));
         }
 
         if (speedCounter > 0)
@@ -103,12 +105,12 @@ public class Player : MonoBehaviour
             this.JumpContinuousExit();
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
         {
             PauseMenu.Pause();
         }
 
-        if (Settings.PlayStyle == PlayStyle.Chase && !God.InCamera(this.transform.position))
+        if (!God.InCamera(this.transform.position))
         {
             this.HandleLoss();
         }
@@ -133,24 +135,14 @@ public class Player : MonoBehaviour
 
     private void HandleCollision(GameObject other)
     {
-        if (other.gameObject.GetComponent<Obstacle>())
+        if (other.gameObject.GetComponent<Obstacle>() && other.gameObject.GetComponent<Obstacle>().ObstacleType == ObstacleType.Consumable)
         {
-            switch (other.gameObject.GetComponent<Obstacle>().ObstacleType)
-            {
-                case ObstacleType.Environment:
-                case ObstacleType.Boundary:
-                    if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
-                    break;
-
-                case ObstacleType.Consumable:
-                    Obstacle otherObs = other.gameObject.GetComponent<Obstacle>();
-                    this.score += otherObs.Score;
-                    HUD.UpdateScore(this.score);
-                    this.GetComponent<Rigidbody2D>().AddForce(otherObs.Force);
-                    this.SpeedMultiplier *= otherObs.SpeedMultiplier;
-                    God.RemoveEnvironmentObj(other.gameObject);
-                    break;
-            }
+            Obstacle otherObs = other.gameObject.GetComponent<Obstacle>();
+            this.score += otherObs.Score;
+            HUD.UpdateScore(this.score);
+            this.GetComponent<Rigidbody2D>().AddForce(otherObs.Force);
+            this.SpeedMultiplier *= otherObs.SpeedMultiplier;
+            God.RemoveEnvironmentObj(other.gameObject);
         }
     }
 

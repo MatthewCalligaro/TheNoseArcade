@@ -210,7 +210,7 @@ public class God : MonoBehaviour
     {
         get
         {
-            return this.transform.position.x * Settings.DifficultyMultiers[Settings.Difficulty.GetHashCode()];
+            return this.transform.position.x * Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
         }
     }
 
@@ -231,11 +231,11 @@ public class God : MonoBehaviour
     private float rightmostBoundaryX;
 
     private List<GameObject> environmentObjs = new List<GameObject>();
-    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.DifficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
+    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
     private List<Vector2> curYBlocks = new List<Vector2>();
     private List<int> envSpawnProbs = new List<int>();
     private List<int> consumableSpawnProbs = new List<int>();
-    private float consumableProb = 0.25f / Settings.DifficultyMultiers[Settings.Difficulty.GetHashCode()];
+    private float consumableProb = 0.25f / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
 
     public static God instance;
     private Camera gameCamera;
