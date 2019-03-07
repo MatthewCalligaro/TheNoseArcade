@@ -3,13 +3,6 @@ using UnityEngine.UI;
 
 public class LossMenu : UIElement
 {
-    private enum Buttons
-    {
-        Restart,
-        MainMenu,
-        Exit
-    }
-
     private enum Texts
     {
         Title,
@@ -27,9 +20,15 @@ public class LossMenu : UIElement
 
     public static void HandleLoss(int score)
     {
+        Player.BlockingPause++;
         Time.timeScale = 0;
         Instance.gameObject.SetActive(true);
         Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+    }
+
+    public override void HandleRestart()
+    {
+        base.HandleRestart();
     }
 
     protected override void Awake()

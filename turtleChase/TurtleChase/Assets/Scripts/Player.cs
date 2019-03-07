@@ -2,6 +2,8 @@
 
 public class Player : MonoBehaviour
 {
+    public static int BlockingPause = 0;
+
     private const float jumpVelocity = 8;
     private const float jumpForce = 500;
     private const float jumpJetpackForce = 1500;
@@ -9,6 +11,7 @@ public class Player : MonoBehaviour
 
     private int score = 0;
     private bool isJetpacking = false;
+    private bool loss = false;
 
     private float speedMultiplier = 1.0f;
     private float speedCounter = 0;
@@ -29,11 +32,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpMultiplier);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpPower);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpMultiplier));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpPower));
         }
     }
 
@@ -51,11 +54,11 @@ public class Player : MonoBehaviour
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
-            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude * Settings.JumpMultiplier);
+            this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * magnitude * Settings.JumpPower);
         }
         else
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude * Settings.JumpMultiplier));
+            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * magnitude * Settings.JumpPower));
         }
     }
 
@@ -66,59 +69,63 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        Player.BlockingPause = 0;
         HUD.UpdateScore(this.score);
     }
 
     private void Update()
     {
-        if (isJetpacking)
+        if (!loss)
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpMultiplier));
-        }
-
-        if (speedCounter > 0)
-        {
-            speedCounter -= Time.deltaTime;
-            if (speedCounter <= 0)
+            if (isJetpacking)
             {
-                this.speedMultiplier = 1.0f;
-                this.speedCounter = 0;
+                this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpPower));
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (Settings.JumpStyle == JumpStyle.Jetpack)
+            if (speedCounter > 0)
             {
-                this.JumpContinuousEnter();
+                speedCounter -= Time.deltaTime;
+                if (speedCounter <= 0)
+                {
+                    this.speedMultiplier = 1.0f;
+                    this.speedCounter = 0;
+                }
             }
-            else
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                this.JumpDiscrete();
+                if (Settings.JumpStyle == JumpStyle.Jetpack)
+                {
+                    this.JumpContinuousEnter();
+                }
+                else
+                {
+                    this.JumpDiscrete();
+                }
             }
-        }
 
-        if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
-        {
-            this.JumpContinuousExit();
-        }
+            if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
+            {
+                this.JumpContinuousExit();
+            }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseMenu.Pause();
-        }
+            if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
+            {
+                PauseMenu.Pause();
+            }
 
-        if (Settings.PlayStyle == PlayStyle.Chase && !God.InCamera(this.transform.position))
-        {
-            this.HandleLoss();
-        }
+            if (!God.InCamera(this.transform.position))
+            {
+                this.HandleLoss();
+            }
 
-        if (God.CameraCoords(this.transform.position).x > 0.75f)
-        {
-            God.Skip(1 / (1 - God.CameraCoords(this.transform.position).x));
-        }
+            if (God.CameraCoords(this.transform.position).x > 0.75f)
+            {
+                God.Skip(1 / (1 - God.CameraCoords(this.transform.position).x));
+            }
 
-        this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+            this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -133,29 +140,20 @@ public class Player : MonoBehaviour
 
     private void HandleCollision(GameObject other)
     {
-        if (other.gameObject.GetComponent<Obstacle>())
+        if (other.gameObject.GetComponent<Obstacle>() && other.gameObject.GetComponent<Obstacle>().ObstacleType == ObstacleType.Consumable)
         {
-            switch (other.gameObject.GetComponent<Obstacle>().ObstacleType)
-            {
-                case ObstacleType.Environment:
-                case ObstacleType.Boundary:
-                    if (Settings.PlayStyle == PlayStyle.Classic) this.HandleLoss();
-                    break;
-
-                case ObstacleType.Consumable:
-                    Obstacle otherObs = other.gameObject.GetComponent<Obstacle>();
-                    this.score += otherObs.Score;
-                    HUD.UpdateScore(this.score);
-                    this.GetComponent<Rigidbody2D>().AddForce(otherObs.Force);
-                    this.SpeedMultiplier *= otherObs.SpeedMultiplier;
-                    God.RemoveEnvironmentObj(other.gameObject);
-                    break;
-            }
+            Obstacle otherObs = other.gameObject.GetComponent<Obstacle>();
+            this.score += otherObs.Score;
+            HUD.UpdateScore(this.score);
+            this.GetComponent<Rigidbody2D>().AddForce(otherObs.Force);
+            this.SpeedMultiplier *= otherObs.SpeedMultiplier;
+            God.RemoveEnvironmentObj(other.gameObject);
         }
     }
 
     private void HandleLoss()
     {
+        this.loss = true;
         LossMenu.HandleLoss(this.score);
     }
 }

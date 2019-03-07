@@ -10,7 +10,7 @@ public class PauseMenu : UIElement
         Exit
     }
 
-    public static PauseMenu instance;
+    private static PauseMenu instance;
     public static PauseMenu Instance
     {
         get
