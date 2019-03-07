@@ -21,6 +21,7 @@ public abstract class UIElement : MonoBehaviour
         if (!initializedSettings)
         {
             Settings.RestoreDefaults();
+            initializedSettings = true;
         }
     }
 
@@ -29,14 +30,14 @@ public abstract class UIElement : MonoBehaviour
         this.gameObject.SetActive(defaultActive);
     }
 
-    public void HandleRestart()
+    public virtual void HandleRestart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void LaunchMainMenu()
     {
-        Debug.Log("TODO");
+        SceneManager.LoadScene(0);
     }
 
     public void LaunchOptions()

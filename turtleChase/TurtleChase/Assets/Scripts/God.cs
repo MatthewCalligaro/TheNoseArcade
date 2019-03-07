@@ -168,7 +168,7 @@ public class God : MonoBehaviour
         // Gold
         new ConsumableStats
         {
-            SpawnProb = 10 ,
+            SpawnProb = 10,
             Score = 5,
             SpeedMultiplier = 1,
             Force = new Vector2(200, 0)

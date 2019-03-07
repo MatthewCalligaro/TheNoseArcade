@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
 
     private int score = 0;
     private bool isJetpacking = false;
+    private bool loss = false;
 
     private float speedMultiplier = 1.0f;
     private float speedCounter = 0;
@@ -68,59 +69,63 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        Player.BlockingPause = 0;
         HUD.UpdateScore(this.score);
     }
 
     private void Update()
     {
-        if (isJetpacking)
+        if (!loss)
         {
-            this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpPower));
-        }
-
-        if (speedCounter > 0)
-        {
-            speedCounter -= Time.deltaTime;
-            if (speedCounter <= 0)
+            if (isJetpacking)
             {
-                this.speedMultiplier = 1.0f;
-                this.speedCounter = 0;
+                this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpPower));
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (Settings.JumpStyle == JumpStyle.Jetpack)
+            if (speedCounter > 0)
             {
-                this.JumpContinuousEnter();
+                speedCounter -= Time.deltaTime;
+                if (speedCounter <= 0)
+                {
+                    this.speedMultiplier = 1.0f;
+                    this.speedCounter = 0;
+                }
             }
-            else
+
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                this.JumpDiscrete();
+                if (Settings.JumpStyle == JumpStyle.Jetpack)
+                {
+                    this.JumpContinuousEnter();
+                }
+                else
+                {
+                    this.JumpDiscrete();
+                }
             }
-        }
 
-        if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
-        {
-            this.JumpContinuousExit();
-        }
+            if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
+            {
+                this.JumpContinuousExit();
+            }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
-        {
-            PauseMenu.Pause();
-        }
+            if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
+            {
+                PauseMenu.Pause();
+            }
 
-        if (!God.InCamera(this.transform.position))
-        {
-            this.HandleLoss();
-        }
+            if (!God.InCamera(this.transform.position))
+            {
+                this.HandleLoss();
+            }
 
-        if (God.CameraCoords(this.transform.position).x > 0.75f)
-        {
-            God.Skip(1 / (1 - God.CameraCoords(this.transform.position).x));
-        }
+            if (God.CameraCoords(this.transform.position).x > 0.75f)
+            {
+                God.Skip(1 / (1 - God.CameraCoords(this.transform.position).x));
+            }
 
-        this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+            this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -148,6 +153,7 @@ public class Player : MonoBehaviour
 
     private void HandleLoss()
     {
+        this.loss = true;
         LossMenu.HandleLoss(this.score);
     }
 }

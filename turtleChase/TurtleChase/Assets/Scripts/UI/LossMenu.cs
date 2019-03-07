@@ -26,6 +26,11 @@ public class LossMenu : UIElement
         Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
+    public override void HandleRestart()
+    {
+        base.HandleRestart();
+    }
+
     protected override void Awake()
     {
         base.Awake();
