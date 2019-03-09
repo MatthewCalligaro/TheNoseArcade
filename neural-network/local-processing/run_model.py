@@ -57,6 +57,9 @@ def process_video(learn):
     pts = []
     tm = time.time()
 
+    total = 0
+    reps = 0
+
     while(True):
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -65,8 +68,8 @@ def process_video(learn):
 
         # Process the frame
         point = predict_img(learn, frame)
-
-        # # Add the point to our list
+        
+        # Add the point to our list
         pts.append(point)
         if (len(pts) > 10):
             pts = pts[1:]
@@ -75,13 +78,15 @@ def process_video(learn):
         for i in range(len(pts) - 1):
             cv2.line(frame, pts[i], pts[i+1], (0,0,255), 2)
 
-        # # Display the resulting frame
+        # Display the resulting frame
         cv2.imshow('frame',frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
+            print('Average FPS:', reps / total)
             break
 
-        print(time.time() - tm)
+        reps += 1
+        total += time.time() - tm
         tm = time.time()
 
     # When everything done, release the capture

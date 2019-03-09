@@ -1,10 +1,11 @@
 """
 Filename: server.py
 """
-
+import cv2
+import numpy as np
+from flask import Flask, jsonify, request
 import os
 import pandas as pd
-from flask import Flask, jsonify, request
 import torch
 
 from fastai.vision import *
@@ -13,28 +14,22 @@ app = Flask(__name__)
 
 @app.route('/predict', methods=['POST'])
 def apicall():
-    """API Call
-
-    Pandas dataframe (sent as a payload) from API Call
-    """
     try:
-        test_json = request.get_json()
-        test = pd.read_json(test_json, orient='records')
-        print(test)
-
-        #To resolve the issue of TypeError: Cannot compare types 'ndarray(dtype=int64)' and 'str'
-        test['Dependents'] = [str(x) for x in list(test['Dependents'])]
-
-        #Getting the Loan_IDs separated out
-        loan_ids = test['Loan_ID']
-
+        # convert string of image data to uint8
+        nparr = np.fromstring(request.data, np.uint8)
+        # decode image
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
     except Exception as e:
         raise e
 
+    # Path to the network
     clf = '../models/vanilla_model.pkl'
 
-    if test.empty:
+    # Make sure the image has all three dimensions
+    if 0 in nparr.shape:
         return(bad_request())
+
     else:
         #Load the saved model
         print("Loading the model...")
@@ -47,16 +42,10 @@ def apicall():
         print("The model has been loaded...doing predictions now...")
         predictions = loaded_model.predict(test)
 
-        """Add the predictions as Series to a new pandas dataframe
-                                OR
-           Depending on the use-case, the entire test data appended with the new files
-        """
-
+        # Make a dataframe of rhe results
         final_predictions = pd.DataFrame(list(zip(coors)))
 
-        """We can be as creative in sending the responses.
-           But we need to send the response codes as well.
-        """
+        # Send the result and response code
         responses = jsonify(predictions=final_predictions.to_json(orient="records"))
         responses.status_code = 200
 
