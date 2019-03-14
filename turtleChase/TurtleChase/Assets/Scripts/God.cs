@@ -7,13 +7,13 @@ using UnityEngine;
 public class God : MonoBehaviour
 {
     ////////////////////////////////////////////////////////////////
-    // Unity-Assigned Properties
+    // Unity-Assigned Fields
     ////////////////////////////////////////////////////////////////
 
-    public GameObject[] environmentPrefabs;
-    public GameObject[] consumablePrefabs;
-    public GameObject ground;
-    public GameObject sky;
+    public GameObject[] ObstaclePrefabs;
+    public GameObject[] ConsumablePrefabs;
+    public GameObject Ground;
+    public GameObject Sky;
 
 
 
@@ -22,9 +22,9 @@ public class God : MonoBehaviour
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// The environment objects which can be added to the level
+    /// The obstacles which can be added to the level
     /// </summary>
-    private enum Environments
+    private enum Obstacles
     {
         Pipe,
         Rock,
@@ -66,13 +66,21 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Constants
+    // Private Properties
     ////////////////////////////////////////////////////////////////
 
-    /// <summary>
-    /// X length, +/- Y position, and Z position of boundary objects
-    /// </summary>
-    private static readonly Vector3 boundaryStats = new Vector3(100, 4.5f, 1);
+    private float DifficultyMultiplier
+    {
+        get
+        {
+            return this.transform.position.x * Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
+        }
+    }
+
+
+    ////////////////////////////////////////////////////////////////
+    // Private Fields
+    ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// X position at which the first environment object is spawned
@@ -80,7 +88,7 @@ public class God : MonoBehaviour
     private const float firstEnvX = 20;
 
     /// <summary>
-    /// Amount that objects spawn ahead of the player in the X direction
+    /// Amount that environment objects spawn ahead of the player in the X direction
     /// </summary>
     private const float envXLead = 15;
 
@@ -95,17 +103,22 @@ public class God : MonoBehaviour
     private const float skipMultiplier = 0.5f;
 
     /// <summary>
+    /// X length, +/- Y position, and Z position of boundary objects
+    /// </summary>
+    private static readonly Vector3 boundaryStats = new Vector3(100, 4.5f, 1);
+
+    /// <summary>
     /// Standard deviation for the Markov chain used to determine the Y position of environment objects
     /// </summary>
     private static readonly VariableValue ySdev = new VariableValue(1.5f, 4, 0.02f);
 
     /// <summary>
-    /// Stats defining environment objects
+    /// Stats defining obstacles
     /// </summary>
-    private static readonly EnvironmentStats[] envStats =
+    private static readonly ObstacleStats[] obstacleStats =
     {
         // Pipe
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(3, 6, 0.03f),
             YGap = new VariableValue(0.75f, 2, 0.01f),
@@ -118,7 +131,7 @@ public class God : MonoBehaviour
         },
 
         // Rock
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(3, 4, 0.02f),
             YGap =  new VariableValue(0.5f, 3, 0.01f),
@@ -131,7 +144,7 @@ public class God : MonoBehaviour
         },
 
         // LedgeS
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(2, 5, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
@@ -144,7 +157,7 @@ public class God : MonoBehaviour
         },
 
         // LedgeM
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(3, 8, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
@@ -157,7 +170,7 @@ public class God : MonoBehaviour
         },
 
         // LedgeL
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(3, 8, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
@@ -170,7 +183,7 @@ public class God : MonoBehaviour
         },
 
         // Plane
-        new EnvironmentStats
+        new ObstacleStats
         {
             XDelay = new VariableValue(1),
             YGap = new VariableValue(0),
@@ -234,33 +247,10 @@ public class God : MonoBehaviour
         }
     };
 
-
-
-    ////////////////////////////////////////////////////////////////
-    // Private Properties
-    ////////////////////////////////////////////////////////////////
-
-    private float DifficultyMultiplier
-    {
-        get
-        {
-            return this.transform.position.x * Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
-        }
-    }
-
-    private static God Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
-
-
-
-    ////////////////////////////////////////////////////////////////
-    // Private Fields
-    ////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Static reference to the one God object in the scene to enable static methods
+    /// </summary>
+    private static God instance;
 
     /// <summary>
     /// The current left sky and ground boundaries
@@ -278,7 +268,7 @@ public class God : MonoBehaviour
     private float rightBoundaryX;
 
     /// <summary>
-    /// List of all environment and consumable objects currently in play
+    /// List of all obstacles and consumable objects currently in play
     /// </summary>
     private List<GameObject> environmentObjs = new List<GameObject>();
 
@@ -288,14 +278,14 @@ public class God : MonoBehaviour
     private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
 
     /// <summary>
-    /// List of Y positions which are blocked by a horizontal environment piece as (rightmost X position, blocked Y position)
+    /// List of Y positions which are blocked by a horizontal obstacle as (rightmost X position, blocked Y position)
     /// </summary>
     private List<Vector2> curYBlocks = new List<Vector2>();
 
     /// <summary>
-    /// List of Environments indicies (with repetitions) from which new environment objects are drawn
+    /// List of Obstacles indicies (with repetitions) from which new obstacles are drawn
     /// </summary>
-    private List<int> envSpawnProbs = new List<int>();
+    private List<int> obstacleSpawnProbs = new List<int>();
 
     /// <summary>
     /// List of Consumables indices (with repetitions) from which new consumable objects are drawn
@@ -306,11 +296,6 @@ public class God : MonoBehaviour
     /// Probability of spawning a consumable
     /// </summary>
     private float consumableProb = 0.25f / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
-
-    /// <summary>
-    /// Static reference to self to allow other classes to statically call God (since there is only one God at a time)
-    /// </summary>
-    private static God instance;
 
     /// <summary>
     /// Reference to the Camera child of God
@@ -330,7 +315,7 @@ public class God : MonoBehaviour
     /// <returns>True if the point is in the Camera's viewport</returns>
     public static bool InCamera(Vector3 position)
     {
-        Vector3 viewPos = Instance.gameCamera.WorldToViewportPoint(position);
+        Vector3 viewPos = instance.gameCamera.WorldToViewportPoint(position);
         return 0 <= viewPos.x && viewPos.x <= 1 && 0 <= viewPos.y && viewPos.y <= 1;
     }
 
@@ -341,17 +326,17 @@ public class God : MonoBehaviour
     /// <returns>The corresponding point in camera coordinates</returns>
     public static Vector3 CameraCoords(Vector3 position)
     {
-        return Instance.gameCamera.WorldToViewportPoint(position);
+        return instance.gameCamera.WorldToViewportPoint(position);
     }
 
     /// <summary>
     /// Destroys and removes an environment object from the environment buffer
     /// </summary>
-    /// <param name="obj">Environment or consumable object to destroy</param>
+    /// <param name="obj">Environment object to destroy</param>
     public static void RemoveEnvironmentObj(GameObject obj)
     {
         Destroy(obj);
-        Instance.environmentObjs.Remove(obj);
+        instance.environmentObjs.Remove(obj);
     }
 
     /// <summary>
@@ -360,8 +345,10 @@ public class God : MonoBehaviour
     /// <param name="magnitude">Amount to move camera forward</param>
     public static void Skip(float magnitude)
     {
-        Instance.transform.position += new Vector3(Time.deltaTime * magnitude * skipMultiplier, 0, 0);
+        instance.transform.position += new Vector3(Time.deltaTime * magnitude * skipMultiplier, 0, 0);
     }
+
+
 
     ////////////////////////////////////////////////////////////////
     // Unity Methods
@@ -378,12 +365,12 @@ public class God : MonoBehaviour
         this.rightBoundaryX = boundaryStats.x;
         this.rightBoundaries = SpawnBoundary(rightBoundaryX);
 
-        // Generate spawn probabilities for environment and consumable objects based on their stats
-        for (int i = 0; i < envStats.Length; i++)
+        // Generate spawn probabilities for obstacles and consumable objects based on their stats
+        for (int i = 0; i < obstacleStats.Length; i++)
         {
-            for (int j = 0; j < envStats[i].SpawnProb; j++)
+            for (int j = 0; j < obstacleStats[i].SpawnProb; j++)
             {
-                envSpawnProbs.Add(i);
+                obstacleSpawnProbs.Add(i);
             }
         }
         for (int i = 0; i < consumableStats.Length; i++)
@@ -410,22 +397,24 @@ public class God : MonoBehaviour
             this.rightBoundaries = this.SpawnBoundary(this.rightBoundaryX);
         }
 
-        // Spawn the next environment or consumable object
+        // Spawn the next environment object
         if (this.transform.position.x > this.nextEnv.x - envXLead)
         {
-            this.SpawnNextObstacle();
+            this.SpawnNextEnv();
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Destroy environment and consumable objects on collision (since they are out of player view)
-        if (collision.gameObject.GetComponent<Obstacle>() != null && 
-            collision.gameObject.GetComponent<Obstacle>().ObstacleType != ObstacleType.Boundary)
+        // Destroy environment objects on collision (since they are out of player view)
+        if (collision.gameObject.GetComponent<Environment>() != null && 
+            collision.gameObject.GetComponent<Environment>().EnvironmentType != EnvironmentType.Boundary)
         {
             RemoveEnvironmentObj(collision.gameObject);
         }
     }
+
+
 
     ////////////////////////////////////////////////////////////////
     // Private Methods
@@ -439,15 +428,15 @@ public class God : MonoBehaviour
     private GameObject[] SpawnBoundary(float x)
     {
         GameObject[] boundaries = new GameObject[2];
-        boundaries[0] = Instantiate(ground, new Vector3(x, -boundaryStats.y, boundaryStats.z), Quaternion.identity);
-        boundaries[1] = Instantiate(sky, new Vector3(x, boundaryStats.y, boundaryStats.z), Quaternion.identity);
+        boundaries[0] = Instantiate(Ground, new Vector3(x, -boundaryStats.y, boundaryStats.z), Quaternion.identity);
+        boundaries[1] = Instantiate(Sky, new Vector3(x, boundaryStats.y, boundaryStats.z), Quaternion.identity);
         return boundaries;
     }
     
     /// <summary>
-    /// Spawns the next environment or consumable object at nextEnv
+    /// Spawns the next environment object at nextEnv
     /// </summary>
-    private void SpawnNextObstacle()
+    private void SpawnNextEnv()
     {
         // Randomly choose if we should spawn a consumable object
         if (Random.value < consumableProb)
@@ -459,14 +448,14 @@ public class God : MonoBehaviour
         }
         else
         {
-            // Randomly choose an environment to spawn from envSpawnProbs
-            int index = this.envSpawnProbs[(int)(Random.value * this.envSpawnProbs.Count)];
-            EnvironmentStats stats = envStats[index];
+            // Randomly choose an obstacle to spawn from obstacleSpawnProbs
+            int index = this.obstacleSpawnProbs[(int)(Random.value * this.obstacleSpawnProbs.Count)];
+            ObstacleStats stats = obstacleStats[index];
 
             // Use a Markov model to choose the next Y position based on the current Y position
             this.nextEnv.y += Utilities.NormalDist(0, ySdev.GetValue(this.DifficultyMultiplier));
 
-            // Adjust the Y position to make sure that it is within the YMax for this environment and does
+            // Adjust the Y position to make sure that it is within the YMax for this obstacle and does
             // not fall on a blocked Y position in curYBlocks
             do
             {
@@ -476,16 +465,16 @@ public class God : MonoBehaviour
             while (!VerifyY(this.nextEnv.y));
 
             // For pipes, we always spawn two (top and bottom) and a pipe score in between
-            if (index == Environments.Pipe.GetHashCode())
+            if (index == Obstacles.Pipe.GetHashCode())
             {
                 float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-                this.SpawnEnv(index, -spacing);
-                this.SpawnEnv(index, spacing, Quaternion.Euler(0, 0, 180));
+                this.SpawnObstacle(index, -spacing);
+                this.SpawnObstacle(index, spacing, Quaternion.Euler(0, 0, 180));
                 this.SpawnConsumable(Consumables.Pipe.GetHashCode());
             }
             else
             {
-                this.SpawnEnv(index);
+                this.SpawnObstacle(index);
             }
 
             this.nextEnv.x += stats.XDelay.GetValue(this.DifficultyMultiplier);
@@ -493,27 +482,27 @@ public class God : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawn a particular environment object with the specified parameters
+    /// Spawn a particular obstacle with the specified parameters
     /// </summary>
-    /// <param name="index">The Environments index of the object to be spawned</param>
+    /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="yOffset">The Y offset of the object from nextEnv.y</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    private void SpawnEnv(int index, float yOffset = 0, Quaternion rotation = new Quaternion())
+    private void SpawnObstacle(int index, float yOffset = 0, Quaternion rotation = new Quaternion())
     { 
-        // Spawn the specified environment object at the specified position/rotation
-        GameObject newEnv = Instantiate(this.environmentPrefabs[index], this.nextEnv + new Vector3(0, yOffset, 0), rotation);
+        // Spawn the specified obstacle at the specified position/rotation
+        GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], this.nextEnv + new Vector3(0, yOffset, 0), rotation);
 
-        // Set the environment object's public properties based on its stats in envStats
-        EnvironmentStats stats = envStats[index];
-        Obstacle newObst = newEnv.GetComponent<Obstacle>();
-        newObst.ObstacleType = ObstacleType.Environment;
+        // Set the obstacle's public properties based on its stats in obstacleStats
+        ObstacleStats stats = obstacleStats[index];
+        Environment newObst = newObstacle.GetComponent<Environment>();
+        newObst.EnvironmentType = EnvironmentType.Obstacle;
         if (Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier))
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);
         }
 
-        // If the environment object blocks its Y position, add this to curYBlocks
+        // If the obstacle blocks its Y position, add this to curYBlocks
         if (stats.YBlock > 0)
         {
             this.curYBlocks.Add(new Vector2(stats.YBlock + this.nextEnv.x, this.nextEnv.y));
@@ -529,13 +518,13 @@ public class God : MonoBehaviour
         // Spawn the specified consumable object at a random Y position at nextEnv.x
         ConsumableStats stats = consumableStats[index];
         GameObject newConsumable = Instantiate(
-            this.consumablePrefabs[index], 
+            this.ConsumablePrefabs[index], 
             new Vector3(this.nextEnv.x, Random.Range(-ConsumableStats.YMax, ConsumableStats.YMax), this.nextEnv.z), 
             Quaternion.identity);
 
         // Set the consumable object's public properties based on its stats in consumableStats
-        Obstacle newObst = newConsumable.GetComponent<Obstacle>();
-        newObst.ObstacleType = ObstacleType.Consumable;
+        Environment newObst = newConsumable.GetComponent<Environment>();
+        newObst.EnvironmentType = EnvironmentType.Consumable;
         newObst.Score = stats.Score;
         newObst.Force = stats.Force;
         newObst.SpeedMultiplier = stats.SpeedMultiplier;

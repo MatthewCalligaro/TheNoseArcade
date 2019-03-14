@@ -1,20 +1,36 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
+/// <summary>
+/// Controller for the heads up display
+/// </summary>
 public class HUD : UIElement
 {
+    /// <summary>
+    /// The text objects contained in the HUD
+    /// </summary>
     private enum Texts
     {
         Score
     }
 
+    /// <summary>
+    /// Static reference to the one HUD object in the scene to enable static methods
+    /// </summary>
     public static HUD instance;
-    public static HUD Instance
+    
+
+
+    ////////////////////////////////////////////////////////////////
+    // Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Updates the score shown on the HUD
+    /// </summary>
+    /// <param name="score">New score to show</param>
+    public static void UpdateScore(int score)
     {
-        get
-        {
-            return instance;
-        }
+        instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
     protected override void Awake()
@@ -22,10 +38,5 @@ public class HUD : UIElement
         base.Awake();
         this.defaultActive = true;
         instance = GameObject.FindGameObjectsWithTag("HUD")[0].GetComponent<HUD>();
-    }
-
-    public static void UpdateScore(int score)
-    {
-        Instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 }

@@ -1,41 +1,41 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// The different types of objects with which the player can interact
+/// The different types of environment objects with which the player can interact
 /// </summary>
-public enum ObstacleType
+public enum EnvironmentType
 {
     Boundary,
-    Environment,
+    Obstacle,
     Consumable,
 }
 
 /// <summary>
-/// An object with which the player can interact
+/// An environment object with which the player can interact
 /// </summary>
-public class Obstacle : MonoBehaviour
+public class Environment : MonoBehaviour
 {
     ////////////////////////////////////////////////////////////////
     // Public Properties
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// The type of the object
+    /// The type of the environment object
     /// </summary>
-    public ObstacleType ObstacleType { get; set; }
+    public EnvironmentType EnvironmentType { get; set; }
 
     /// <summary>
-    ///  The score that the player recieves from colliding with the object
+    ///  The score that the player recieves from colliding with the environment object
     /// </summary>
     public int Score { get; set; }
 
     /// <summary>
-    /// The speed multiplier that the player recieves from colliding with the object
+    /// The speed multiplier that the player recieves from colliding with the environment object
     /// </summary>
     public float SpeedMultiplier { get; set; }
 
     /// <summary>
-    /// The force vector which the object exerts on the player when they collide
+    /// The force vector which the environment object exerts on the player when they collide
     /// </summary>
     public Vector2 Force { get; set; }
 
@@ -45,7 +45,7 @@ public class Obstacle : MonoBehaviour
     public float Speed { get; set; }
 
     /// <summary>
-    /// A vector specifying the range of motion for the object
+    /// A vector specifying the range of motion for the environment object
     /// </summary>
     public Vector2 Movement
     {
@@ -69,12 +69,12 @@ public class Obstacle : MonoBehaviour
     private Vector3 movement;
 
     /// <summary>
-    /// The position at which the object was spawned
+    /// The position at which the environment object was spawned
     /// </summary>
     private Vector3 startPosition;
 
     /// <summary>
-    /// The direction along Movement which the object is currently moving (either 1 or -1)
+    /// The direction along Movement which the environment object is currently moving (either 1 or -1)
     /// </summary>
     private int direction = 1;
 
