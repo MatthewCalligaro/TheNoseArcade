@@ -19,8 +19,10 @@ let ticks;
 let start;
 
 // Canvas size
-let vidWidth = 640;
-let vidHeight = 480;
+// let vidWidth = 640;
+// let vidHeight = 480;
+let vidWidth = 320;
+let vidHeight = 240;
 
 // Set defaults
 let mode = "active";
@@ -61,8 +63,8 @@ function setup() {
   poseNet.on('pose', function(results) {
     poses = results;
     // console.log(poses);
-    // ticks++;
-    // console.log(ticks/(Date.now()-start));
+    ticks++;
+    console.log(ticks/(Date.now()-start));
   });
 
   // Hide the video so we can render it flipped in the draw loop. 
@@ -140,20 +142,20 @@ function findNose() {
       case "active":
         if(on) {
           console.log("active: JumpEnter")
-          // gameInstance.SendMessage("Player", "JumpEnter", 1);
+          gameInstance.SendMessage("Player", "JumpEnter", 1);
         }
         else {
           console.log("active: JumpExit")
-          // gameInstance.SendMessage("Player", "JumpExit");
+          gameInstance.SendMessage("Player", "JumpExit");
         }
         break;
       case "velocity":
         console.log("velocity: JumpEnter");
-        // gameInstance.SendMessage("Player", "JumpEnter", 1);
+        gameInstance.SendMessage("Player", "JumpEnter", 1);
         break;
       case "magnitude":
         console.log("magnitude: JumpEnter ("+magnitude+")");
-        // gameInstance.SendMessage("Player", "JumpEnter", magnitude);
+        gameInstance.SendMessage("Player", "JumpEnter", magnitude);
         break;
       default:
     }

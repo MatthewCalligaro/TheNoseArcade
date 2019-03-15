@@ -1,4 +1,31 @@
 $(document).ready(function(){
+    // INITIAL SETTINGS
+
+    // Set initial limits for sliders
+    $("#delay").attr({
+        "min": 0,
+        "max": 20,
+        "value": delay
+    });
+
+    $("#threshold").attr({
+        "min": 0,
+        "max": vidHeight,
+        "value": threshold
+    });
+
+    $("#sensitivity").attr({
+        "min": 1,
+        "max": vidHeight / 8,
+        "value": sensitivity
+    });
+
+    // // Populate slider labels // TODO: so this needs to maybe happen
+    // $("#delay").html(delay);
+    // $("#threshold").html(threshold);
+    // $("#sensitivity").html(sensitivity);
+
+
     // LISTENERS
 
     // Change trigger mode
@@ -24,28 +51,6 @@ $(document).ready(function(){
     $("#sensitivity").on("change", function() {
         sensitivity = $(this).val();
         $("#sensitivityValue").html(sensitivity);
-    });
-
-    
-    // INITIAL SETTINGS
-
-    // Set initial limits for sliders
-    $("#delay").attr({
-        "min": 0,
-        "max": 20,
-        "value": delay
-    });
-
-    $("#threshold").attr({
-        "min": 0,
-        "max": vidHeight,
-        "value": threshold
-    });
-
-    $("#sensitivity").attr({
-        "min": 1,
-        "max": vidHeight / 2,
-        "value": sensitivity
     });
 
 });
