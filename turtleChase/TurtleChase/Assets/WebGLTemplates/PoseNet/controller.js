@@ -117,20 +117,20 @@ function findNose() {
       case "active":
         if(on) {
           console.log("JUMP (discrete)")
-          // gameInstance.SendMessage("Player", "JumpEnter");
+          gameInstance.SendMessage("Player", "JumpEnter", 1);
         }
         else {
           console.log("JUMP (off)")
-          // gameInstance.SendMessage("Player", "JumpExit");
+          gameInstance.SendMessage("Player", "JumpExit");
         }
         break;
       case "velocity":
         console.log("JUMP (discrete)");
-        // gameInstance.SendMessage("Player", "JumpEnter");
+        gameInstance.SendMessage("Player", "JumpEnter", 1);
         break;
       case "magnitude":
         console.log("JUMP (magnitude "+magnitude+")");
-        // gameInstance.SendMessage("Player", "JumpEnter", magnitude);
+        gameInstance.SendMessage("Player", "JumpEnter", magnitude);
         break;
       default:
     }
