@@ -35,7 +35,7 @@ function setup() {
   video = createCapture(VIDEO);
   video.size(vidWidth, vidHeight);
   // video.size(width, height);
-  video.parent('videoContainer')
+  // video.parent('videoContainer')
 
   pixelDensity(1);
   pg = createGraphics(vidWidth, vidHeight);
@@ -45,8 +45,8 @@ function setup() {
   let options = { 
     // imageScaleFactor: 0.3,
     // outputStride: 16,
-    // flipHorizontal: true,
-    flipHorizontal: false,
+    flipHorizontal: true,
+    // flipHorizontal: false,
     minConfidence: 0.2,
     maxPoseDetections: 1,
     // scoreThreshold: 0.5,
@@ -88,11 +88,11 @@ function draw() {
   // pg.image(video, 0, 0);
   // scale(1.0,-1.0);
 
-  push();
-  translate(vidWidth,0);
-  scale(-1.0, 1.0);
+  // push();
+  pg.translate(vidWidth,0);
+  pg.scale(-1.0, 1.0);
   pg.image(video, 0, 0);
-  pop();
+  // pop();
 
   findNose();
   updateThreshold();
