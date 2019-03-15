@@ -13,29 +13,41 @@ let pNoseY;
 let magnitude;
 
 let jumpCooldown;
-let threshold;
-let mode;
 
+// Benchmark variables
 let ticks;
 let start;
 
+// Canvas size
+let vidWidth = 640;
+let vidHeight = 480;
+
+// Set defaults
+let mode = "active";
+let delay = 7;
+let threshold = vidHeight / 2;
+let sensitivity = vidHeight / 12;
+
 // Function that p5 calls initially to set up graphics
 function setup() {
-  let canvas = createCanvas(640, 480);
-  canvas.parent('videoContainer');
+  // let canvas = createCanvas(vidWidth, vidHeight);
+  // canvas.parent('videoContainer');
   video = createCapture(VIDEO);
-  video.size(width, height);
+  video.size(vidWidth, vidHeight);
+  // video.size(width, height);
   video.parent('videoContainer')
 
   pixelDensity(1);
-  pg = createGraphics(width, height);
+  pg = createGraphics(vidWidth, vidHeight);
+  // pg = createGraphics(width, height);
   pg.parent('videoContainer');
 
   let options = { 
     // imageScaleFactor: 0.3,
     // outputStride: 16,
+    // flipHorizontal: true,
     flipHorizontal: false,
-    minConfidence: 0,
+    minConfidence: 0.2,
     maxPoseDetections: 1,
     // scoreThreshold: 0.5,
     scoreThreshold: 2,
@@ -53,16 +65,13 @@ function setup() {
     // console.log(ticks/(Date.now()-start));
   });
 
+  // Hide the video so we can render it flipped in the draw loop. 
+  video.hide();
+
   // Show graphics
   pg.show();
 
   jumpCooldown = 0;
-
-  // Set defaults
-  mode = "active";
-  delay = 7;
-  threshold = 150;
-  sensitivity = 40;
 
   // Benchmarking code
   ticks = 0;
@@ -72,6 +81,19 @@ function setup() {
 // Function that p5 calls repeatedly to render graphics
 function draw() {
   pg.clear();
+
+  // Reverse and render video
+  // translate(capture.width,0);
+  // scale(-1.0,1.0);
+  // pg.image(video, 0, 0);
+  // scale(1.0,-1.0);
+
+  push();
+  translate(vidWidth,0);
+  scale(-1.0, 1.0);
+  pg.image(video, 0, 0);
+  pop();
+
   findNose();
   updateThreshold();
 }
@@ -116,21 +138,21 @@ function findNose() {
     switch(mode) {
       case "active":
         if(on) {
-          console.log("JUMP (discrete)")
-          gameInstance.SendMessage("Player", "JumpEnter", 1);
+          console.log("active: JumpEnter")
+          // gameInstance.SendMessage("Player", "JumpEnter", 1);
         }
         else {
-          console.log("JUMP (off)")
-          gameInstance.SendMessage("Player", "JumpExit");
+          console.log("active: JumpExit")
+          // gameInstance.SendMessage("Player", "JumpExit");
         }
         break;
       case "velocity":
-        console.log("JUMP (discrete)");
-        gameInstance.SendMessage("Player", "JumpEnter", 1);
+        console.log("velocity: JumpEnter");
+        // gameInstance.SendMessage("Player", "JumpEnter", 1);
         break;
       case "magnitude":
-        console.log("JUMP (magnitude "+magnitude+")");
-        gameInstance.SendMessage("Player", "JumpEnter", magnitude);
+        console.log("magnitude: JumpEnter ("+magnitude+")");
+        // gameInstance.SendMessage("Player", "JumpEnter", magnitude);
         break;
       default:
     }
@@ -143,6 +165,6 @@ function updateThreshold() {
   if(mode == "active") { 
     pg.stroke(230, 80, 0);
     pg.strokeWeight(1);
-    pg.line(0, threshold, width, threshold);
+    pg.line(0, threshold, vidWidth, threshold);
   }
 }
