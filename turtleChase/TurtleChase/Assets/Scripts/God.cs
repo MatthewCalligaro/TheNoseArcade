@@ -457,12 +457,15 @@ public class God : MonoBehaviour
 
             // Adjust the Y position to make sure that it is within the YMax for this obstacle and does
             // not fall on a blocked Y position in curYBlocks
+            int attempts = 0;
             do
             {
                 this.nextEnv.y = this.nextEnv.y > stats.YMax ? 2 * stats.YMax - this.nextEnv.y : this.nextEnv.y;
                 this.nextEnv.y = this.nextEnv.y < -stats.YMax ? 2 * -stats.YMax - this.nextEnv.y : this.nextEnv.y;
+                attempts++;
             }
-            while (!VerifyY(this.nextEnv.y));
+            while (!VerifyY(this.nextEnv.y) && attempts < 100);
+            // TODO: prevent infinite looping with a more robust solution
 
             // For pipes, we always spawn two (top and bottom) and a pipe score in between
             if (index == Obstacles.Pipe.GetHashCode())
