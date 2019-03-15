@@ -28,20 +28,30 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void JumpDiscrete(bool on)
+    public void JumpDiscrete()
     {
         if (Settings.JumpStyle == JumpStyle.Velocity)
         {
             this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpPower);
         }
-        else if (Settings.JumpStyle == JumpStyle.Force)
+        else if(Settings.JumpStyle == JumpStyle.Force)
         {
             this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce * Settings.JumpPower));
         }
         else
         {
-            this.isJetpacking = on;
+            this.isJetpacking = true;
         }
+    }
+
+    public void JumpContinuousEnter() // NOTE: possibly could just use jumpDiscrete. Leaving for now. 
+    {
+        this.isJetpacking = true;
+    }
+
+    public void JumpContinuousExit()
+    {
+        this.isJetpacking = false;
     }
 
     public void JumpWithMagnitude(float magnitude)
@@ -88,13 +98,19 @@ public class Player : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-
-                    this.JumpDiscrete(true);
+                if (Settings.JumpStyle == JumpStyle.Jetpack)
+                {
+                    this.JumpContinuousEnter();
+                }
+                else
+                {
+                    this.JumpDiscrete();
+                }
             }
 
             if (Input.GetKeyUp(KeyCode.Space) && Settings.JumpStyle == JumpStyle.Jetpack)
             {
-                this.JumpDiscrete(false);
+                this.JumpContinuousExit();
             }
 
             if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)

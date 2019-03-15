@@ -1,8 +1,3 @@
-// Copyright (c) 2018 ml5
-//
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
-
 let video;
 let poseNet;
 let poses = [];
@@ -21,9 +16,12 @@ let jumpCooldown;
 let threshold;
 let mode;
 
+let ticks;
+let start;
+
 // Function that p5 calls initially to set up graphics
 function setup() {
-  var canvas = createCanvas(640, 480);
+  let canvas = createCanvas(640, 480);
   canvas.parent('videoContainer');
   video = createCapture(VIDEO);
   video.size(width, height);
@@ -50,61 +48,82 @@ function setup() {
   delay = 7;
   threshold = 150;
   sensitivity = 40;
+
+  // Benchmarking code
+  ticks = 0;
+  start = Date.now();
 }
 
 // Function that p5 calls repeatedly to render graphics
 function draw() {
+  pg.clear();
   findNose();
   updateThreshold();
 }
 
 function findNose() {
   jumpCooldown = max(0, jumpCooldown - 1);
-  var trigger = 0; // By default don't register movement
+  let trigger = 0; // By default don't register movement
   if(poses.length > 0) {
     // Only detect nose keypoint of first pose
     let nose = poses[0].pose.keypoints[0];
-    // Only recognize if probability is bigger than 0.2
-    if (nose.score > 0.2) {
-      noseX = nose.position.x;
-      noseY = nose.position.y;
+    noseX = nose.position.x;
+    noseY = nose.position.y;
 
-      // Active zone
-      if(mode == "active") {
-        trigger = pNoseY > threshold && noseY < threshold;
-      }
-      // Difference
-      else {
-        console.log(pNoseY);
-        console.log(noseY);
-        console.log(sensitivity);
+    switch(mode) {
+      case "active":
+        trigger = pNoseY > threshold != noseY > threshold;
+        on = noseY < threshold;
+        break;
+      case "magnitude":
+        magnitude = pNoseY - noseY; // Drop through
+      case "velocity":
         trigger = (pNoseY - noseY) > sensitivity; 
-        console.log(trigger);
-        magnitude = pNoseY - noseY;
-      }
-
-      pNoseX = noseX;
-      pNoseY = noseY;
+        break;
+      default:
     }
+
+    pNoseX = noseX;
+    pNoseY = noseY;
+
+    // Render nose dot
+    pg.stroke(0, 225, 0);
+    pg.strokeWeight(5);
+    pg.ellipse(noseX, noseY, 1, 1);
+
+    // Benchmarking code
+    // ticks++;
+    // console.log(ticks/(Date.now()-start));
   }
 
   if (jumpCooldown == 0 && trigger) {
     jumpCooldown = delay; // Reset jump cooldown
-    console.log("JUMP");
-    gameInstance.SendMessage("Player", "JumpDiscrete");
-    // TODO: Make sure this hook-in works properly; use Magnitude (but ignore depending on game settings) in velocity mode
-    // if (mode == "active") {
-    //   gameInstance.SendMessage("Player", "JumpDiscrete");
-    // }
-    // else {
-    //   gameInstance.SendMessage("Player", "JumpWithMagnitude", magnitude);
-    // }
+    switch(mode) {
+      case "active":
+        if(on) {
+          console.log("JUMP (discrete)")
+          gameInstance.SendMessage("Player", "JumpDiscrete");
+        }
+        else {
+          console.log("JUMP (off)")
+          gameInstance.SendMessage("Player", "JumpContinuousExit");
+        }
+        break;
+      case "velocity":
+        console.log("JUMP (discrete)");
+        gameInstance.SendMessage("Player", "JumpDiscrete");
+        break;
+      case "magnitude":
+        console.log("JUMP (magnitude "+magnitude+")");
+        gameInstance.SendMessage("Player", "JumpWithMagnitude", magnitude);
+        break;
+      default:
+    }
   }
 }
 
 // Visually update the threshold value
 function updateThreshold() {
-  pg.clear();
   // Only render line in active mode. 
   if(mode == "active") { 
     pg.stroke(230, 80, 0);
