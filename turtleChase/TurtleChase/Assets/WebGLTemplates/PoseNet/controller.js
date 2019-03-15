@@ -31,11 +31,26 @@ function setup() {
   pg = createGraphics(width, height);
   pg.parent('videoContainer');
 
+  let options = { 
+    // imageScaleFactor: 0.3,
+    // outputStride: 16,
+    flipHorizontal: false,
+    minConfidence: 0,
+    maxPoseDetections: 1,
+    // scoreThreshold: 0.5,
+    scoreThreshold: 2,
+    nmsRadius: 20,
+    detectionType: 'single',
+    // multiplier: 0.75,
+  }
   // Create a new poseNet method with a single detection
-  poseNet = ml5.poseNet(video, function() {});
+  poseNet = ml5.poseNet(video, options, function() {});
 
   poseNet.on('pose', function(results) {
     poses = results;
+    // console.log(poses);
+    // ticks++;
+    // console.log(ticks/(Date.now()-start));
   });
 
   // Show graphics
