@@ -30,8 +30,8 @@ public class God : MonoBehaviour
         Rock,
         LedgeS,
         LedgeM,
-        LedgeL,
-        Cloud
+        LedgeL, 
+        Plane
     }
 
     /// <summary>
