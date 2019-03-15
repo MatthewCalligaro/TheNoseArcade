@@ -115,10 +115,6 @@ public class Player : MonoBehaviour
                 this.isJetpacking = true;
                 break;
         }
-        else
-        {
-            this.isJetpacking = true;
-        }
     }
 
     /// <summary>
