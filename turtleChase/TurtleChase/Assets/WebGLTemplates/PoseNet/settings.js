@@ -31,24 +31,25 @@ $(document).ready(function(){
 
 
     // Threshold slider
+    // Note that the slider displays the inverse of threshold instead of its actual value. 
     $("#thresholdSlider").slider({
         min: 0,
         max: vidHeight,
         step: 1,
-        value: threshold,
+        value: vidHeight - threshold,
         slide: function(event, ui) {
-            threshold = ui.value;
-            $("input.thresholdValue").val(threshold);
+            threshold = vidHeight - ui.value; // Invert the threshold. 
+            $("input.thresholdValue").val(ui.value);
         },
     });
 
     $("input.thresholdValue").change(function() {
         let newVal = parseInt($(this).val());
         if(isNaN(newVal)) {
-            $(this).val(threshold); // Bad input, put it back. Can handle more gracefully later. 
+            $(this).val(vidHeight - threshold); // Bad input, put it back. Can handle more gracefully later. 
         }
         else {
-            threshold = newVal;
+            threshold = vidHeight - newVal; // Invert the threshold. 
             $("#thresholdSlider").slider("value", threshold);
         }
     });
