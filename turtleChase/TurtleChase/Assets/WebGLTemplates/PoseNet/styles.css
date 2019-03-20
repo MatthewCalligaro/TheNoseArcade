@@ -28,3 +28,26 @@ body > div {
 #settingsContainer {
 	grid-area: settings;
 }
+
+
+.slider-container {
+	display: grid;
+	grid-template-areas: 
+		"label"
+		"input"
+		"draggable";
+	grid-gap: 10px;
+	margin: 10px;
+}
+
+.slider-label {
+	grid-area: label;
+}
+
+.slider-input {
+	grid-area: input;
+}
+
+.slider-draggable {
+	grid-area: draggable;
+}

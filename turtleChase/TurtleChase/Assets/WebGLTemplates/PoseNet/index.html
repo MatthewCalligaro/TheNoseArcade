@@ -46,17 +46,15 @@
 
       <div id="addlSettings">
 
-        <div>
-          <label id="delayLabel">[General] Set delay between jumps:</label>
-          <div id="delay">
+        <div class="slider-container">
+          <label id="delayLabel" class="slider-label">[General] Set delay between jumps:</label>
+          <div id="delay" class="slider-input">
               <input type="text" class="delayValue"/>
           </div>
-          <br />
-          <div id="delaySlider"></div>
+          <div id="delaySlider" class="slider-draggable"></div>
         </div>
 
         <div>
-          <!-- <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label> -->
           <div>
             <label id="thresholdLabel">[Active] Set threshold (red line):</label>
             <div id="threshold">
