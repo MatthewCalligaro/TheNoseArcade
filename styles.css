@@ -33,7 +33,7 @@ body {
 		"label"
 		"input"
 		"draggable";
-	grid-gap: 5px;
+	grid-gap: 7px;
 	margin: 5px;
 }
 
@@ -42,13 +42,13 @@ body {
 	grid-template-areas: 
 		"label"
 		"input";
-	grid-gap: 5px;
+	grid-gap: 7px;
 	margin: 5px;
 }
 
 .radio-container {
 	display: grid;
-	grid-gap: 5px;
+	grid-gap: 7px;
 	margin: 5px;
 }
 

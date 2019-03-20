@@ -71,46 +71,46 @@ $(document).ready(function(){
     });
 
 
-    // Sensitivity slider
-    $("#sensitivitySlider").slider({
+    // Velocity range slider
+    $("#rangeSlider").slider({
         min: 0,
         max: 2*vidHeight/3,
         step: 1,
-        values: [sensitivity[0], sensitivity[1]],
+        values: [range[0], range[1]],
         range: true,
         slide: function(event, ui) {
             for (var i = 0; i < ui.values.length; ++i) {
-                sensitivity[i] = ui.values[i];
-                $("input.sensitivityValue[data-index=" + i + "]").val(ui.values[i]);
+                range[i] = ui.values[i];
+                $("input.rangeValue[data-index=" + i + "]").val(ui.values[i]);
             }
         },
     });
 
     // Sensitivity input initial lower bound
-    $("input.sensitivityValue[data-index=0]").attr({
-        value: sensitivity[0]
+    $("input.rangeValue[data-index=0]").attr({
+        value: range[0]
     });
 
     // Sensitivity input initial upper bound
-    $("input.sensitivityValue[data-index=1]").attr({
-        value: sensitivity[1]
+    $("input.rangeValue[data-index=1]").attr({
+        value: range[1]
     });
 
     // Sensitivity input listener
-    $("input.sensitivityValue").change(function() {
+    $("input.rangeValue").change(function() {
         var $this = $(this);
         let index = $this.data("index");
         let newVal = parseInt($this.val());
         if(isNaN(newVal) // Non-numerical input. 
-            || (index == 0 && newVal > sensitivity[1]) // Past other slider. 
-            || (index == 1 && newVal < sensitivity[0])
+            || (index == 0 && newVal > range[1]) // Past other slider. 
+            || (index == 1 && newVal < range[0])
             || (newVal < 0) // Beyond min/max.
             || (newVal > 2*vidHeight/3)) {
-            $(this).val(sensitivity[index]); // Bad input, put it back. Can handle more gracefully later. 
+            $(this).val(range[index]); // Bad input, put it back. Can handle more gracefully later. 
         }
         else {
-            sensitivity[index] = newVal;
-            $("#sensitivitySlider").slider("values", index, newVal);
+            range[index] = newVal;
+            $("#rangeSlider").slider("values", index, newVal);
         }
     });
 
