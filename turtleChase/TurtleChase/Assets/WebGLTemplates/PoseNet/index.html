@@ -40,16 +40,22 @@
     <!-- Settings -->
     <div id="settingsContainer">
 
-      <div id="mode">
-        <div>Select a trigger method:</div>
-        <input type="radio" name="inputMode" value="active" checked>Active Zone</input>
-        <input type="radio" name="inputMode" value="velocity">Velocity</input>
+      <!-- Input mode -->
+      <div class="radio-container">
+        <label data-helptext="Choose the type of movement to jump">Select a trigger method:</label>
+        <div>
+          <input type="radio" name="inputMode" value="active" checked data-helptext="Move your nose above the red line to jump">Active Zone
+        </div>
+        <div>  
+          <input type="radio" name="inputMode" value="velocity" data-helptext="Move your nose upward quickly to jump">Velocity
+        </div>
       </div>
 
       <hr>
 
+      <!-- Delay -->
       <div class="slider-container">
-        <label id="delayLabel" class="settings-label">[General] Set delay between jumps:</label>
+        <label id="delayLabel" class="settings-label" data-helptext="Set how long to wait before detecting another jump">[General] Set delay between jumps:</label>
         <div id="delay" class="settings-input">
             <input type="text" class="delayValue"/>
         </div>
@@ -58,8 +64,9 @@
 
       <hr>
 
+      <!-- Threshold -->
       <div class="slider-container">
-        <label id="thresholdLabel" class="settings-label">[Active] Set threshold (red line):</label>
+        <label id="thresholdLabel" class="settings-label" data-helptext="Change threshold in active mode">[Active Zone] Set threshold (red line):</label>
         <div id="threshold" class="settings-input">
             <input type="text" class="thresholdValue"/>
         </div>
@@ -68,8 +75,9 @@
 
       <hr>
 
+      <!-- Sensitivity -->
       <div class="slider-container">
-        <label id="delayLabel" class="settings-label">[Velocity] Set sensitivity:</label>
+        <label id="sensitivityLabel" class="settings-label" data-helptext="Set the range of recognized jump values">[Velocity] Set sensitivity:</label>
         <div id="sensitivity" class="settings-input">
             <input type="text" class="sensitivityValue" data-index="0"/>
             <input type="text" class="sensitivityValue" data-index="1"/>
@@ -79,8 +87,9 @@
 
       <hr>
 
+      <!-- Constant magnitude -->
       <div class="checkbox-container">
-        <label class="settings-label">[Velocity] Constant magnitude:</label>
+        <label class="settings-label" data-helptext="Normalize jump magnitude regardless of nose speed">[Velocity] Constant magnitude:</label>
         <input type="checkbox" id="constantMag" class="settings-input">
       </div>
 

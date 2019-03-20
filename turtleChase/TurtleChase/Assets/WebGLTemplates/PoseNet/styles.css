@@ -3,11 +3,8 @@ body {
 	grid-template-areas: 
 		"game settings"
 		"game video"
-		"game ."
-}
-
-body > div {
-	margin: 20px;
+		"game .";
+	grid-gap: 10px;
 }
 
 #gameContainer {
@@ -19,9 +16,6 @@ body > div {
 }
 
 #videoContainer > video, #videoContainer > canvas {
-    /*transform: scale(0.5, 0.5);*/
-    /*transform-origin: 0 0;*/
-
     position: absolute;
 }
 
@@ -30,14 +24,17 @@ body > div {
 }
 
 
+
+/* SETTINGS */
+
 .slider-container {
 	display: grid;
 	grid-template-areas: 
 		"label"
 		"input"
 		"draggable";
-	grid-gap: 10px;
-	margin: 10px;
+	grid-gap: 5px;
+	margin: 5px;
 }
 
 .checkbox-container {
@@ -45,9 +42,16 @@ body > div {
 	grid-template-areas: 
 		"label"
 		"input";
-	grid-gap: 10px;
-	margin: 10px;
+	grid-gap: 5px;
+	margin: 5px;
 }
+
+.radio-container {
+	display: grid;
+	grid-gap: 5px;
+	margin: 5px;
+}
+
 
 .settings-label {
 	grid-area: label;

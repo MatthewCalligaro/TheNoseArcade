@@ -18,6 +18,10 @@ $(document).ready(function(){
         },
     });
 
+    $("input.delayValue").attr({
+        value: delay
+    });
+
     $("input.delayValue").change(function() {
         let newVal = parseInt($(this).val());
         if(isNaN(newVal)) {
@@ -41,6 +45,10 @@ $(document).ready(function(){
             threshold = vidHeight - ui.value; // Invert the threshold. 
             $("input.thresholdValue").val(ui.value);
         },
+    });
+
+    $("input.thresholdValue").attr({
+        value: vidHeight - threshold
     });
 
     $("input.thresholdValue").change(function() {
@@ -70,6 +78,14 @@ $(document).ready(function(){
         },
     });
 
+    $("input.sensitivityValue[data-index=0]").attr({
+        value: sensitivity[0]
+    });
+
+    $("input.sensitivityValue[data-index=1]").attr({
+        value: sensitivity[1]
+    });
+
     $("input.sensitivityValue").change(function() {
         var $this = $(this);
         let index = $this.data("index");
@@ -97,7 +113,6 @@ $(document).ready(function(){
 
 
 
-
     // // Populate slider labels // TODO: so this needs to maybe happen
     // $("#delay").html(delay);
     // $("#threshold").html(threshold);
@@ -106,4 +121,12 @@ $(document).ready(function(){
 
 
 
+});
+
+
+$( document ).tooltip({
+    items: "[data-helptext]",
+    content: function() {
+        return $(this).attr("data-helptext");
+    }
 });
