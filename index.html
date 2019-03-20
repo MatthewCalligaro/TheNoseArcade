@@ -13,7 +13,12 @@
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  
+
+    <!-- JQuery UI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"></link>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <!-- Unity -->
     <script src="Build/UnityLoader.js"></script>
     <script>
@@ -29,31 +34,68 @@
   
   <body>
 
+    <!-- Unity loads game here -->
     <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
 
+    <!-- Settings -->
     <div id="settingsContainer">
-      <form id="mode">
-        <div>Select a trigger method:</div>
-        <input type="radio" name="inputMode" value="active" checked>Active Zone</input>
-        <input type="radio" name="inputMode" value="velocity">Velocity</input>
-        <input type="radio" name="inputMode" value="magnitude">Magnitude</input>
-      </form>
-      <div id="addlSettings">
+
+      <!-- Input mode -->
+      <div class="radio-container">
+        <label data-helptext="Choose the type of movement to jump">Select a trigger method:</label>
         <div>
-          <div>[General] Set delay between jumps:</div>
-          <input type="range" class="slider" id="delay"><label id="delayValue"></label>
+          <input type="radio" name="inputMode" value="active" checked data-helptext="Move your nose above the red line to jump">Active Zone
         </div>
-        <div>
-          <div>[Active] Set threshold:</div>
-          <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label>
-        </div>
-        <div>
-          <div>[Velocity, Magnitude] Set sensitivity:</div>
-          <input type="range" class="slider" id="sensitivity"><label id="sensitivityValue"></label>
+        <div>  
+          <input type="radio" name="inputMode" value="velocity" data-helptext="Move your nose upward quickly to jump">Velocity
         </div>
       </div>
+
+      <hr>
+
+      <!-- Delay -->
+      <div class="slider-container">
+        <label id="delayLabel" class="settings-label" data-helptext="Set how long to wait before detecting another jump">[General] Set delay between jumps:</label>
+        <div id="delay" class="settings-input">
+            <input type="text" class="delayValue"/>
+        </div>
+        <div id="delaySlider" class="settings-draggable"></div>
+      </div>
+
+      <hr>
+
+      <!-- Threshold -->
+      <div class="slider-container">
+        <label id="thresholdLabel" class="settings-label" data-helptext="Change threshold in active mode">[Active Zone] Set threshold (red line):</label>
+        <div id="threshold" class="settings-input">
+            <input type="text" class="thresholdValue"/>
+        </div>
+        <div id="thresholdSlider" class="settings-draggable"></div>
+      </div>
+
+      <hr>
+
+      <!-- Sensitivity -->
+      <div class="slider-container">
+        <label id="sensitivityLabel" class="settings-label" data-helptext="Set the range of recognized jump values">[Velocity] Set sensitivity:</label>
+        <div id="sensitivity" class="settings-input">
+            <input type="text" class="sensitivityValue" data-index="0"/>
+            <input type="text" class="sensitivityValue" data-index="1"/>
+        </div>
+        <div id="sensitivitySlider" class="settings-draggable"></div>
+      </div>
+
+      <hr>
+
+      <!-- Constant magnitude -->
+      <div class="checkbox-container">
+        <label class="settings-label" data-helptext="Normalize jump magnitude regardless of nose speed">[Velocity] Constant magnitude:</label>
+        <input type="checkbox" id="constantMag" class="settings-input">
+      </div>
+
     </div>
 
+    <!-- Webcam video monitor -->
     <div id="videoContainer"></div>
 
   </body>
