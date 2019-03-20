@@ -5,6 +5,8 @@ let poses = [];
 let noseX;
 let noseY;
 
+let coords = new Array();
+
 // Canvas size
 let vidWidth = 320;
 let vidHeight = 240;
@@ -46,8 +48,16 @@ function findNose() {
         noseX = nose.position.x;
         noseY = nose.position.y;
 
-        console.log("sending:")
-        gameInstance.SendMessage("Player", "setX", noseX); // FIXME: Possibly can send as an array; for now sending as two diff functions.
-        gameInstance.SendMessage("Player", "setY", noseY);
+        console.log("sending X, Y: "+noseX+", "+noseY);
+
+        coords.push(noseX);
+        coords.push(noseY);
+
+        gameInstance.SendMessage("Player", "setCoords", coords);
+
+        // gameInstance.SendMessage("Player", "setX", noseX); // FIXME: Possibly can send as an array, as above. If not, send both messages.
+        // gameInstance.SendMessage("Player", "setY", noseY);
+
+        coords = [];
     }
 }
