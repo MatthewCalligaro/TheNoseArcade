@@ -27,7 +27,7 @@ let vidHeight = 240;
 let mode = "active";
 let delay = 7;
 let threshold = vidHeight / 2;
-let sensitivity = [vidHeight / 12, vidHeight / 3];
+let range = [vidHeight / 12, vidHeight / 3];
 let constantMag = true;
 
 // Function that p5 calls initially to set up graphics
@@ -102,7 +102,7 @@ function findNose() {
                 break;
             case "velocity":
                 rawMagnitude = (constantMag ? 1 : pNoseY - noseY);
-                trigger = (pNoseY - noseY) > sensitivity[0]; 
+                trigger = (pNoseY - noseY) > range[0]; 
                 break;
             default:
         }
@@ -134,9 +134,9 @@ function findNose() {
                 }
                 break;
             case "velocity":
-                // Scale magnitude to sensitivity range
-                console.log(sensitivity);
-                scaledMagnitude = rawMagnitude / (sensitivity[1] - sensitivity[0])
+                // Scale magnitude to velocity range
+                console.log(range);
+                scaledMagnitude = rawMagnitude / (range[1] - range[0])
                 console.log("velocity: JumpEnter ("+scaledMagnitude+")");
                 break;
             default:
