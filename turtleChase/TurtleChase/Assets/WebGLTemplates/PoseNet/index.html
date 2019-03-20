@@ -13,7 +13,12 @@
 
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  
+
+    <!-- JQuery UI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"></link>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <!-- Unity -->
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
@@ -32,26 +37,41 @@
     <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>
 
     <div id="settingsContainer">
-      <form id="mode">
+
+      <div id="mode">
         <div>Select a trigger method:</div>
         <input type="radio" name="inputMode" value="active" checked>Active Zone</input>
         <input type="radio" name="inputMode" value="velocity">Velocity</input>
-        <input type="radio" name="inputMode" value="magnitude">Magnitude</input>
-      </form>
+      </div>
+
       <div id="addlSettings">
         <div>
           <div>[General] Set delay between jumps:</div>
           <input type="range" class="slider" id="delay"><label id="delayValue"></label>
         </div>
+
         <div>
           <div>[Active] Set threshold:</div>
           <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label>
         </div>
+
         <div>
-          <div>[Velocity, Magnitude] Set sensitivity:</div>
-          <input type="range" class="slider" id="sensitivity"><label id="sensitivityValue"></label>
+          <div>[Velocity] Set sensitivity:</div>
+          <!-- <input type="range" class="slider" id="sensitivity"> -->
+          <label id="sensitivityValue"></label>
+          <div id="sensitivity">
+              <input type="text" class="sensitivityValue" data-index="0"/>
+              <input type="text" class="sensitivityValue" data-index="1"/>
+          </div>
+          <br />
+          <div id="sensitivitySlider"></div>
+
+          <div>[Velocity] Constant magnitude:</div>
+          <input type="checkbox" id="constantMag"><label id="constantMagValue"></label>
         </div>
+
       </div>
+
     </div>
 
     <div id="videoContainer"></div>

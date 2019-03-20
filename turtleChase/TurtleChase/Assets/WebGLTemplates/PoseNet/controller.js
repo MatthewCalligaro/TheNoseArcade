@@ -10,7 +10,8 @@ let noseY;
 let pNoseX;
 let pNoseY;
 
-let magnitude;
+let scaledMagnitude;
+let rawMagnitude;
 
 let jumpCooldown;
 
@@ -19,8 +20,6 @@ let ticks;
 let start;
 
 // Canvas size
-// let vidWidth = 640;
-// let vidHeight = 480;
 let vidWidth = 320;
 let vidHeight = 240;
 
@@ -28,22 +27,20 @@ let vidHeight = 240;
 let mode = "active";
 let delay = 7;
 let threshold = vidHeight / 2;
-let sensitivity = vidHeight / 12;
+let sensitivity = [vidHeight / 12, vidHeight / 3];
+let constantMag = true;
 
 // Function that p5 calls initially to set up graphics
 function setup() {
-  // let canvas = createCanvas(vidWidth, vidHeight);
-  // canvas.parent('videoContainer');
   video = createCapture(VIDEO);
   video.size(vidWidth, vidHeight);
-  // video.size(width, height);
   video.parent('videoContainer')
 
   pixelDensity(1);
   pg = createGraphics(vidWidth, vidHeight);
-  // pg = createGraphics(width, height);
   pg.parent('videoContainer');
 
+  // Options for PoseNet
   let options = { 
     // imageScaleFactor: 0.3,
     // outputStride: 16,
@@ -63,8 +60,8 @@ function setup() {
   poseNet.on('pose', function(results) {
     poses = results;
     // console.log(poses);
-    ticks++;
-    console.log(ticks/(Date.now()-start));
+    // ticks++;
+    // console.log(ticks/(Date.now()-start));
   });
 
   // Hide the video so we can render it flipped in the draw loop. 
@@ -72,7 +69,7 @@ function setup() {
 
   // Show graphics
   pg.show();
-  // Flip graphics so you get proper mirroring
+  // Flip graphics so you get proper mirroring of video and nose dot
   pg.translate(vidWidth,0);
   pg.scale(-1.0, 1.0);
 
@@ -87,15 +84,8 @@ function setup() {
 function draw() {
   pg.clear();
 
-  // Reverse and render video
-  // translate(capture.width,0);
-  // scale(-1.0,1.0);
-  // pg.image(video, 0, 0);
-  // scale(1.0,-1.0);
-
-  // push();
+  // Render video
   pg.image(video, 0, 0);
-  // pop();
 
   findNose();
   updateThreshold();
@@ -115,10 +105,9 @@ function findNose() {
         trigger = pNoseY > threshold != noseY > threshold;
         on = noseY < threshold;
         break;
-      case "magnitude":
-        magnitude = pNoseY - noseY; // Drop through
       case "velocity":
-        trigger = (pNoseY - noseY) > sensitivity; 
+        rawMagnitude = (constantMag ? 1 : pNoseY - noseY);
+        trigger = (pNoseY - noseY) > sensitivity[0]; 
         break;
       default:
     }
@@ -142,20 +131,17 @@ function findNose() {
       case "active":
         if(on) {
           console.log("active: JumpEnter")
-          gameInstance.SendMessage("Player", "JumpEnter", 1);
+          // gameInstance.SendMessage("Player", "JumpEnter", 1);
         }
         else {
           console.log("active: JumpExit")
-          gameInstance.SendMessage("Player", "JumpExit");
+          // gameInstance.SendMessage("Player", "JumpExit");
         }
         break;
       case "velocity":
-        console.log("velocity: JumpEnter");
-        gameInstance.SendMessage("Player", "JumpEnter", 1);
-        break;
-      case "magnitude":
-        console.log("magnitude: JumpEnter ("+magnitude+")");
-        gameInstance.SendMessage("Player", "JumpEnter", magnitude);
+        // Scale magnitude to sensitivity range
+        scaledMagnitude = rawMagnitude / (sensitivity[1] - sensitivity[0])
+        console.log("velocity: JumpEnter ("+scaledMagnitude+")");
         break;
       default:
     }
