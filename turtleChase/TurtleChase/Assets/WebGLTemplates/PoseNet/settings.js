@@ -1,23 +1,60 @@
 $(document).ready(function(){
-    // INITIAL SETTINGS
-
-    // Set initial limits for sliders
-    $("#delay").attr({
-        "min": 0,
-        "max": 20,
-        "value": delay
+    // Mode input
+    $("#mode>input").on("change", function(){
+        mode = $(this).val();
+        console.log("Now in "+mode+" mode.");
     });
 
-    $("#threshold").attr({
-        "min": 0,
-        "max": vidHeight,
-        "value": threshold
+
+    // Delay slider
+    $("#delaySlider").slider({
+        min: 0,
+        max: 20,
+        step: 1,
+        value: delay,
+        slide: function(event, ui) {
+            delay = ui.value;
+            $("input.delayValue").val(delay);
+        },
     });
 
-    $("#constantMag").attr({
-        "checked": constantMag
+    $("input.delayValue").change(function() {
+        let newVal = parseInt($(this).val());
+        if(isNaN(newVal)) {
+            $(this).val(delay); // Bad input, put it back. Can handle more gracefully later. 
+        }
+        else {
+            delay = newVal;
+            $("#delaySlider").slider("value", delay);
+        }
     });
 
+
+    // Threshold slider
+    $("#thresholdSlider").slider({
+        min: 0,
+        max: vidHeight,
+        step: 1,
+        value: threshold,
+        slide: function(event, ui) {
+            threshold = ui.value;
+            $("input.thresholdValue").val(threshold);
+        },
+    });
+
+    $("input.thresholdValue").change(function() {
+        let newVal = parseInt($(this).val());
+        if(isNaN(newVal)) {
+            $(this).val(threshold); // Bad input, put it back. Can handle more gracefully later. 
+        }
+        else {
+            threshold = newVal;
+            $("#thresholdSlider").slider("value", threshold);
+        }
+    });
+
+
+    // Sensitivity slider
     $("#sensitivitySlider").slider({
         min: 0,
         max: 2*vidHeight/3,
@@ -34,8 +71,29 @@ $(document).ready(function(){
 
     $("input.sensitivityValue").change(function() {
         var $this = $(this);
-        $("#sensitivitySlider").slider("values", $this.data("index"), $this.val());
+        let index = $this.data("index");
+        let newVal = parseInt($this.val());
+        if(newVal != NaN) {
+            $(this).val(sensitivity[index]); // Bad input, put it back. Can handle more gracefully later. 
+        }
+        else {
+            sensitivity[index] = newVal;
+            $("#sensitivitySlider").slider("values", index, newVal);
+        }
     });
+
+    // Constant magnitude initial settings
+    $("#constantMag").attr({
+        "checked": constantMag
+    });
+
+    // Const magnitude listener
+    $("#constantMag").on("change", function() {
+        constantMag = $(this).prop('checked');
+    });
+
+
+
 
 
 
@@ -45,36 +103,6 @@ $(document).ready(function(){
     // $("#sensitivity").html(sensitivity);
 
 
-    // LISTENERS
 
-    // Change trigger mode
-    $("#mode>input").on("change", function(){
-        mode = $(this).val();
-        console.log("Now in "+mode+" mode.");
-    });
-
-
-    // Change delay between jumps
-    $("#delay").on("change", function() {
-        delay = $(this).val();
-        $("#delayValue").html(delay);
-    });
-
-    // Change active zone limit
-    $("#threshold").on("change", function() {
-        threshold = $(this).val();
-        $("#thresholdValue").html(threshold);
-    });
-
-    // Change sensitivity for velocity
-    $("#sensitivity").on("change", function() {
-        sensitivity = $(this).val();
-        $("#sensitivityValue").html(sensitivity);
-    });
-
-    // Change const magnitude for velocity
-    $("#constantMag").on("change", function() {
-        constantMag = $(this).prop('checked');
-    });
 
 });

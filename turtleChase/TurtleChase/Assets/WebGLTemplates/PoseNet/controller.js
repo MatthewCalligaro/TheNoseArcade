@@ -140,6 +140,7 @@ function findNose() {
         break;
       case "velocity":
         // Scale magnitude to sensitivity range
+        console.log(sensitivity);
         scaledMagnitude = rawMagnitude / (sensitivity[1] - sensitivity[0])
         console.log("velocity: JumpEnter ("+scaledMagnitude+")");
         break;

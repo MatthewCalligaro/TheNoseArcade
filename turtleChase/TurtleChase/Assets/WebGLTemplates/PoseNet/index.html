@@ -45,20 +45,30 @@
       </div>
 
       <div id="addlSettings">
+
         <div>
-          <div>[General] Set delay between jumps:</div>
-          <input type="range" class="slider" id="delay"><label id="delayValue"></label>
+          <label id="delayLabel">[General] Set delay between jumps:</label>
+          <div id="delay">
+              <input type="text" class="delayValue"/>
+          </div>
+          <br />
+          <div id="delaySlider"></div>
         </div>
 
         <div>
-          <div>[Active] Set threshold:</div>
-          <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label>
+          <!-- <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label> -->
+          <div>
+            <label id="thresholdLabel">[Active] Set threshold (red line):</label>
+            <div id="threshold">
+                <input type="text" class="thresholdValue"/>
+            </div>
+            <br />
+            <div id="thresholdSlider"></div>
+          </div>
         </div>
 
         <div>
-          <div>[Velocity] Set sensitivity:</div>
-          <!-- <input type="range" class="slider" id="sensitivity"> -->
-          <label id="sensitivityValue"></label>
+          <label id="delayLabel">[Velocity] Set sensitivity:</label>
           <div id="sensitivity">
               <input type="text" class="sensitivityValue" data-index="0"/>
               <input type="text" class="sensitivityValue" data-index="1"/>
