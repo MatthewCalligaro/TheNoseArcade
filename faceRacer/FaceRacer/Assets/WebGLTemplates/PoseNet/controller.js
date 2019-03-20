@@ -32,7 +32,7 @@ function setup() {
         poses = results;
     });
 
-    // Hide the video so we can render it flipped in the draw loop. 
+    // Hide the video.
     video.hide();
 }
 
