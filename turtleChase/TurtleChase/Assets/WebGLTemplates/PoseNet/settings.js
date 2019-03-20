@@ -18,13 +18,17 @@ $(document).ready(function(){
         },
     });
 
+    // Delay input initial value
     $("input.delayValue").attr({
         value: delay
     });
 
+    // Delay input listener
     $("input.delayValue").change(function() {
         let newVal = parseInt($(this).val());
-        if(isNaN(newVal)) {
+        if(isNaN(newVal) // Non-numerical input.
+            || (newVal < 0) // Beyond min/max.
+            || (newVal > 20)) {
             $(this).val(delay); // Bad input, put it back. Can handle more gracefully later. 
         }
         else {
@@ -47,13 +51,17 @@ $(document).ready(function(){
         },
     });
 
+    // Threshold input initial value
     $("input.thresholdValue").attr({
         value: vidHeight - threshold
     });
 
+    // Threshold input listener
     $("input.thresholdValue").change(function() {
         let newVal = parseInt($(this).val());
-        if(isNaN(newVal)) {
+        if(isNaN(newVal) // Non-numerical input.
+            || (newVal < 0) // Beyond min/max.
+            || (newVal > vidHeight)) {
             $(this).val(vidHeight - threshold); // Bad input, put it back. Can handle more gracefully later. 
         }
         else {
@@ -78,19 +86,26 @@ $(document).ready(function(){
         },
     });
 
+    // Sensitivity input initial lower bound
     $("input.sensitivityValue[data-index=0]").attr({
         value: sensitivity[0]
     });
 
+    // Sensitivity input initial upper bound
     $("input.sensitivityValue[data-index=1]").attr({
         value: sensitivity[1]
     });
 
+    // Sensitivity input listener
     $("input.sensitivityValue").change(function() {
         var $this = $(this);
         let index = $this.data("index");
         let newVal = parseInt($this.val());
-        if(newVal != NaN) {
+        if(isNaN(newVal) // Non-numerical input. 
+            || (index == 0 && newVal > sensitivity[1]) // Past other slider. 
+            || (index == 1 && newVal < sensitivity[0])
+            || (newVal < 0) // Beyond min/max.
+            || (newVal > 2*vidHeight/3)) {
             $(this).val(sensitivity[index]); // Bad input, put it back. Can handle more gracefully later. 
         }
         else {
@@ -99,27 +114,16 @@ $(document).ready(function(){
         }
     });
 
+
     // Constant magnitude initial settings
     $("#constantMag").attr({
-        "checked": constantMag
+        checked: constantMag
     });
 
     // Const magnitude listener
     $("#constantMag").on("change", function() {
         constantMag = $(this).prop('checked');
     });
-
-
-
-
-
-    // // Populate slider labels // TODO: so this needs to maybe happen
-    // $("#delay").html(delay);
-    // $("#threshold").html(threshold);
-    // $("#sensitivity").html(sensitivity);
-
-
-
 
 });
 
