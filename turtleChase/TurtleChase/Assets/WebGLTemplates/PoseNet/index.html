@@ -34,8 +34,10 @@
   
   <body>
 
+    <!-- Unity loads game here -->
     <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>
 
+    <!-- Settings -->
     <div id="settingsContainer">
 
       <div id="mode">
@@ -44,44 +46,47 @@
         <input type="radio" name="inputMode" value="velocity">Velocity</input>
       </div>
 
-      <div id="addlSettings">
+      <hr>
 
-        <div class="slider-container">
-          <label id="delayLabel" class="slider-label">[General] Set delay between jumps:</label>
-          <div id="delay" class="slider-input">
-              <input type="text" class="delayValue"/>
-          </div>
-          <div id="delaySlider" class="slider-draggable"></div>
+      <div class="slider-container">
+        <label id="delayLabel" class="settings-label">[General] Set delay between jumps:</label>
+        <div id="delay" class="settings-input">
+            <input type="text" class="delayValue"/>
         </div>
+        <div id="delaySlider" class="settings-draggable"></div>
+      </div>
 
-        <div>
-          <div>
-            <label id="thresholdLabel">[Active] Set threshold (red line):</label>
-            <div id="threshold">
-                <input type="text" class="thresholdValue"/>
-            </div>
-            <br />
-            <div id="thresholdSlider"></div>
-          </div>
+      <hr>
+
+      <div class="slider-container">
+        <label id="thresholdLabel" class="settings-label">[Active] Set threshold (red line):</label>
+        <div id="threshold" class="settings-input">
+            <input type="text" class="thresholdValue"/>
         </div>
+        <div id="thresholdSlider" class="settings-draggable"></div>
+      </div>
 
-        <div>
-          <label id="delayLabel">[Velocity] Set sensitivity:</label>
-          <div id="sensitivity">
-              <input type="text" class="sensitivityValue" data-index="0"/>
-              <input type="text" class="sensitivityValue" data-index="1"/>
-          </div>
-          <br />
-          <div id="sensitivitySlider"></div>
+      <hr>
 
-          <div>[Velocity] Constant magnitude:</div>
-          <input type="checkbox" id="constantMag"><label id="constantMagValue"></label>
+      <div class="slider-container">
+        <label id="delayLabel" class="settings-label">[Velocity] Set sensitivity:</label>
+        <div id="sensitivity" class="settings-input">
+            <input type="text" class="sensitivityValue" data-index="0"/>
+            <input type="text" class="sensitivityValue" data-index="1"/>
         </div>
+        <div id="sensitivitySlider" class="settings-draggable"></div>
+      </div>
 
+      <hr>
+
+      <div class="checkbox-container">
+        <label class="settings-label">[Velocity] Constant magnitude:</label>
+        <input type="checkbox" id="constantMag" class="settings-input">
       </div>
 
     </div>
 
+    <!-- Webcam video monitor -->
     <div id="videoContainer"></div>
 
   </body>

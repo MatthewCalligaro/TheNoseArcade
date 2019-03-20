@@ -40,14 +40,23 @@ body > div {
 	margin: 10px;
 }
 
-.slider-label {
+.checkbox-container {
+	display: grid;
+	grid-template-areas: 
+		"label"
+		"input";
+	grid-gap: 10px;
+	margin: 10px;
+}
+
+.settings-label {
 	grid-area: label;
 }
 
-.slider-input {
+.settings-input {
 	grid-area: input;
 }
 
-.slider-draggable {
+.settings-draggable {
 	grid-area: draggable;
 }
