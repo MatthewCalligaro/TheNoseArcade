@@ -24,35 +24,37 @@
     <script src="controller.js"></script>
 
     <link rel="stylesheet" href="styles.css">
+
   </head>
   
   <body>
 
     <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
 
-    <div id="videoContainer"></div>
-
     <div id="settingsContainer">
       <form id="mode">
-        Select a trigger method: 
+        <div>Select a trigger method:</div>
         <input type="radio" name="inputMode" value="active" checked>Active Zone</input>
         <input type="radio" name="inputMode" value="velocity">Velocity</input>
+        <input type="radio" name="inputMode" value="magnitude">Magnitude</input>
       </form>
       <div id="addlSettings">
-        <div class="generalSettings">
-          [General] Set delay between jumps:
-          <input type="range" min="0" max="20" value="7" class="slider" id="delay">
+        <div>
+          <div>[General] Set delay between jumps:</div>
+          <input type="range" class="slider" id="delay"><label id="delayValue"></label>
         </div>
-        <div class="activeSettings">
-          [Active] Set threshold:
-          <input type="range" min="0" max="480" value="150" class="slider" id="threshold">
+        <div>
+          <div>[Active] Set threshold:</div>
+          <input type="range" class="slider" id="threshold" style="direction:rtl;"><label id="thresholdValue"></label>
         </div>
-        <div class="velocitySettings">
-          [Velocity] Set sensitivity:
-          <input type="range" min="1" max="50" value="40" class="slider" id="sensitivity">
+        <div>
+          <div>[Velocity, Magnitude] Set sensitivity:</div>
+          <input type="range" class="slider" id="sensitivity"><label id="sensitivityValue"></label>
         </div>
       </div>
     </div>
+
+    <div id="videoContainer"></div>
 
   </body>
   

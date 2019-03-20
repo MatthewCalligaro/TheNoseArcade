@@ -1,7 +1,30 @@
-canvas, video {
+body {
+	display: grid;
+	grid-template-areas: 
+		"game settings"
+		"game video"
+		"game ."
+}
+
+body > div {
+	margin: 20px;
+}
+
+#gameContainer {
+	grid-area: game;
+}
+
+#videoContainer {
+    grid-area: video;
+}
+
+#videoContainer > video, #videoContainer > canvas {
+    /*transform: scale(0.5, 0.5);*/
+    /*transform-origin: 0 0;*/
+
     position: absolute;
 }
-#videoContainer {
-    width: 640px;
-    height: 480px;
+
+#settingsContainer {
+	grid-area: settings;
 }
