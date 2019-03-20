@@ -42,17 +42,12 @@ function setup() {
 
     // Options for PoseNet
     let options = { 
-        // imageScaleFactor: 0.3,
-        // outputStride: 16,
         flipHorizontal: false,
-        // flipHorizontal: false,
         minConfidence: 0.2,
         maxPoseDetections: 1,
-        // scoreThreshold: 0.5,
         scoreThreshold: 2,
         nmsRadius: 20,
         detectionType: 'single',
-        // multiplier: 0.75,
     }
     // Create a new poseNet method with a single detection
     poseNet = ml5.poseNet(video, options, function() {});
@@ -131,11 +126,11 @@ function findNose() {
             case "active":
                 if(on) {
                     console.log("active: JumpEnter")
-                    // gameInstance.SendMessage("Player", "JumpEnter", 1);
+                    gameInstance.SendMessage("Player", "JumpEnter", 1);
                 }
                 else {
                     console.log("active: JumpExit")
-                    // gameInstance.SendMessage("Player", "JumpExit");
+                    gameInstance.SendMessage("Player", "JumpExit");
                 }
                 break;
             case "velocity":
