@@ -103,7 +103,7 @@ public class Player : MonoBehaviour
         switch (Settings.JumpStyle)
         {
             case JumpStyle.Velocity:
-                this.GetComponent<Rigidbody2D>().velocity = new Vector2(0, jumpVelocity * Settings.JumpPower * magnitude);
+                this.GetComponent<Rigidbody2D>().velocity = new Vector2(this.GetComponent<Rigidbody2D>().velocity.x, jumpVelocity * Settings.JumpPower * magnitude);
                 break;
 
             case JumpStyle.Force:

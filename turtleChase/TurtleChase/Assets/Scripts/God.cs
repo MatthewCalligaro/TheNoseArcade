@@ -98,9 +98,19 @@ public class God : MonoBehaviour
     private const float envZ = 2;
 
     /// <summary>
+    /// Maximum Y position of environment objects
+    /// </summary>
+    private const float envMaxY = 4.25f;
+
+    /// <summary>
     /// Multiplier to the speed at which the camera skips forward to catch up with the player
     /// </summary>
     private const float skipMultiplier = 0.5f;
+
+    /// <summary>
+    /// Distance to leave for player to pass through on ideal path
+    /// </summary>
+    private const float playerSpace = 0.5f;
 
     /// <summary>
     /// X length, +/- Y position, and Z position of boundary objects
@@ -122,7 +132,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(3, 6, 0.03f),
             YGap = new VariableValue(0.75f, 2, 0.01f),
-            YMax = 4.25f,
+            YOffset = 0,
             YBlock = 0,
             MovementProb = new VariableValue(0.5f, 0, 0.01f),
             Movement = new Vector2(0, 0.5f),
@@ -135,7 +145,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(3, 4, 0.02f),
             YGap =  new VariableValue(0.5f, 3, 0.01f),
-            YMax = 4.25f,
+            YOffset = 1f,
             YBlock = 0,
             MovementProb = new VariableValue(1f, 0.25f, 0.015f),
             Movement = new Vector2(0, 3),
@@ -148,7 +158,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(2, 5, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
-            YMax = 3.0f,
+            YOffset = 0.5f,
             YBlock = 2,
             MovementProb = new VariableValue(0.5f, 0, 0.01f),
             Movement = new Vector2(2, 0),
@@ -161,7 +171,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(3, 8, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
-            YMax = 3.0f,
+            YOffset = 0.5f,
             YBlock = 5,
             MovementProb = new VariableValue(0.25f, 0, 0.01f),
             Movement = new Vector2(2, 0),
@@ -174,7 +184,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(3, 8, 0.1f),
             YGap = new VariableValue(3, 5, 0.1f),
-            YMax = 3.0f,
+            YOffset = 0.5f,
             YBlock = 10,
             MovementProb = new VariableValue(0.25f, 0, 0.01f),
             Movement = new Vector2(2, 0),
@@ -187,7 +197,7 @@ public class God : MonoBehaviour
         {
             XDelay = new VariableValue(1),
             YGap = new VariableValue(0),
-            YMax = 4.0f,
+            YOffset = 0.75f,
             YBlock = 0,
             MovementProb = new VariableValue(1),
             Movement = new Vector2(-100, 0),
@@ -209,15 +219,6 @@ public class God : MonoBehaviour
             SpeedMultiplier = 1,
             Force = Vector2.zero
         },
-
-        // Gold
-        new ConsumableStats
-        {
-            SpawnProb = 10,
-            Score = 5,
-            SpeedMultiplier = 1,
-            Force = new Vector2(200, 0)
-        },
         
         // Silver
         new ConsumableStats
@@ -226,6 +227,15 @@ public class God : MonoBehaviour
             Score = 2,
             SpeedMultiplier = 1,
             Force = new Vector2(125, 0)
+        },
+
+        // Gold
+        new ConsumableStats
+        {
+            SpawnProb = 10,
+            Score = 5,
+            SpeedMultiplier = 1,
+            Force = new Vector2(200, 0)
         },
 
         // Speed
@@ -273,7 +283,7 @@ public class God : MonoBehaviour
     private List<GameObject> environmentObjs = new List<GameObject>();
 
     /// <summary>
-    /// Position of the next environment object to be spawned
+    /// Position of the ideal path at the X position where the next environment object will be spawned
     /// </summary>
     private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
 
@@ -452,32 +462,62 @@ public class God : MonoBehaviour
             int index = this.obstacleSpawnProbs[(int)(Random.value * this.obstacleSpawnProbs.Count)];
             ObstacleStats stats = obstacleStats[index];
 
-            // Use a Markov model to choose the next Y position based on the current Y position
-            this.nextEnv.y += Utilities.NormalDist(0, ySdev.GetValue(this.DifficultyMultiplier));
-
-            // Adjust the Y position to make sure that it is within the YMax for this obstacle and does
-            // not fall on a blocked Y position in curYBlocks
-            int attempts = 0;
-            do
+            // Calculate the minimum and maximum Y of the ideal path based on other obstacles blocking at this X position
+            float minY = -envMaxY;
+            float maxY = envMaxY;
+            for (int i = 0; i < this.curYBlocks.Count; ++i)
             {
-                this.nextEnv.y = this.nextEnv.y > stats.YMax ? 2 * stats.YMax - this.nextEnv.y : this.nextEnv.y;
-                this.nextEnv.y = this.nextEnv.y < -stats.YMax ? 2 * -stats.YMax - this.nextEnv.y : this.nextEnv.y;
-                attempts++;
+                // Remove a Y block if the ending X position has been passed
+                if (this.nextEnv.x > this.curYBlocks[i].x)
+                {
+                    this.curYBlocks.RemoveAt(i);
+                    i--;
+                }
+                else if (this.curYBlocks[i].y < this.nextEnv.y)
+                {
+                    minY = Mathf.Max(minY, this.curYBlocks[i].y);
+                }
+                else
+                {
+                    maxY = Mathf.Min(maxY, this.curYBlocks[i].y);
+                }
             }
-            while (!VerifyY(this.nextEnv.y) && attempts < 100);
-            // TODO: prevent infinite looping with a more robust solution
+            minY += playerSpace;
+            maxY -= playerSpace;
 
-            // For pipes, we always spawn two (top and bottom) and a pipe score in between
-            if (index == Obstacles.Pipe.GetHashCode())
+            // Use a Markov model to choose the next Y position of the ideal path
+            this.nextEnv.y = Utilities.Markov(this.nextEnv.y, ySdev.GetValue(this.DifficultyMultiplier), minY, maxY);
+
+            // Spawn the obstacle only if there is enough space to do so
+            if (maxY - minY > stats.YOffset * 2)
             {
-                float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-                this.SpawnObstacle(index, -spacing);
-                this.SpawnObstacle(index, spacing, Quaternion.Euler(0, 0, 180));
-                this.SpawnConsumable(Consumables.Pipe.GetHashCode());
+                // Calculate the offset of the current obstacle to leave room on the ideal path
+                float yOffset = (Random.value > 0.5f) ? stats.YOffset : -stats.YOffset;
+                if (yOffset < minY)
+                {
+                    yOffset += 2 * stats.YOffset;
+                }
+                else if (yOffset > maxY)
+                {
+                    yOffset -= 2 * stats.YOffset;
+                }
+
+                // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
+                if (index == Obstacles.Pipe.GetHashCode())
+                {
+                    float spacing = stats.YGap.GetValue(DifficultyMultiplier);
+                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset - spacing));
+                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset + spacing), Quaternion.Euler(0, 0, 180));
+                    this.SpawnConsumable(Consumables.Pipe.GetHashCode());
+                }
+                else
+                {
+                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * yOffset);
+                }
             }
             else
             {
-                this.SpawnObstacle(index);
+                Debug.Log("pass: (" + minY + ", " + maxY + ")");
             }
 
             this.nextEnv.x += stats.XDelay.GetValue(this.DifficultyMultiplier);
@@ -488,12 +528,12 @@ public class God : MonoBehaviour
     /// Spawn a particular obstacle with the specified parameters
     /// </summary>
     /// <param name="index">The Obstacles index of the object to be spawned</param>
-    /// <param name="yOffset">The Y offset of the object from nextEnv.y</param>
+    /// <param name="position">The position at which to spawn the obstacle</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    private void SpawnObstacle(int index, float yOffset = 0, Quaternion rotation = new Quaternion())
+    private void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion())
     { 
-        // Spawn the specified obstacle at the specified position/rotation
-        GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], this.nextEnv + new Vector3(0, yOffset, 0), rotation);
+        // Spawn the specified obstacle at the specified position and rotation
+        GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
 
         // Set the obstacle's public properties based on its stats in obstacleStats
         ObstacleStats stats = obstacleStats[index];
@@ -505,10 +545,11 @@ public class God : MonoBehaviour
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);
         }
 
-        // If the obstacle blocks its Y position, add this to curYBlocks
+        // If the obstacle blocks its Y position, add its top and bottom to curYBlocks
         if (stats.YBlock > 0)
         {
-            this.curYBlocks.Add(new Vector2(stats.YBlock + this.nextEnv.x, this.nextEnv.y));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y + stats.YOffset));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y - stats.YOffset));
         }
     }
 
@@ -522,7 +563,7 @@ public class God : MonoBehaviour
         ConsumableStats stats = consumableStats[index];
         GameObject newConsumable = Instantiate(
             this.ConsumablePrefabs[index], 
-            new Vector3(this.nextEnv.x, Random.Range(-ConsumableStats.YMax, ConsumableStats.YMax), this.nextEnv.z), 
+            new Vector3(this.nextEnv.x, Random.Range(-envMaxY, envMaxY), this.nextEnv.z), 
             Quaternion.identity);
 
         // Set the consumable object's public properties based on its stats in consumableStats
@@ -531,33 +572,5 @@ public class God : MonoBehaviour
         newObst.Score = stats.Score;
         newObst.Force = stats.Force;
         newObst.SpeedMultiplier = stats.SpeedMultiplier;
-    }
-
-    /// <summary>
-    /// Check if a Y position conflicts with a blocked Y in curYBlocks
-    /// </summary>
-    /// <param name="y">The Y position to check</param>
-    /// <returns>true if the Y position does not conflict with any Y blocks</returns>
-    private bool VerifyY(float y)
-    {
-        for (int i = 0; i < this.curYBlocks.Count; ++i)
-        {
-            // Remove a Y block if the ending x position has been passed
-            if (this.transform.position.x > this.curYBlocks[i].x)
-            {
-                this.curYBlocks.RemoveAt(i);
-                i--;
-            }
-            else
-            {
-                // Return false if we are within 1.0 of any Y block
-                if (Mathf.Abs(y - this.curYBlocks[i].y) < 1.0f)
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
