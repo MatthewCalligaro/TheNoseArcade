@@ -144,6 +144,7 @@ public class Player : MonoBehaviour
     {
         BlockingPause = 0;
         HUD.UpdateScore(this.score);
+        HUD.UpdateDistance((int)this.transform.position.x);
     }
 
     private void Update()
@@ -195,8 +196,13 @@ public class Player : MonoBehaviour
                 this.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpJetpackForce * Time.deltaTime * Settings.JumpPower));
             }
 
-            // Move forward with the current speed multiplier
+            // Move forward with the current speed multiplier and update the HUD distance
+            int lastX = (int)this.transform.position.x;
             this.transform.Translate(new Vector3(God.ScrollSpeed * this.SpeedMultiplier * Time.deltaTime, 0, 0));
+            if ((int)this.transform.position.x > lastX)
+            {
+                HUD.UpdateDistance((int)this.transform.position.x);
+            }
         }
     }
 
