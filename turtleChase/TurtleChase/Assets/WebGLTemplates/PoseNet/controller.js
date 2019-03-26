@@ -125,19 +125,38 @@ function findNose() {
         switch(mode) {
             case "active":
                 if(on) {
-                    console.log("active: JumpEnter")
-                    gameInstance.SendMessage("Player", "JumpEnter", 1);
+                    console.log("ACTIVE: JumpEnter")
+                    try {
+                        gameInstance.SendMessage("Player", "JumpEnter", 1);
+                        console.log("Jump succeeded.");
+                    }
+                    catch(err) {
+                        console.log("Jump failed with error: "+err);
+                    }
                 }
                 else {
-                    console.log("active: JumpExit")
-                    gameInstance.SendMessage("Player", "JumpExit");
+                    console.log("ACTIVE: JumpExit");
+                    try {
+                        gameInstance.SendMessage("Player", "JumpExit");
+                        console.log("Jump succeeded.");
+                    }
+                    catch(err) {
+                        console.log("Jump failed with error: "+err);
+                    }
                 }
                 break;
             case "velocity":
                 // Scale magnitude to velocity range
                 console.log(range);
-                scaledMagnitude = rawMagnitude / (range[1] - range[0])
-                console.log("velocity: JumpEnter ("+scaledMagnitude+")");
+                scaledMagnitude = rawMagnitude / (range[1] - range[0]);
+                console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
+                try {
+                    gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
+                    console.log("Jump succeeded.");
+                }
+                catch(err) {
+                    console.log("Jump failed with error: "+err);
+                }
                 break;
             default:
         }
