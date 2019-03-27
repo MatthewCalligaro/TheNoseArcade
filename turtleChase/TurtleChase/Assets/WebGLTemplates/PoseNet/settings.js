@@ -1,6 +1,6 @@
 $(document).ready(function(){
     // Mode input
-    $("#mode>input").on("change", function(){
+    $("#inputMode>input").on("change", function(){
         mode = $(this).val();
         console.log("Now in "+mode+" mode.");
     });
@@ -9,7 +9,7 @@ $(document).ready(function(){
     // Delay slider
     $("#delaySlider").slider({
         min: 0,
-        max: 20,
+        max: 1000,
         step: 1,
         value: delay,
         slide: function(event, ui) {

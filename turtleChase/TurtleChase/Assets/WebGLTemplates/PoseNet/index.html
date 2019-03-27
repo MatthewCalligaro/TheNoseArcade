@@ -57,7 +57,7 @@
       <div class="slider-container">
         <label id="delayLabel" class="settings-label" data-helptext="Set how long to wait before detecting another jump">[General] Set delay between jumps:</label>
         <div id="delay" class="settings-input">
-            <input type="text" class="delayValue"/>
+            <input type="text" class="delayValue"/> ms
         </div>
         <div id="delaySlider" class="settings-draggable"></div>
       </div>
@@ -68,7 +68,7 @@
       <div class="slider-container">
         <label id="thresholdLabel" class="settings-label" data-helptext="Change threshold in active mode">[Active Zone] Set threshold (red line):</label>
         <div id="threshold" class="settings-input">
-            <input type="text" class="thresholdValue"/>
+            <input type="text" class="thresholdValue"/> px
         </div>
         <div id="thresholdSlider" class="settings-draggable"></div>
       </div>
@@ -77,12 +77,11 @@
 
       <!-- Sensitivity -->
       <div class="slider-container">
-        <label id="rangeLabel" class="settings-label" data-helptext="Set the desired range of nose velocities for jumping">[Velocity] Set velocity range:</label>
-        <div id="range" class="settings-input">
-            <input type="text" class="rangeValue" data-index="0"/>
-            <input type="text" class="rangeValue" data-index="1"/>
+        <label id="velocityMinLabel" class="settings-label" data-helptext="Set the minimum nose velocity to register a jump">[Nose Velocity] Set minimum velocity:</label>
+        <div id="velocityMin" class="settings-input">
+            <input type="text" class="velocityMinValue"/> px/ms
         </div>
-        <div id="rangeSlider" class="settings-draggable"></div>
+        <div id="velocityMinSlider" class="settings-draggable"></div>
       </div>
 
       <hr>
