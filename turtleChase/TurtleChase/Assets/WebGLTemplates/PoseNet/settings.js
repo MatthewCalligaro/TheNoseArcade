@@ -1,4 +1,25 @@
 $(document).ready(function(){
+
+    var focusGameCanvas = function() {
+        console.log("Try to focus game.");
+        var gameCanvas = $("#gameContainer>canvas");
+        if(gameCanvas.length) {
+            console.log("Focusing game.");
+            gameCanvas[0].setAttribute("tabindex", "1");
+            gameCanvas[0].focus(); 
+        }
+        else {
+           setTimeout(focusGameCanvas, 100);
+        }
+    }
+ 
+    focusGameCanvas();
+
+    // In case no change is made, give the game focus. 
+    $("input").on("blur", function() {
+        focusGameCanvas();
+    });
+
     // Listener for any input updating.
     $("input").on("change", function(){
         let name = $(this).attr("name");

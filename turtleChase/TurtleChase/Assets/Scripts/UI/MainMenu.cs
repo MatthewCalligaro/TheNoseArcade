@@ -45,6 +45,9 @@ public class MainMenu : UIElement
 
     protected override void Start()
     {
+        #if !UNITY_EDITOR && UNITY_WEBGL
+            WebGLInput.captureAllKeyboardInput = false;
+        #endif
         base.Start();
         this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value = Settings.Difficulty.GetHashCode();
     }
