@@ -32,7 +32,11 @@ let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates.
 let velocityMin = vidHeight / 12;
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
-let inMenu;
+let inMenu = true;
+
+// I didn't invert these because I'm not giving you sliders soz
+let xArrowLims = [vidWidth / 4, 3 * vidWidth / 4];
+let yArrowLims = [vidHeight / 4, 3 * vidHeight / 4];
 
 // Function that p5 calls initially to set up graphics
 function setup() {
@@ -90,22 +94,11 @@ function draw() {
 
     inMenu = $("#menuStatus").attr("menu-status");
 
-    if(inMenu) {
-        detectArrows();
-        updateAreas();
-    }
-    else {
-        detectJump();
-        updateThreshold();
-    }
+    detectNose();
+    updateVisuals();
 }
 
-function detectArrows() {
-    // Define areas somewhere else bro idk
-    console.log("detectArrows unimplemented");
-}
-
-function detectJump() {
+function detectNose() {
     let trigger = 0; // By default don't register movement
     if(poses.length > 0) {
         lastDetect = thisDetect;
@@ -131,7 +124,7 @@ function detectJump() {
         pNoseY = noseY;
 
         // Render nose dot
-        pg.stroke(0, 225, 0);
+        pg.stroke(0, 225, 0); // Approximately Lime
         pg.strokeWeight(5);
         pg.ellipse(noseX, noseY, 1, 1);
 
@@ -182,17 +175,39 @@ function detectJump() {
     }
 }
 
-// Visually update the 
-function updateAreas() {
-    console.log("updateAreas unimplemented");
-}
-
 // Visually update the threshold value
-function updateThreshold() {
-    // Only render line in active mode. 
-    if(mode == "active") { 
-        pg.stroke(230, 80, 0);
-        pg.strokeWeight(1);
-        pg.line(0, vidHeight - threshold, vidWidth, vidHeight - threshold);
+function updateVisuals() {
+    if(inMenu) {
+        // pg.stroke(245, 60, 180); // Vague Pink
+        pg.noStroke();
+        pg.fill(245, 60, 180, 125); // Vague Pink
+        // pg.strokeWeight(1);
+        // Ensure that 0 index is the larger index
+        xArrowLims.sort();
+        yArrowLims.sort();
+        console.log(xArrowLims)
+        console.log(yArrowLims);
+        // Up
+        pg.rect(xArrowLims[0], 0, xArrowLims[1]-xArrowLims[0], yArrowLims[1]); 
+        // Down
+        pg.rect(xArrowLims[0], yArrowLims[0], xArrowLims[1]-xArrowLims[0], vidHeight); 
+        // Right
+        pg.rect(0, yArrowLims[0], xArrowLims[1], yArrowLims[1]-yArrowLims[0]);
+        // Left
+        pg.rect(xArrowLims[0], yArrowLims[0], vidWidth, yArrowLims[1]-yArrowLims[0]);
+        // for(var i = 0; i < 2; i++) {
+        //     // Render x limit
+        //     pg.line(xArrowLims[i], 0, xArrowLims[i], vidHeight);
+        //     // Render y limit
+        //     pg.line(0, yArrowLims[i], vidWidth, yArrowLims[i]);
+        // }
+    }
+    else {
+        // Only render line in active mode. 
+        if(mode == "active") { 
+            pg.stroke(230, 80, 0); // Kinda Red
+            pg.strokeWeight(1);
+            pg.line(0, vidHeight - threshold, vidWidth, vidHeight - threshold);
+        }
     }
 }
