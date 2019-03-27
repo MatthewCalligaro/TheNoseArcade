@@ -2,6 +2,7 @@ $(document).ready(function(){
     // Listener for any input updating.
     $("input").on("change", function(){
         let name = $(this).attr("name");
+        let type = $(this).attr("type");
         // Radio inputs
         if(type == "radio") {
             // Trigger mode
@@ -20,41 +21,38 @@ $(document).ready(function(){
             let newVal = parseInt($(this).val());
             // Delay
             if(name == "delay") {
-                if(isNaN(newVal) // Non-numerical input.
-                    || (newVal < $("#delaySlider").slider("option", "min")) // Beyond min/max.
-                    || (newVal > $("#delaySlider").slider("option", "max"))) {
-                    $(this).val(delay); // Bad input, put it back. Can handle more gracefully later. 
-                }
-                else {
+                // Check if input is good. 
+                if(!isNaN(newVal) // Verify input is numerical.
+                    && newVal >= $("#delaySlider").slider("option", "min") // Verify within min/max.
+                    && newVal <= $("#delaySlider").slider("option", "max")) {
                     delay = newVal;
-                    $("#delaySlider").slider("value", delay);
                 }
+                $(this).val(delay); // Refresh input, whether we got a good value or not. 
+                $("#delaySlider").slider("value", delay);
                 console.log("Delay is "+delay);
             }
             // Active mode threshold
             else if(name == "threshold") {
-                if(isNaN(newVal) // Non-numerical input.
-                    || (newVal < $("#thresholdSlider").slider("option", "min")) // Beyond min/max.
-                    || (newVal > $("#thresholdSlider").slider("option", "max"))) {
-                    $(this).val(threshold); // Bad input, put it back. Can handle more gracefully later. 
-                }
-                else {
+                // Check if input is good. 
+                if(!isNaN(newVal) // Verify input is numerical.
+                    && newVal >= $("#thresholdSlider").slider("option", "min") // Verify within min/max.
+                    && newVal <= $("#thresholdSlider").slider("option", "max")) {
                     threshold = newVal; // Invert the threshold. 
-                    $("#thresholdSlider").slider("value", threshold);
                 }
+                $(this).val(threshold); // Refresh input, whether we got a good value or not. 
+                $("#thresholdSlider").slider("value", threshold);
                 console.log("Threshold is "+threshold);
             }
             // Velocity minimum
             else if(name == "velocityMin") {
-                if(isNaN(newVal) // Non-numerical input. 
-                    || (newVal < $("#velocityMinSlider").slider("option", "min")) // Beyond min/max.
-                    || (newVal > $("#velocityMinSlider").slider("option", "max"))) {
-                    $(this).val(velocityMin); // Bad input, put it back. Can handle more gracefully later. 
-                }
-                else {
+                // Check if input is good. 
+                if(!isNaN(newVal) // Verify input is numerical.
+                    && newVal >= $("#velocityMinSlider").slider("option", "min") // Verify within min/max.
+                    && newVal <= $("#velocityMinSlider").slider("option", "max")) {
                     velocityMin = newVal;
-                    $("#velocityMinSlider").slider("value", velocityMin);
                 }
+                $(this).val(velocityMin); // Refresh input, whether we got a good value or not. 
+                $("#velocityMinSlider").slider("value", velocityMin);
                 console.log("Velocity min is "+velocityMin);
             }
         }
