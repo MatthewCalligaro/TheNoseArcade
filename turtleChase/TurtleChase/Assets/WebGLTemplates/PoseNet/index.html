@@ -47,7 +47,7 @@
           <input type="radio" name="inputMode" value="active" checked data-helptext="Move your nose above the red line to jump">Active Zone
         </div>
         <div>  
-          <input type="radio" name="inputMode" value="velocity" data-helptext="Move your nose upward quickly to jump">Velocity
+          <input type="radio" name="inputMode" value="velocity" data-helptext="Move your nose upward quickly to jump">Nose Velocity
         </div>
       </div>
 
@@ -57,7 +57,7 @@
       <div class="slider-container">
         <label id="delayLabel" class="settings-label" data-helptext="Set how long to wait before detecting another jump">[General] Set delay between jumps:</label>
         <div id="delay" class="settings-input">
-            <input type="text" class="delayValue"/> ms
+            <input type="text" name="delay" class="delayValue"/> ms
         </div>
         <div id="delaySlider" class="settings-draggable"></div>
       </div>
@@ -68,7 +68,7 @@
       <div class="slider-container">
         <label id="thresholdLabel" class="settings-label" data-helptext="Change threshold in active mode">[Active Zone] Set threshold (red line):</label>
         <div id="threshold" class="settings-input">
-            <input type="text" class="thresholdValue"/> px
+            <input type="text" name="threshold" class="thresholdValue"/> px
         </div>
         <div id="thresholdSlider" class="settings-draggable"></div>
       </div>
@@ -79,7 +79,7 @@
       <div class="slider-container">
         <label id="velocityMinLabel" class="settings-label" data-helptext="Set the minimum nose velocity to register a jump">[Nose Velocity] Set minimum velocity:</label>
         <div id="velocityMin" class="settings-input">
-            <input type="text" class="velocityMinValue"/> px/ms
+            <input type="text" name="velocityMin" class="velocityMinValue"/> px/ms
         </div>
         <div id="velocityMinSlider" class="settings-draggable"></div>
       </div>
@@ -87,9 +87,14 @@
       <hr>
 
       <!-- Constant magnitude -->
-      <div class="checkbox-container">
-        <label class="settings-label" data-helptext="Normalize jump magnitude regardless of nose speed">[Velocity] Constant magnitude:</label>
-        <input type="checkbox" id="constantMag" class="settings-input">
+      <div class="radio-container">
+        <label data-helptext="Set all jumps to the same magnitude">[Nose Velocity] Select jump magnitude scaling:</label>
+        <div>
+          <input type="radio" name="magScaling" value="constant" checked data-helptext="Normalize jump magnitude regardless of nose speed">Jump with constant magnitude
+        </div>
+        <div>  
+          <input type="radio" name="magScaling" value="proportional" data-helptext="Scale jump magnitude by nose speed">Jump with magnitude proportional to nose speed
+        </div>
       </div>
 
     </div>

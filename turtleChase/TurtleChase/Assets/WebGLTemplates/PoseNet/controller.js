@@ -28,10 +28,10 @@ let vidHeight = 240;
 // Set defaults
 let mode = "active";
 let delay = 200; // ms
-let threshold = vidHeight / 2;
+let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates. 
 let velocityMin = vidHeight / 12;
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
-let constantMag = true;
+let magScaling = "constant";
 
 // Function that p5 calls initially to set up graphics
 function setup() {
@@ -102,11 +102,11 @@ function findNose() {
 
         switch(mode) {
             case "active":
-                trigger = pNoseY > threshold != noseY > threshold;
-                on = noseY < threshold;
+                trigger = pNoseY > (vidHeight - threshold) != noseY > (vidHeight - threshold);
+                on = noseY < (vidHeight - threshold);
                 break;
             case "velocity":
-                rawMagnitude = (constantMag ? 1 : pNoseY - noseY) / (thisDetect - lastDetect);
+                rawMagnitude = (pNoseY - noseY) / (thisDetect - lastDetect);
                 trigger = (pNoseY - noseY) / (thisDetect - lastDetect) > velocityMin; 
                 break;
             default:
@@ -152,7 +152,7 @@ function findNose() {
                 break;
             case "velocity":
                 // Scale magnitude to velocity range
-                scaledMagnitude = rawMagnitude / (velocityScalar - velocityMin); 
+                scaledMagnitude = (magScaling == "constant" ? 1 : rawMagnitude / (velocityScalar - velocityMin)); 
                 console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
                 try {
                     gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
@@ -173,6 +173,6 @@ function updateThreshold() {
     if(mode == "active") { 
         pg.stroke(230, 80, 0);
         pg.strokeWeight(1);
-        pg.line(0, threshold, vidWidth, threshold);
+        pg.line(0, vidHeight - threshold, vidWidth, vidHeight - threshold);
     }
 }

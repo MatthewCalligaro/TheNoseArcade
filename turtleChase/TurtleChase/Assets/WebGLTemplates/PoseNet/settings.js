@@ -1,8 +1,63 @@
 $(document).ready(function(){
-    // Mode input
-    $("#inputMode>input").on("change", function(){
-        mode = $(this).val();
-        console.log("Now in "+mode+" mode.");
+    // Listener for any input updating.
+    $("input").on("change", function(){
+        let name = $(this).attr("name");
+        // Radio inputs
+        if(type == "radio") {
+            // Trigger mode
+            if(name == "inputMode") {
+                mode = $(this).val();
+                console.log("Now in "+mode+" mode.");
+            }
+            // Constant magnitude
+            if(name == "magScaling") {
+                magScaling = $(this).val();
+                console.log("Now using "+magScaling+" scaling.");
+            }
+        }
+        // Text inputs
+        else if(type == "text") {
+            let newVal = parseInt($(this).val());
+            // Delay
+            if(name == "delay") {
+                if(isNaN(newVal) // Non-numerical input.
+                    || (newVal < $("#delaySlider").slider("option", "min")) // Beyond min/max.
+                    || (newVal > $("#delaySlider").slider("option", "max"))) {
+                    $(this).val(delay); // Bad input, put it back. Can handle more gracefully later. 
+                }
+                else {
+                    delay = newVal;
+                    $("#delaySlider").slider("value", delay);
+                }
+                console.log("Delay is "+delay);
+            }
+            // Active mode threshold
+            else if(name == "threshold") {
+                if(isNaN(newVal) // Non-numerical input.
+                    || (newVal < $("#thresholdSlider").slider("option", "min")) // Beyond min/max.
+                    || (newVal > $("#thresholdSlider").slider("option", "max"))) {
+                    $(this).val(threshold); // Bad input, put it back. Can handle more gracefully later. 
+                }
+                else {
+                    threshold = newVal; // Invert the threshold. 
+                    $("#thresholdSlider").slider("value", threshold);
+                }
+                console.log("Threshold is "+threshold);
+            }
+            // Velocity minimum
+            else if(name == "velocityMin") {
+                if(isNaN(newVal) // Non-numerical input. 
+                    || (newVal < $("#velocityMinSlider").slider("option", "min")) // Beyond min/max.
+                    || (newVal > $("#velocityMinSlider").slider("option", "max"))) {
+                    $(this).val(velocityMin); // Bad input, put it back. Can handle more gracefully later. 
+                }
+                else {
+                    velocityMin = newVal;
+                    $("#velocityMinSlider").slider("value", velocityMin);
+                }
+                console.log("Velocity min is "+velocityMin);
+            }
+        }
     });
 
 
@@ -23,111 +78,45 @@ $(document).ready(function(){
         value: delay
     });
 
-    // Delay input listener
-    $("input.delayValue").change(function() {
-        let newVal = parseInt($(this).val());
-        if(isNaN(newVal) // Non-numerical input.
-            || (newVal < 0) // Beyond min/max.
-            || (newVal > 20)) {
-            $(this).val(delay); // Bad input, put it back. Can handle more gracefully later. 
-        }
-        else {
-            delay = newVal;
-            $("#delaySlider").slider("value", delay);
-        }
-    });
-
 
     // Threshold slider
-    // Note that the slider displays the inverse of threshold instead of its actual value. 
     $("#thresholdSlider").slider({
         min: 0,
         max: vidHeight,
         step: 1,
-        value: vidHeight - threshold,
+        value: threshold,
         slide: function(event, ui) {
-            threshold = vidHeight - ui.value; // Invert the threshold. 
-            $("input.thresholdValue").val(ui.value);
+            threshold = ui.value;
+            $("input.thresholdValue").val(threshold);
         },
     });
 
     // Threshold input initial value
     $("input.thresholdValue").attr({
-        value: vidHeight - threshold
-    });
-
-    // Threshold input listener
-    $("input.thresholdValue").change(function() {
-        let newVal = parseInt($(this).val());
-        if(isNaN(newVal) // Non-numerical input.
-            || (newVal < 0) // Beyond min/max.
-            || (newVal > vidHeight)) {
-            $(this).val(vidHeight - threshold); // Bad input, put it back. Can handle more gracefully later. 
-        }
-        else {
-            threshold = vidHeight - newVal; // Invert the threshold. 
-            $("#thresholdSlider").slider("value", threshold);
-        }
+        value: threshold
     });
 
 
-    // Velocity range slider
-    $("#rangeSlider").slider({
+    // Velocity min slider
+    $("#velocityMinSlider").slider({
         min: 0,
-        max: 2*vidHeight/3,
+        max: vidHeight/3, // TODO no don't do that. 
         step: 1,
-        values: [range[0], range[1]],
-        range: true,
+        value: velocityMin,
         slide: function(event, ui) {
-            for (var i = 0; i < ui.values.length; ++i) {
-                range[i] = ui.values[i];
-                $("input.rangeValue[data-index=" + i + "]").val(ui.values[i]);
-            }
+            velocityMin = ui.value;
+            $("input.velocityMinValue").val(velocityMin);
         },
     });
 
-    // Sensitivity input initial lower bound
-    $("input.rangeValue[data-index=0]").attr({
-        value: range[0]
-    });
-
-    // Sensitivity input initial upper bound
-    $("input.rangeValue[data-index=1]").attr({
-        value: range[1]
-    });
-
-    // Sensitivity input listener
-    $("input.rangeValue").change(function() {
-        var $this = $(this);
-        let index = $this.data("index");
-        let newVal = parseInt($this.val());
-        if(isNaN(newVal) // Non-numerical input. 
-            || (index == 0 && newVal > range[1]) // Past other slider. 
-            || (index == 1 && newVal < range[0])
-            || (newVal < 0) // Beyond min/max.
-            || (newVal > 2*vidHeight/3)) {
-            $(this).val(range[index]); // Bad input, put it back. Can handle more gracefully later. 
-        }
-        else {
-            range[index] = newVal;
-            $("#rangeSlider").slider("values", index, newVal);
-        }
-    });
-
-
-    // Constant magnitude initial settings
-    $("#constantMag").attr({
-        checked: constantMag
-    });
-
-    // Const magnitude listener
-    $("#constantMag").on("change", function() {
-        constantMag = $(this).prop('checked');
+    // Velocity min initial value
+    $("input.velocityMinValue").attr({
+        value: velocityMin
     });
 
 });
 
-
+// Pop up helptext. 
 $( document ).tooltip({
     items: "[data-helptext]",
     content: function() {
