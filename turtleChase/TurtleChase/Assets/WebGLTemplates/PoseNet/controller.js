@@ -14,6 +14,8 @@ let scaledMagnitude;
 let rawMagnitude;
 
 let lastJump;
+let thisDetect;
+let lastDetect;
 
 // Benchmark variables
 let ticks;
@@ -27,7 +29,8 @@ let vidHeight = 240;
 let mode = "active";
 let delay = 200; // ms
 let threshold = vidHeight / 2;
-let range = [vidHeight / 12, vidHeight / 3];
+let velocityMin = vidHeight / 12;
+let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let constantMag = true;
 
 // Function that p5 calls initially to set up graphics
@@ -73,6 +76,7 @@ function setup() {
     start = Date.now();
 
     lastJump = Date.now();
+    thisDetect = Date.now();
 }
 
 // Function that p5 calls repeatedly to render graphics
@@ -89,6 +93,8 @@ function draw() {
 function findNose() {
     let trigger = 0; // By default don't register movement
     if(poses.length > 0) {
+        lastDetect = thisDetect;
+        thisDetect = Date.now();
         // Only detect nose keypoint of first pose
         let nose = poses[0].pose.keypoints[0];
         noseX = nose.position.x;
@@ -100,8 +106,8 @@ function findNose() {
                 on = noseY < threshold;
                 break;
             case "velocity":
-                rawMagnitude = (constantMag ? 1 : pNoseY - noseY);
-                trigger = (pNoseY - noseY) > range[0]; 
+                rawMagnitude = (constantMag ? 1 : pNoseY - noseY) / (thisDetect - lastDetect);
+                trigger = (pNoseY - noseY) / (thisDetect - lastDetect) > velocityMin; 
                 break;
             default:
         }
@@ -146,8 +152,7 @@ function findNose() {
                 break;
             case "velocity":
                 // Scale magnitude to velocity range
-                console.log(range);
-                scaledMagnitude = rawMagnitude / (range[1] - range[0]);
+                scaledMagnitude = rawMagnitude / (velocityScalar - velocityMin); 
                 console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
                 try {
                     gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
