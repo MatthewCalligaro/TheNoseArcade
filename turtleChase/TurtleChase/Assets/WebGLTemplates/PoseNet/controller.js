@@ -178,10 +178,8 @@ function detectNose() {
 // Visually update the threshold value
 function updateVisuals() {
     if(inMenu) {
-        // pg.stroke(245, 60, 180); // Vague Pink
         pg.noStroke();
         pg.fill(245, 60, 180, 125); // Vague Pink
-        // pg.strokeWeight(1);
         // Ensure that 0 index is the larger index
         xArrowLims.sort();
         yArrowLims.sort();
@@ -195,12 +193,6 @@ function updateVisuals() {
         pg.rect(0, yArrowLims[0], xArrowLims[1], yArrowLims[1]-yArrowLims[0]);
         // Left
         pg.rect(xArrowLims[0], yArrowLims[0], vidWidth, yArrowLims[1]-yArrowLims[0]);
-        // for(var i = 0; i < 2; i++) {
-        //     // Render x limit
-        //     pg.line(xArrowLims[i], 0, xArrowLims[i], vidHeight);
-        //     // Render y limit
-        //     pg.line(0, yArrowLims[i], vidWidth, yArrowLims[i]);
-        // }
     }
     else {
         // Only render line in active mode. 
