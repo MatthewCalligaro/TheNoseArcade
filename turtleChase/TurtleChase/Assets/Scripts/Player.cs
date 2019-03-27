@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Controls the player and player score
 /// </summary>
 public class Player : MonoBehaviour
 {
+
+    [DllImport("__Internal")]
+    private static extern void updateMenuStatus(bool isInMenu);
+
     /// <summary>
     /// Number of UI elements currently preventing pause
     /// </summary>
@@ -100,6 +105,8 @@ public class Player : MonoBehaviour
     /// <param name="magnitude"></param>
     public void JumpEnter(float magnitude = 1.0f)
     {
+        updateMenuStatus(isJetpacking); // TODO or whatever
+
         switch (Settings.JumpStyle)
         {
             case JumpStyle.Velocity:

@@ -32,6 +32,7 @@ let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates.
 let velocityMin = vidHeight / 12;
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
+let inMenu;
 
 // Function that p5 calls initially to set up graphics
 function setup() {
@@ -77,6 +78,7 @@ function setup() {
 
     lastJump = Date.now();
     thisDetect = Date.now();
+
 }
 
 // Function that p5 calls repeatedly to render graphics
@@ -86,11 +88,24 @@ function draw() {
     // Render video
     pg.image(video, 0, 0);
 
-    findNose();
-    updateThreshold();
+    inMenu = $("#menuStatus").attr("menu-status");
+
+    if(inMenu) {
+        detectArrows();
+        updateAreas();
+    }
+    else {
+        detectJump();
+        updateThreshold();
+    }
 }
 
-function findNose() {
+function detectArrows() {
+    // Define areas somewhere else bro idk
+    console.log("detectArrows unimplemented");
+}
+
+function detectJump() {
     let trigger = 0; // By default don't register movement
     if(poses.length > 0) {
         lastDetect = thisDetect;
@@ -165,6 +180,11 @@ function findNose() {
             default:
         }
     }
+}
+
+// Visually update the 
+function updateAreas() {
+    console.log("updateAreas unimplemented");
 }
 
 // Visually update the threshold value
