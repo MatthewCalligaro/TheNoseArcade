@@ -13,7 +13,7 @@ let pNoseY;
 let scaledMagnitude;
 let rawMagnitude;
 
-let jumpCooldown;
+let lastJump;
 
 // Benchmark variables
 let ticks;
@@ -25,7 +25,7 @@ let vidHeight = 240;
 
 // Set defaults
 let mode = "active";
-let delay = 7;
+let delay = 200; // ms
 let threshold = vidHeight / 2;
 let range = [vidHeight / 12, vidHeight / 3];
 let constantMag = true;
@@ -68,11 +68,11 @@ function setup() {
     pg.translate(vidWidth,0);
     pg.scale(-1.0, 1.0);
 
-    jumpCooldown = 0;
-
     // Benchmarking code
     ticks = 0;
     start = Date.now();
+
+    lastJump = Date.now();
 }
 
 // Function that p5 calls repeatedly to render graphics
@@ -87,7 +87,6 @@ function draw() {
 }
 
 function findNose() {
-    jumpCooldown = max(0, jumpCooldown - 1);
     let trigger = 0; // By default don't register movement
     if(poses.length > 0) {
         // Only detect nose keypoint of first pose
@@ -120,8 +119,8 @@ function findNose() {
         // console.log(ticks/(Date.now()-start));
     }
 
-    if (jumpCooldown == 0 && trigger) {
-        jumpCooldown = delay; // Reset jump cooldown
+    if (Date.now() - lastJump > delay && trigger) {
+        lastJump = Date.now();
         switch(mode) {
             case "active":
                 if(on) {
