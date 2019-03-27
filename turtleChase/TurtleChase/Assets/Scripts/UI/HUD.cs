@@ -10,7 +10,8 @@ public class HUD : UIElement
     /// </summary>
     private enum Texts
     {
-        Score
+        Score,
+        Distance,
     }
 
     /// <summary>
@@ -31,6 +32,11 @@ public class HUD : UIElement
     public static void UpdateScore(int score)
     {
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+    }
+
+    public static void UpdateDistance(int distance)
+    {
+        instance.texts[Texts.Distance.GetHashCode()].text = "Distance: " + distance + "m";
     }
 
     protected override void Awake()

@@ -11,17 +11,17 @@ public class ObstacleStats
     public VariableValue XDelay { get; set; }
 
     /// <summary>
-    /// Y distance between multiple of these obstacles at the same x position
+    /// Y distance between multiple of these obstacles at the same X position
     /// </summary>
     public VariableValue YGap { get; set; }
 
     /// <summary>
-    /// Maximum y position
+    /// Minimum Y distance which obstacle must be placed away from the intended path
     /// </summary>
-    public float YMax { get; set; }
+    public float YOffset { get; set; }
 
     /// <summary>
-    /// Distance for which future environment objects cannot be spawned at this y position
+    /// Distance for which future environment objects cannot be spawned at this Y position
     /// </summary>
     public float YBlock { get; set; }
 

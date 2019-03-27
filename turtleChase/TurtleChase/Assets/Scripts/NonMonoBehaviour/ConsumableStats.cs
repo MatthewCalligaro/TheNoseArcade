@@ -6,11 +6,6 @@
 public class ConsumableStats
 {
     /// <summary>
-    /// Maximum y position
-    /// </summary>
-    public const float YMax = 3.5f;
-
-    /// <summary>
     /// X distance before the next obstacle is spawned
     /// </summary>
     public const float XDelay = 1.0f;
