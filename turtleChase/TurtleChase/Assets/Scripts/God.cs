@@ -79,8 +79,13 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Fields
+    // Protected and Private Fields
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Whether the God should precedurally generate obstacles and consumables
+    /// </summary>
+    protected bool generateLevel = true;
 
     /// <summary>
     /// X position at which the first environment object is spawned
@@ -408,7 +413,7 @@ public class God : MonoBehaviour
         }
 
         // Spawn the next environment object
-        if (this.transform.position.x > this.nextEnv.x - envXLead)
+        if (this.generateLevel && this.transform.position.x > this.nextEnv.x - envXLead)
         {
             this.SpawnNextEnv();
         }
@@ -427,7 +432,7 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Methods
+    // Protected and Private Methods
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
@@ -453,7 +458,7 @@ public class God : MonoBehaviour
         {
             // Randomly choose a consumable to spawn from consumableSpawnProbs
             int index = this.consumableSpawnProbs[(int)(Random.value * this.consumableSpawnProbs.Count)];
-            this.SpawnConsumable(index);
+            this.SpawnConsumable(index, new Vector3(this.nextEnv.x, Random.Range(-envMaxY, envMaxY), this.nextEnv.z));
             this.nextEnv.x += ConsumableStats.XDelay;
         }
         else
@@ -508,7 +513,7 @@ public class God : MonoBehaviour
                     float spacing = stats.YGap.GetValue(DifficultyMultiplier);
                     this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset - spacing));
                     this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset + spacing), Quaternion.Euler(0, 0, 180));
-                    this.SpawnConsumable(Consumables.Pipe.GetHashCode());
+                    this.SpawnConsumable(Consumables.Pipe.GetHashCode(), this.nextEnv);
                 }
                 else
                 {
@@ -530,7 +535,7 @@ public class God : MonoBehaviour
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    private void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion())
+    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion())
     { 
         // Spawn the specified obstacle at the specified position and rotation
         GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
@@ -554,19 +559,18 @@ public class God : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawn a particular consumable object
+    /// Spawn a particular consumable object with the specified parameters
     /// </summary>
     /// <param name="index">The Consumables index of the object to be spawned</param>
-    private void SpawnConsumable(int index)
+    /// <param name="position">The position at which to spawn the obstacle</param>
+    /// <param name="rotation">The amount to rotate the object</param>
+    protected void SpawnConsumable(int index, Vector3 position, Quaternion rotation = new Quaternion())
     {
-        // Spawn the specified consumable object at a random Y position at nextEnv.x
-        ConsumableStats stats = consumableStats[index];
-        GameObject newConsumable = Instantiate(
-            this.ConsumablePrefabs[index], 
-            new Vector3(this.nextEnv.x, Random.Range(-envMaxY, envMaxY), this.nextEnv.z), 
-            Quaternion.identity);
+        // Spawn the specified consumable at the specified position and rotation
+        GameObject newConsumable = Instantiate(this.ConsumablePrefabs[index], position, rotation);
 
         // Set the consumable object's public properties based on its stats in consumableStats
+        ConsumableStats stats = consumableStats[index];
         Environment newObst = newConsumable.GetComponent<Environment>();
         newObst.EnvironmentType = EnvironmentType.Consumable;
         newObst.Score = stats.Score;
