@@ -32,11 +32,15 @@ let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates.
 let velocityMin = vidHeight / 12;
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
-let inMenu = true;
+let inMenu;
 
 // I didn't invert these because I'm not giving you sliders soz
 let xArrowLims = [vidWidth / 4, 3 * vidWidth / 4];
 let yArrowLims = [vidHeight / 4, 3 * vidHeight / 4];
+
+let arrowRegion = null;
+let lastArrowRegion = null;
+let arrowDelay = 1000; // ms
 
 // Function that p5 calls initially to set up graphics
 function setup() {
@@ -62,9 +66,6 @@ function setup() {
 
     poseNet.on('pose', function(results) {
         poses = results;
-        // console.log(poses);
-        // ticks++;
-        // console.log(ticks/(Date.now()-start));
     });
 
     // Hide the video so we can render it flipped in the draw loop. 
@@ -82,7 +83,7 @@ function setup() {
 
     lastJump = Date.now();
     thisDetect = Date.now();
-
+    lastArrowChange = Date.now();
 }
 
 // Function that p5 calls repeatedly to render graphics
@@ -92,22 +93,62 @@ function draw() {
     // Render video
     pg.image(video, 0, 0);
 
-    inMenu = $("#menuStatus").attr("menu-status");
+    inMenu = $("#menuStatus").attr("menu-status") == "true";
 
     detectNose();
     updateVisuals();
 }
 
-function detectNose() {
-    let trigger = 0; // By default don't register movement
-    if(poses.length > 0) {
-        lastDetect = thisDetect;
-        thisDetect = Date.now();
-        // Only detect nose keypoint of first pose
-        let nose = poses[0].pose.keypoints[0];
-        noseX = nose.position.x;
-        noseY = nose.position.y;
+// Return the string corresponding to the arrowRegion we're in.
+function getRegion(x, y) {
+    // Ensure that 0 index is the larger index
+    xArrowLims.sort();
+    yArrowLims.sort();
+    if(x < xArrowLims[0] && x > xArrowLims[1] && y < yArrowLims[1]) { // Up
+        return "up";
+    }
+    else if(x < xArrowLims[0] && x > xArrowLims[1] && y > yArrowLims[0]) { // Down
+        return "down";
+    }
+    else if(y < yArrowLims[0] && y > yArrowLims[1] && x < xArrowLims[1]) { // Left
+        return "left";
+    }
+    else if(y < yArrowLims[0] && y > yArrowLims[1] && x > xArrowLims[0]) { // Right
+        return "right";
+    }
+    else {
+        return null;
+    }
+}
 
+function detectNose() {
+    // No poses detected, nothing to do. 
+    if(poses.length <= 0) {
+        return;
+    }
+    
+    let trigger = 0; // By default don't register movement
+    lastDetect = thisDetect;
+    thisDetect = Date.now();
+    // Only detect nose keypoint of first pose
+    let nose = poses[0].pose.keypoints[0];
+    noseX = nose.position.x;
+    noseY = nose.position.y;
+
+    // Decide what to do with nose position. 
+    if(inMenu) {
+        arrowRegion = getRegion(noseX, noseY);
+        if(arrowRegion != lastArrowRegion) {
+            lastArrowChange = Date.now();
+            lastArrowRegion = arrowRegion; // Only need to update this if they are different. 
+        }
+        else if(lastArrowRegion != null && Date.now() - lastArrowChange > arrowDelay) {
+            // CALL ARROWKEY IN DIRECTION arrowRegion
+            console.log("arrowkey in direction "+arrowRegion);
+            lastArrowChange = Date.now();
+        }
+    }
+    else {
         switch(mode) {
             case "active":
                 trigger = pNoseY > (vidHeight - threshold) != noseY > (vidHeight - threshold);
@@ -119,20 +160,14 @@ function detectNose() {
                 break;
             default:
         }
-
-        pNoseX = noseX;
-        pNoseY = noseY;
-
-        // Render nose dot
-        pg.stroke(0, 225, 0); // Approximately Lime
-        pg.strokeWeight(5);
-        pg.ellipse(noseX, noseY, 1, 1);
-
-        // Benchmarking code
-        // ticks++;
-        // console.log(ticks/(Date.now()-start));
     }
 
+    // Render nose dot
+    pg.stroke(0, 225, 0); // Approximately Lime
+    pg.strokeWeight(5);
+    pg.ellipse(noseX, noseY, 1, 1);
+
+    // Handle jump. 
     if (Date.now() - lastJump > delay && trigger) {
         lastJump = Date.now();
         switch(mode) {
@@ -173,6 +208,10 @@ function detectNose() {
             default:
         }
     }
+
+    // Set latest values to old values. 
+    pNoseX = noseX;
+    pNoseY = noseY;
 }
 
 // Visually update the threshold value
@@ -183,8 +222,6 @@ function updateVisuals() {
         // Ensure that 0 index is the larger index
         xArrowLims.sort();
         yArrowLims.sort();
-        console.log(xArrowLims)
-        console.log(yArrowLims);
         // Up
         pg.rect(xArrowLims[0], 0, xArrowLims[1]-xArrowLims[0], yArrowLims[1]); 
         // Down
