@@ -1,3 +1,8 @@
+const UP = 0;
+const DOWN = 1;
+const RIGHT = 2;
+const LEFT = 3;
+
 let video;
 let poseNet;
 let poses = [];
@@ -183,17 +188,17 @@ function mouseDragged() {
 
 // Return the int corresponding to the arrowRegion we're in.
 function getRegion(x, y) {
-    if(x < xLimMax && x > xLimMin && y < yLimMin) { // Up
-        return 0;
+    if(x < xLimMax && x > xLimMin && y < yLimMin) {
+        return UP;
     }
-    else if(x < xLimMax && x > xLimMin && y > yLimMax) { // Down
-        return 1;
+    else if(x < xLimMax && x > xLimMin && y > yLimMax) {
+        return DOWN;
     }
-    else if(y < yLimMax && y > yLimMin && x < xLimMin) { // Left
-        return 2;
+    else if(y < yLimMax && y > yLimMin && x < xLimMin) {
+        return RIGHT;
     }
-    else if(y < yLimMax && y > yLimMin && x > xLimMax) { // Right
-        return 3;
+    else if(y < yLimMax && y > yLimMin && x > xLimMax) {
+        return LEFT;
     }
     else {
         return null;
@@ -305,18 +310,32 @@ function updateVisuals() {
         // Render arrow key areas.
         pg.noStroke();
 
+        let percentLoaded = (Date.now()-lastArrowChange)/arrowDelay;
+
         // Up
         pg.fill(255, 0, 0, 125); // Super Friggin Red
         pg.rect(xLimMax, 0, xLimMin-xLimMax, yLimMin); 
+        if(arrowRegion == UP) {
+            pg.rect(xLimMax, (1-percentLoaded)*yLimMin, xLimMin-xLimMax, percentLoaded*yLimMin); 
+        }
         // Down
         pg.fill(0, 255, 0, 125); // Super Friggin Green
         pg.rect(xLimMax, yLimMax, xLimMin-xLimMax, vidHeight); 
+        if(arrowRegion == DOWN) {
+            pg.rect(xLimMax, yLimMax, xLimMin-xLimMax, percentLoaded*yLimMax); 
+        }
         // Right
         pg.fill(0, 0, 255, 125); // Super Friggin Blue
         pg.rect(0, yLimMax, xLimMin, yLimMin-yLimMax);
+        if(arrowRegion == RIGHT) {
+            pg.rect((1-percentLoaded)*xLimMin, yLimMax, percentLoaded*xLimMin, yLimMin-yLimMax);
+        }
         // Left
         pg.fill(255, 0, 255, 125); // Super Friggin Not-Green
         pg.rect(xLimMax, yLimMax, vidWidth, yLimMin-yLimMax);
+        if(arrowRegion == LEFT) {
+            pg.rect(xLimMax, yLimMax, percentLoaded*xLimMax, yLimMin-yLimMax);
+        }
     }
     else {
         // Only render line in active mode. 
