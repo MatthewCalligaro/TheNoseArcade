@@ -50,18 +50,6 @@ $(document).ready(function(){
                 $("#delaySlider").slider("value", delay);
                 console.log("Delay is "+delay);
             }
-            // Active mode threshold
-            else if(name == "threshold") {
-                // Check if input is good. 
-                if(!isNaN(newVal) // Verify input is numerical.
-                    && newVal >= $("#thresholdSlider").slider("option", "min") // Verify within min/max.
-                    && newVal <= $("#thresholdSlider").slider("option", "max")) {
-                    threshold = newVal; // Invert the threshold. 
-                }
-                $(this).val(threshold); // Refresh input, whether we got a good value or not. 
-                $("#thresholdSlider").slider("value", threshold);
-                console.log("Threshold is "+threshold);
-            }
             // Velocity minimum
             else if(name == "velocityMin") {
                 // Check if input is good. 
@@ -93,24 +81,6 @@ $(document).ready(function(){
     // Delay input initial value
     $("input.delayValue").attr({
         value: delay
-    });
-
-
-    // Threshold slider
-    $("#thresholdSlider").slider({
-        min: 0,
-        max: vidHeight,
-        step: 1,
-        value: threshold,
-        slide: function(event, ui) {
-            threshold = ui.value;
-            $("input.thresholdValue").val(threshold);
-        },
-    });
-
-    // Threshold input initial value
-    $("input.thresholdValue").attr({
-        value: threshold
     });
 
 
