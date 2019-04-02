@@ -26,6 +26,10 @@ let lastDetect;
 let vidWidth = 320;
 let vidHeight = 240;
 
+// Size of open menu button. 
+let openMenuWidth = 100;
+let openMenuHeight = 70;
+
 // Set defaults
 let mode = "active";
 let delay = 200; // ms
@@ -199,8 +203,9 @@ function setArrowLims() {
     }
 }
 
-// Return the int corresponding to the arrowRegion we're in.
+// Return the int corresponding to the region we're in.
 function getRegion(x, y) {
+    // Calculate and return arrow key. 
     if(x < xLimMax && x > xLimMin && y < yLimMin) {
         return UP;
     }
@@ -213,9 +218,8 @@ function getRegion(x, y) {
     else if(y < yLimMax && y > yLimMin && x > xLimMax) {
         return LEFT;
     }
-    else {
-        return null;
-    }
+    // Not in a special area. 
+    return null;
 }
 
 function detectNose() {
@@ -231,6 +235,11 @@ function detectNose() {
     let nose = poses[0].pose.keypoints[0];
     noseX = nose.position.x;
     noseY = nose.position.y;
+
+    // Render nose dot
+    pg.stroke(0, 225, 0); // Approximately Lime
+    pg.strokeWeight(5);
+    pg.ellipse(noseX, noseY, 1, 1);
 
     // Decide what to do with nose position. 
     if(inMenu) {
@@ -252,6 +261,20 @@ function detectNose() {
         }
     }
     else {
+
+        // Check if we want to open the menu. 
+        if(noseX > vidWidth - openMenuWidth && noseY > vidHeight - openMenuHeight) {
+            try {
+                gameInstance.SendMessage("Player", "OpenMenu");
+                console.log("Opened menu.");
+                return; // Leave to handle menu interaction asap. 
+            }
+            catch(err) {
+                console.log("Menu open failed with error: "+err);
+                // Continue playing, possibly we'll succeed at opening menu later. 
+            }
+        }
+
         switch(mode) {
             case "active":
                 trigger = pNoseY < threshold != noseY < threshold;
@@ -263,52 +286,47 @@ function detectNose() {
                 break;
             default:
         }
-    }
 
-    // Render nose dot
-    pg.stroke(0, 225, 0); // Approximately Lime
-    pg.strokeWeight(5);
-    pg.ellipse(noseX, noseY, 1, 1);
-
-    // Handle jump. 
-    if (Date.now() - lastJump > delay && trigger) {
-        lastJump = Date.now();
-        switch(mode) {
-            case "active":
-                if(on) {
-                    console.log("ACTIVE: JumpEnter")
+        // Handle jump. 
+        if (Date.now() - lastJump > delay && trigger) {
+            lastJump = Date.now();
+            switch(mode) {
+                case "active":
+                    if(on) {
+                        console.log("ACTIVE: JumpEnter")
+                        try {
+                            gameInstance.SendMessage("Player", "JumpEnter", 1);
+                            console.log("Jump succeeded.");
+                        }
+                        catch(err) {
+                            console.log("Jump failed with error: "+err);
+                        }
+                    }
+                    else {
+                        console.log("ACTIVE: JumpExit");
+                        try {
+                            gameInstance.SendMessage("Player", "JumpExit");
+                            console.log("Jump succeeded.");
+                        }
+                        catch(err) {
+                            console.log("Jump failed with error: "+err);
+                        }
+                    }
+                    break;
+                case "velocity":
+                    // Scale magnitude to velocity range
+                    scaledMagnitude = (magScaling == "constant" ? 1 : rawMagnitude / (velocityScalar - velocityMin)); 
+                    console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
                     try {
-                        gameInstance.SendMessage("Player", "JumpEnter", 1);
+                        gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
                         console.log("Jump succeeded.");
                     }
                     catch(err) {
                         console.log("Jump failed with error: "+err);
                     }
-                }
-                else {
-                    console.log("ACTIVE: JumpExit");
-                    try {
-                        gameInstance.SendMessage("Player", "JumpExit");
-                        console.log("Jump succeeded.");
-                    }
-                    catch(err) {
-                        console.log("Jump failed with error: "+err);
-                    }
-                }
-                break;
-            case "velocity":
-                // Scale magnitude to velocity range
-                scaledMagnitude = (magScaling == "constant" ? 1 : rawMagnitude / (velocityScalar - velocityMin)); 
-                console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
-                try {
-                    gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
-                    console.log("Jump succeeded.");
-                }
-                catch(err) {
-                    console.log("Jump failed with error: "+err);
-                }
-                break;
-            default:
+                    break;
+                default:
+            }
         }
     }
 
@@ -351,6 +369,11 @@ function updateVisuals() {
         }
     }
     else {
+        // Render area to open menu. 
+        pg.noStroke();
+        pg.fill(0, 255, 255, 125); // Super Friggin Not-Red
+        pg.rect(vidWidth-openMenuWidth, vidHeight-openMenuHeight, openMenuWidth, openMenuHeight);
+
         // Only render line in active mode. 
         if(mode == "active") { 
             pg.stroke(230, 80, 0); // Kinda Red
