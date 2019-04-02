@@ -29,13 +29,13 @@ let vidHeight = 240;
 // Set defaults
 let mode = "active";
 let delay = 200; // ms
-let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates. 
+let threshold = vidHeight / 2; // Measured in canvas coordinates. 
 let velocityMin = vidHeight / 12;
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
 let inMenu;
 
-// Arrow limits not inverted. 
+// Arrow limits measured in canvas coordinates. 
 let xLimMin = vidWidth / 4;
 let xLimMax = 3 * vidWidth / 4;
 let yLimMin = vidHeight / 4;
@@ -117,6 +117,19 @@ function draw() {
 
 // Built-in p5 function that gets called on mouse drag. 
 function mouseDragged() {
+    if(inMenu) {
+        setArrowLims();
+    }
+    else {
+        // If mouse is reasonably close, set threshold.
+        if(Math.abs(adjMouseY-threshold) < 60) {
+            threshold = adjMouseY;
+        }
+    }
+}
+
+// Set arrow key areas according to mouse position. 
+function setArrowLims() {
     let chooseMaxForX = false;
     let chooseMaxForY = false;
 
@@ -241,8 +254,8 @@ function detectNose() {
     else {
         switch(mode) {
             case "active":
-                trigger = pNoseY > (vidHeight - threshold) != noseY > (vidHeight - threshold);
-                on = noseY < (vidHeight - threshold);
+                trigger = pNoseY < threshold != noseY < threshold;
+                on = noseY < threshold;
                 break;
             case "velocity":
                 rawMagnitude = (pNoseY - noseY) / (thisDetect - lastDetect);
@@ -341,8 +354,8 @@ function updateVisuals() {
         // Only render line in active mode. 
         if(mode == "active") { 
             pg.stroke(230, 80, 0); // Kinda Red
-            pg.strokeWeight(1);
-            pg.line(0, vidHeight - threshold, vidWidth, vidHeight - threshold);
+            pg.strokeWeight(2);
+            pg.line(0, threshold, vidWidth, threshold);
         }
     }
 
