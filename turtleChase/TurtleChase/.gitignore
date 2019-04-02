@@ -356,6 +356,7 @@ MigrationBackup/
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+[Pp]ackages/
 
 # Never ignore Asset meta data
 ![Aa]ssets/**/*.meta
