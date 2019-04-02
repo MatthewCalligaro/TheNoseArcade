@@ -8,6 +8,8 @@ public class TutorialEvent
 
     public int TaskNum { get; set; }
 
+    public float Distance { get; set; }
+
     public int[] ObstacleIndices { get; set; }
 
     public Vector3[] ObstaclePositions { get; set; }

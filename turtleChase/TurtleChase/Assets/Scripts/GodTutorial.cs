@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum TutorialTask
 {
@@ -8,6 +9,7 @@ public enum TutorialTask
     Pause,
     MenuMove,
     MenuSelect,
+    Distance,
     Consumable
 }
 
@@ -17,27 +19,64 @@ public class GodTutorial : God
     {
         new TutorialEvent
         {
-            Text = "Jump",
+            Text = "Raise your nose or press the spacebar to jump",
             Task = TutorialTask.Jump,
+            TaskNum = 3
+        },
+
+        new TutorialEvent
+        {
+            Text = "Press the escape key to pause",
+            Task = TutorialTask.Pause,
+            TaskNum = 1
+        },
+
+        new TutorialEvent
+        {
+            Text = "Left click the resume button with the mouse to resume",
+            Task = TutorialTask.MenuSelect,
+            TaskNum = 1
+        },
+
+        new TutorialEvent
+        {
+            Text = "Jump to avoid getting caught behind obstacles",
+            Task = TutorialTask.Distance,
+            Distance = 35,
+            ObstacleIndices = new int[]{1, 1, 1},
+            ObstaclePositions = new Vector3[]{new Vector3(10, -3.5f, 0), new Vector3(20, -3, 0), new Vector3(30, 0, 0)},
+            TaskNum = 1
+        },
+
+        new TutorialEvent
+        {
+            Text = $"You gain" + consumableStats[Consumables.Pipe.GetHashCode()].Score + "when you pass between pipe obstacles",
+            Task = TutorialTask.Consumable,
+            Distance = 35,
+            ObstacleIndices = new int[]{0, 0, 0},
+            ObstaclePositions = new Vector3[]{new Vector3(10, -2, 0), new Vector3(20, 0, 0), new Vector3(30, 2, 0)},
             TaskNum = 3
         }
     };
 
-    private static GodTutorial Instance;
+    private static GodTutorial instance;
 
     private int taskCount = 0;
     private TutorialEvent curEvent;
-    private int eventIndex = 0;
+    private int eventIndex;
+    private float curEventStartX;
+
+    private float finishX = float.MaxValue;
 
 
     public static void RegisterTask(TutorialTask task)
     {
-        if (task == Instance.curEvent.Task)
+        if (instance != null && task == instance.curEvent.Task)
         {
-            Instance.taskCount++;
-            if (Instance.taskCount >= Instance.curEvent.TaskNum)
+            instance.taskCount++;
+            if (instance.taskCount >= instance.curEvent.TaskNum)
             {
-                Instance.LoadNextEvent();
+                instance.LoadNextEvent();
             }
         }
     }
@@ -47,23 +86,33 @@ public class GodTutorial : God
         eventIndex++;
         if (eventIndex >= events.Length)
         {
-            // Finish Tutorial
+            HUD.UpdateTutorialText("Congratulations, you finished the Tutorial!");
+            this.finishX = this.transform.position.x + 10;
         }
         else
         {
             taskCount = 0;
             curEvent = events[eventIndex];
+            curEventStartX = this.transform.position.x;
 
             // Spawn obstacles and consumables for this event
-            for (int i = 0; i < curEvent.ObstacleIndices.Length; i++)
+            if (curEvent.ObstacleIndices != null)
             {
-                SpawnObstacle(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i]);
+                for (int i = 0; i < curEvent.ObstacleIndices.Length; i++)
+                {
+                    SpawnObstacle(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x);
+                }
             }
 
-            for (int i = 0; i < curEvent.ConsumableIndices.Length; i++)
+            if (curEvent.ConsumableIndices != null)
             {
-                SpawnConsumable(curEvent.ConsumableIndices[i], curEvent.ConsumablePositions[i]);
+                for (int i = 0; i < curEvent.ConsumableIndices.Length; i++)
+                {
+                    SpawnConsumable(curEvent.ConsumableIndices[i], curEvent.ConsumablePositions[i] + Vector3.right * this.transform.position.x);
+                }
             }
+
+            HUD.UpdateTutorialText(curEvent.Text);
         }
     }
 
@@ -72,4 +121,27 @@ public class GodTutorial : God
         this.generateLevel = false;
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<GodTutorial>();
+
+        this.eventIndex = -1;
+        this.LoadNextEvent();
+    }
+
+    protected override void Update()
+    {
+        if (this.curEvent.Task == TutorialTask.Distance && this.transform.position.x - this.curEventStartX > this.curEvent.Distance)
+        {
+            this.LoadNextEvent();
+        }
+
+        if (this.transform.position.x > this.finishX)
+        {
+            SceneManager.LoadScene(0);
+        }
+
+        base.Update();
+    }
 }

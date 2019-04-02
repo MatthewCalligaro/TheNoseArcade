@@ -24,7 +24,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// The obstacles which can be added to the level
     /// </summary>
-    private enum Obstacles
+    protected enum Obstacles
     {
         Pipe,
         Rock,
@@ -37,7 +37,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// The consumable objects which can be added to the level
     /// </summary>
-    private enum Consumables
+    protected enum Consumables
     {
         Pipe,
         Silver,
@@ -49,7 +49,7 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Public Properties
+    // Properties
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
@@ -63,12 +63,9 @@ public class God : MonoBehaviour
         }
     }
 
-
-
-    ////////////////////////////////////////////////////////////////
-    // Private Properties
-    ////////////////////////////////////////////////////////////////
-
+    /// <summary>
+    /// Current relative difficulty based on Difficulty setting and X position
+    /// </summary>
     private float DifficultyMultiplier
     {
         get
@@ -79,58 +76,13 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Protected and Private Fields
+    // Fields
     ////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// Whether the God should precedurally generate obstacles and consumables
-    /// </summary>
-    protected bool generateLevel = true;
-
-    /// <summary>
-    /// X position at which the first environment object is spawned
-    /// </summary>
-    private const float firstEnvX = 20;
-
-    /// <summary>
-    /// Amount that environment objects spawn ahead of the player in the X direction
-    /// </summary>
-    private const float envXLead = 15;
-
-    /// <summary>
-    /// Z position of environment objects
-    /// </summary>
-    private const float envZ = 2;
-
-    /// <summary>
-    /// Maximum Y position of environment objects
-    /// </summary>
-    private const float envMaxY = 4.25f;
-
-    /// <summary>
-    /// Multiplier to the speed at which the camera skips forward to catch up with the player
-    /// </summary>
-    private const float skipMultiplier = 0.5f;
-
-    /// <summary>
-    /// Distance to leave for player to pass through on ideal path
-    /// </summary>
-    private const float playerSpace = 0.5f;
-
-    /// <summary>
-    /// X length, +/- Y position, and Z position of boundary objects
-    /// </summary>
-    private static readonly Vector3 boundaryStats = new Vector3(100, 4.5f, 1);
-
-    /// <summary>
-    /// Standard deviation for the Markov chain used to determine the Y position of environment objects
-    /// </summary>
-    private static readonly VariableValue ySdev = new VariableValue(1.5f, 4, 0.02f);
 
     /// <summary>
     /// Stats defining obstacles
     /// </summary>
-    private static readonly ObstacleStats[] obstacleStats =
+    protected static readonly ObstacleStats[] obstacleStats =
     {
         // Pipe
         new ObstacleStats
@@ -214,7 +166,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Stats defining consumable objects
     /// </summary>
-    private static readonly ConsumableStats[] consumableStats =
+    protected static readonly ConsumableStats[] consumableStats =
     {
         // Pipe Score
         new ConsumableStats
@@ -261,6 +213,51 @@ public class God : MonoBehaviour
             Force = new Vector2(-250, 0)
         }
     };
+
+    /// <summary>
+    /// Whether the God should precedurally generate obstacles and consumables
+    /// </summary>
+    protected bool generateLevel = true;
+
+    /// <summary>
+    /// X position at which the first environment object is spawned
+    /// </summary>
+    private const float firstEnvX = 20;
+
+    /// <summary>
+    /// Amount that environment objects spawn ahead of the player in the X direction
+    /// </summary>
+    private const float envXLead = 15;
+
+    /// <summary>
+    /// Z position of environment objects
+    /// </summary>
+    private const float envZ = 2;
+
+    /// <summary>
+    /// Maximum Y position of environment objects
+    /// </summary>
+    private const float envMaxY = 4.25f;
+
+    /// <summary>
+    /// Multiplier to the speed at which the camera skips forward to catch up with the player
+    /// </summary>
+    private const float skipMultiplier = 0.5f;
+
+    /// <summary>
+    /// Distance to leave for player to pass through on ideal path
+    /// </summary>
+    private const float playerSpace = 0.5f;
+
+    /// <summary>
+    /// X length, +/- Y position, and Z position of boundary objects
+    /// </summary>
+    private static readonly Vector3 boundaryStats = new Vector3(100, 4.5f, 1);
+
+    /// <summary>
+    /// Standard deviation for the Markov chain used to determine the Y position of environment objects
+    /// </summary>
+    private static readonly VariableValue ySdev = new VariableValue(1.5f, 4, 0.02f);
 
     /// <summary>
     /// Static reference to the one God object in the scene to enable static methods
@@ -369,7 +366,7 @@ public class God : MonoBehaviour
     // Unity Methods
     ////////////////////////////////////////////////////////////////
 
-    private void Start ()
+    protected virtual void Start ()
     {
         // Find self and camera
         instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
@@ -397,7 +394,7 @@ public class God : MonoBehaviour
         }
     }
 
-	private void Update ()
+	protected virtual void Update()
     {
         // Scroll camera
         this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
