@@ -98,7 +98,7 @@ public class Player : MonoBehaviour
     /// Handles when the player recieves the command to jump
     /// </summary>
     /// <param name="magnitude"></param>
-    public void JumpEnter(float magnitude = 1.0f)
+    public virtual void JumpEnter(float magnitude = 1.0f)
     {
         switch (Settings.JumpStyle)
         {
@@ -123,6 +123,17 @@ public class Player : MonoBehaviour
     public void JumpExit()
     {
         this.isJetpacking = false;
+    }
+
+    /// <summary>
+    /// Handles when the player recieves the command to pause the game
+    /// </summary>
+    public virtual void Pause()
+    {
+        if (BlockingPause <= 0)
+        {
+            PauseMenu.Pause();
+        }
     }
 
     /// <summary>
@@ -173,9 +184,9 @@ public class Player : MonoBehaviour
             }
 
             // Use escape to pause
-            if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                PauseMenu.Pause();
+                this.Pause();
             }
 
             // The player loses if they fall outside of the camera
@@ -219,14 +230,14 @@ public class Player : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Methods
+    // Protected and Private Methods
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Handles collisions with any type of game object
     /// </summary>
     /// <param name="other">The game object with which the player collided</param>
-    private void HandleCollision(GameObject other)
+    protected virtual void HandleCollision(GameObject other)
     {
         // If other is a consumable object, apply its relevant stats and remove it
         if (other.gameObject.GetComponent<Environment>() && other.gameObject.GetComponent<Environment>().EnvironmentType == EnvironmentType.Consumable)

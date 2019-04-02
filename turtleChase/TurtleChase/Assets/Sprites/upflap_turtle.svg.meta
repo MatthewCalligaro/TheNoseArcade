@@ -51,5 +51,9 @@ ScriptedImporter:
         y: 0
         width: 0
         height: 0
+<<<<<<< HEAD
       spriteID: ffbd0d692e12b4649bc9eda91a88a4f4
+=======
+      spriteID: e9ff071682e75424788b5496d1016d0e
+>>>>>>> turtle-chase
     PhysicsOutlines: []

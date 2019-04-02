@@ -12,6 +12,7 @@ public class HUD : UIElement
     {
         Score,
         Distance,
+        Tutorial
     }
 
     /// <summary>
@@ -34,9 +35,22 @@ public class HUD : UIElement
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
+    /// <summary>
+    /// Updates the distance shown on the HUD
+    /// </summary>
+    /// <param name="distance">New distance to show</param>
     public static void UpdateDistance(int distance)
     {
         instance.texts[Texts.Distance.GetHashCode()].text = "Distance: " + distance + "m";
+    }
+
+    /// <summary>
+    /// Updates the tutorial text
+    /// </summary>
+    /// <param name="text">New tutorial text</param>
+    public static void UpdateTutorialText(string text)
+    {
+        instance.texts[Texts.Tutorial.GetHashCode()].text = text;
     }
 
     protected override void Awake()

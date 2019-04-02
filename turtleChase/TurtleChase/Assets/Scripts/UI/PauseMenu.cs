@@ -46,6 +46,7 @@ public class PauseMenu : UIElement
     /// </summary>
     public void HandleResume()
     {
+        GodTutorial.RegisterTask(TutorialTask.MenuSelect);
         Pause(false);
     }
 
