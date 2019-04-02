@@ -60,6 +60,14 @@ public abstract class UIElement : MonoBehaviour
     }
 
     /// <summary>
+    /// Handles when the Tutorial button is pressed by loading the tutorial scene
+    /// </summary>
+    public void HandleTutorial()
+    {
+        SceneManager.LoadScene(2);
+    }
+
+    /// <summary>
     /// Handles when the Options button is pressed by opening the Options UI element
     /// </summary>
     public void HandleOptions()

@@ -505,17 +505,7 @@ public class God : MonoBehaviour
                 }
 
                 // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
-                if (index == Obstacles.Pipe.GetHashCode())
-                {
-                    float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset - spacing));
-                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * (yOffset + spacing), Quaternion.Euler(0, 0, 180));
-                    this.SpawnConsumable(Consumables.Pipe.GetHashCode(), this.nextEnv);
-                }
-                else
-                {
-                    this.SpawnObstacle(index, this.nextEnv + Vector3.up * yOffset);
-                }
+                this.SpawnObstaclePre(index, this.nextEnv + Vector3.up * yOffset);
             }
             else
             {
@@ -527,7 +517,28 @@ public class God : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawn a particular obstacle with the specified parameters
+    /// Spawns an obstacle type at a given position including handling obstacles consisting of multiple objects
+    /// </summary>
+    /// <param name="index">The Obstacle index of the obstacle type to be spawned</param>
+    /// <param name="position">The position at which to center the obstacle type</param>
+    protected void SpawnObstaclePre(int index, Vector3 position)
+    {
+        ObstacleStats stats = obstacleStats[index];
+        if (index == Obstacles.Pipe.GetHashCode())
+        {
+            float spacing = stats.YGap.GetValue(DifficultyMultiplier);
+            this.SpawnObstacle(index, position + Vector3.down * spacing);
+            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180));
+            this.SpawnConsumable(Consumables.Pipe.GetHashCode(), position);
+        }
+        else
+        {
+            this.SpawnObstacle(index, position);
+        }
+    }
+
+    /// <summary>
+    /// Spawns a particular obstacle with the specified parameters
     /// </summary>
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
@@ -556,7 +567,7 @@ public class God : MonoBehaviour
     }
 
     /// <summary>
-    /// Spawn a particular consumable object with the specified parameters
+    /// Spawns a particular consumable object with the specified parameters
     /// </summary>
     /// <param name="index">The Consumables index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>

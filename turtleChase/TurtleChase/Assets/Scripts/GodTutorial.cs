@@ -50,7 +50,7 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = $"You gain" + consumableStats[Consumables.Pipe.GetHashCode()].Score + "when you pass between pipe obstacles",
+            Text = $"You gain {consumableStats[Consumables.Pipe.GetHashCode()].Score} point{(consumableStats[Consumables.Pipe.GetHashCode()].Score > 1 ? "s" : "")} when you pass between pipe obstacles",
             Task = TutorialTask.Consumable,
             Distance = 35,
             ObstacleIndices = new int[]{0, 0, 0},
@@ -100,7 +100,7 @@ public class GodTutorial : God
             {
                 for (int i = 0; i < curEvent.ObstacleIndices.Length; i++)
                 {
-                    SpawnObstacle(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x);
+                    SpawnObstaclePre(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x);
                 }
             }
 
