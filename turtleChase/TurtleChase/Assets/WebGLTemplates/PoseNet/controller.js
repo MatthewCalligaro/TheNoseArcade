@@ -133,6 +133,7 @@ function findNose() {
                     console.log("ACTIVE: JumpEnter")
                     try {
                         gameInstance.SendMessage("Player", "JumpEnter", 1);
+                        gameInstance.SendMessage("PlayerTutorial", "JumpEnter", 1);
                         console.log("Jump succeeded.");
                     }
                     catch(err) {
@@ -143,6 +144,7 @@ function findNose() {
                     console.log("ACTIVE: JumpExit");
                     try {
                         gameInstance.SendMessage("Player", "JumpExit");
+                        gameInstance.SendMessage("PlayerTutorial", "JumpExit");
                         console.log("Jump succeeded.");
                     }
                     catch(err) {
@@ -156,6 +158,7 @@ function findNose() {
                 console.log("VELOCITY: JumpEnter ("+scaledMagnitude+")");
                 try {
                     gameInstance.SendMessage("Player", "JumpEnter", scaledMagnitude);
+                    gameInstance.SendMessage("PlayerTutorial", "JumpEnter", scaledMagnitude);
                     console.log("Jump succeeded.");
                 }
                 catch(err) {
