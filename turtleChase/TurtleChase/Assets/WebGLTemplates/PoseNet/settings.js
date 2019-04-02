@@ -1,10 +1,8 @@
 $(document).ready(function(){
 
     var focusGameCanvas = function() {
-        console.log("Try to focus game.");
         var gameCanvas = $("#gameContainer>canvas");
         if(gameCanvas.length) {
-            console.log("Focusing game.");
             gameCanvas[0].setAttribute("tabindex", "1");
             gameCanvas[0].focus(); 
         }

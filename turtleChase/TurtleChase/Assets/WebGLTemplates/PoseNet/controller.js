@@ -17,10 +17,6 @@ let lastJump;
 let thisDetect;
 let lastDetect;
 
-// Benchmark variables
-let ticks;
-let start;
-
 // Canvas size
 let vidWidth = 320;
 let vidHeight = 240;
@@ -34,13 +30,28 @@ let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
 let inMenu;
 
-// I didn't invert these because I'm not giving you sliders soz
-let xArrowLims = [vidWidth / 4, 3 * vidWidth / 4];
-let yArrowLims = [vidHeight / 4, 3 * vidHeight / 4];
+// Arrow limits not inverted. 
+let xLimMin = vidWidth / 4;
+let xLimMax = 3 * vidWidth / 4;
+let yLimMin = vidHeight / 4;
+let yLimMax = 3 * vidHeight / 4;
+let limDists = {
+    x: {
+        min: 0,
+        max: 0,
+    },
+    y: {
+        min: 0,
+        max: 0,
+    },
+}
 
 let arrowRegion = null;
 let lastArrowRegion = null;
 let arrowDelay = 1000; // ms
+
+let adjMouseX;
+let adjMouseY;
 
 // Function that p5 calls initially to set up graphics
 function setup() {
@@ -77,10 +88,6 @@ function setup() {
     pg.translate(vidWidth,0);
     pg.scale(-1.0, 1.0);
 
-    // Benchmarking code
-    ticks = 0;
-    start = Date.now();
-
     lastJump = Date.now();
     thisDetect = Date.now();
     lastArrowChange = Date.now();
@@ -88,6 +95,10 @@ function setup() {
 
 // Function that p5 calls repeatedly to render graphics
 function draw() {
+    // Adjust mouse coords.
+    adjMouseX = 3*vidWidth-mouseX;
+    adjMouseY = mouseY+20;
+
     pg.clear();
 
     // Render video
@@ -99,22 +110,90 @@ function draw() {
     updateVisuals();
 }
 
-// Return the string corresponding to the arrowRegion we're in.
+// Built-in p5 function that gets called on mouse drag. 
+function mouseDragged() {
+    let chooseMaxForX = false;
+    let chooseMaxForY = false;
+
+    // Calculate distances between mouse and limits. 
+    limDists.x.min = Math.abs(adjMouseX - xLimMin);
+    limDists.x.max = Math.abs(adjMouseX - xLimMax);
+    limDists.y.min = Math.abs(adjMouseY - yLimMin);
+    limDists.y.max = Math.abs(adjMouseY - yLimMax);
+
+    // Decide whether to use min or max. 
+    if(limDists.x.max < limDists.x.min) {
+        chooseMaxForX = true;
+    }
+    if(limDists.y.max < limDists.y.min) {
+        chooseMaxForY = true;
+    }
+
+    // Decide whether to use x or y. 
+    let xDist = (chooseMaxForX ? limDists.x.max : limDists.x.min);
+    let yDist = (chooseMaxForY ? limDists.y.max : limDists.y.min);
+
+    if(xDist < yDist) {
+        // Drag x. 
+        if(chooseMaxForX) {
+            // Handle lim-switching. 
+            if(adjMouseX < xLimMin) {
+                xLimMax = xLimMin;
+                xLimMin = adjMouseX;
+            }
+            else {
+                xLimMax = adjMouseX;
+            }
+        }
+        else {
+            // Handle lim-switching. 
+            if(adjMouseX > xLimMax) {
+                xLimMin = xLimMax;
+                xLimMax = adjMouseX;
+            }
+            else {
+                xLimMin = adjMouseX;
+            }
+        }
+    }
+    else {
+        // Drag y. 
+        if(chooseMaxForY) {
+            // Handle lim-switching. 
+            if(adjMouseY < yLimMin) {
+                yLimMax = yLimMin;
+                yLimMin = adjMouseY;
+            }
+            else {
+                yLimMax = adjMouseY;
+            }
+        }
+        else {
+            // Handle lim-switching. 
+            if(adjMouseY > yLimMax) {
+                yLimMin = yLimMax;
+                yLimMax = adjMouseY;
+            }
+            else {
+                yLimMin = adjMouseY;
+            }
+        }
+    }
+}
+
+// Return the int corresponding to the arrowRegion we're in.
 function getRegion(x, y) {
-    // Ensure that 0 index is the larger index
-    xArrowLims.sort();
-    yArrowLims.sort();
-    if(x < xArrowLims[0] && x > xArrowLims[1] && y < yArrowLims[1]) { // Up
-        return "up";
+    if(x < xLimMax && x > xLimMin && y < yLimMin) { // Up
+        return 0;
     }
-    else if(x < xArrowLims[0] && x > xArrowLims[1] && y > yArrowLims[0]) { // Down
-        return "down";
+    else if(x < xLimMax && x > xLimMin && y > yLimMax) { // Down
+        return 1;
     }
-    else if(y < yArrowLims[0] && y > yArrowLims[1] && x < xArrowLims[1]) { // Left
-        return "left";
+    else if(y < yLimMax && y > yLimMin && x < xLimMin) { // Left
+        return 2;
     }
-    else if(y < yArrowLims[0] && y > yArrowLims[1] && x > xArrowLims[0]) { // Right
-        return "right";
+    else if(y < yLimMax && y > yLimMin && x > xLimMax) { // Right
+        return 3;
     }
     else {
         return null;
@@ -126,7 +205,7 @@ function detectNose() {
     if(poses.length <= 0) {
         return;
     }
-    
+
     let trigger = 0; // By default don't register movement
     lastDetect = thisDetect;
     thisDetect = Date.now();
@@ -140,11 +219,17 @@ function detectNose() {
         arrowRegion = getRegion(noseX, noseY);
         if(arrowRegion != lastArrowRegion) {
             lastArrowChange = Date.now();
-            lastArrowRegion = arrowRegion; // Only need to update this if they are different. 
+            lastArrowRegion = arrowRegion; // Only need to update last region if they are different. 
         }
         else if(lastArrowRegion != null && Date.now() - lastArrowChange > arrowDelay) {
-            // CALL ARROWKEY IN DIRECTION arrowRegion
-            console.log("arrowkey in direction "+arrowRegion);
+            // Send arrow key to game. 
+            try {
+                gameInstance.SendMessage("Menu", "ArrowKey", arrowRegion);
+                console.log("Sent arrow key in direction "+arrowRegion);
+            }
+            catch(err) {
+                console.log("Arrow key "+arrowRegion+" failed with error: "+err);
+            }
             lastArrowChange = Date.now();
         }
     }
@@ -217,19 +302,21 @@ function detectNose() {
 // Visually update the threshold value
 function updateVisuals() {
     if(inMenu) {
+        // Render arrow key areas.
         pg.noStroke();
-        pg.fill(245, 60, 180, 125); // Vague Pink
-        // Ensure that 0 index is the larger index
-        xArrowLims.sort();
-        yArrowLims.sort();
+
         // Up
-        pg.rect(xArrowLims[0], 0, xArrowLims[1]-xArrowLims[0], yArrowLims[1]); 
+        pg.fill(255, 0, 0, 125); // Super Friggin Red
+        pg.rect(xLimMax, 0, xLimMin-xLimMax, yLimMin); 
         // Down
-        pg.rect(xArrowLims[0], yArrowLims[0], xArrowLims[1]-xArrowLims[0], vidHeight); 
+        pg.fill(0, 255, 0, 125); // Super Friggin Green
+        pg.rect(xLimMax, yLimMax, xLimMin-xLimMax, vidHeight); 
         // Right
-        pg.rect(0, yArrowLims[0], xArrowLims[1], yArrowLims[1]-yArrowLims[0]);
+        pg.fill(0, 0, 255, 125); // Super Friggin Blue
+        pg.rect(0, yLimMax, xLimMin, yLimMin-yLimMax);
         // Left
-        pg.rect(xArrowLims[0], yArrowLims[0], vidWidth, yArrowLims[1]-yArrowLims[0]);
+        pg.fill(255, 0, 255, 125); // Super Friggin Not-Green
+        pg.rect(xLimMax, yLimMax, vidWidth, yLimMin-yLimMax);
     }
     else {
         // Only render line in active mode. 
@@ -239,4 +326,10 @@ function updateVisuals() {
             pg.line(0, vidHeight - threshold, vidWidth, vidHeight - threshold);
         }
     }
+
+    // Crosshairs the mouse. 
+    pg.stroke(255, 255, 0); // Jarate
+    pg.strokeWeight(1);
+    pg.line(0, adjMouseY, vidWidth, adjMouseY);
+    pg.line(adjMouseX, 0, adjMouseX, vidHeight);
 }
