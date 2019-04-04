@@ -24,64 +24,80 @@ public enum Difficulty
 public class Settings
 {
     ////////////////////////////////////////////////////////////////
-    // Public Properties
+    // Properties
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Current player jump style
     /// </summary>
-    public static JumpStyle JumpStyle { get; set; }
+    public static JumpStyle JumpStyle
+    {
+        get
+        {
+            return settableSettings.JumpStyle.Value;
+        }
+    }
 
     /// <summary>
     /// Current game difficulty
     /// </summary>
-    public static Difficulty Difficulty { get; set; }
+    public static Difficulty Difficulty
+    {
+        get
+        {
+            return settableSettings.Difficulty.Value;
+        }
+        set
+        {
+            settableSettings.Difficulty = value;
+        }
+    }
 
     /// <summary>
-    /// Current basline magnitude of player jump
+    /// Current baseline magnitude of player jump
     /// </summary>
-    public static float JumpPower { get; set; }
+    public static float JumpPower
+    {
+        get
+        {
+            return settableSettings.JumpPower.Value;
+        }
+    }
 
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Fields
+    // Fields
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Maximum value for JumpPower
+    /// </summary>
+    public const float maxJumpPower = 1.5f;
+
+    /// <summary>
+    /// Minimum value for JumpPower
+    /// </summary>
+    public const float minJumpPower = 0.5f;
 
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
     /// </summary>
     public static readonly float[] difficultyMultipliers = { 1.0f, 1.5f, 2.0f };
 
-    /// <summary>
-    /// Maxmium value for JumpPower
-    /// </summary>
-    public static float maxJumpPower = 1.5f;
+    public static readonly SettableSettings defaultSettings = new SettableSettings
+    {
+        JumpStyle = JumpStyle.Velocity,
+        Difficulty = Difficulty.Medium,
+        JumpPower = 1.0f
+    };
 
-    /// <summary>
-    /// Minimum value for JumpPower
-    /// </summary>
-    public static float minJumpPower = 0.5f;
-
-    /// <summary>
-    /// Default value for JumpStyle
-    /// </summary>
-    private static JumpStyle defaultJumpStyle = JumpStyle.Velocity;
-
-    /// <summary>
-    /// Default value for Difficulty
-    /// </summary>
-    private static Difficulty defaultDifficulty = Difficulty.Medium;
-
-    /// <summary>
-    /// Default value for JumpPower
-    /// </summary>
-    private static float defaultJumpPower = 1.0f;
+    private static SettableSettings settableSettings;
 
 
 
     ////////////////////////////////////////////////////////////////
-    // Public Methods
+    // Methods
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
@@ -89,8 +105,22 @@ public class Settings
     /// </summary>
     public static void RestoreDefaults()
     {
-        JumpStyle = defaultJumpStyle;
-        Difficulty = defaultDifficulty;
-        JumpPower = defaultJumpPower;
+        settableSettings = defaultSettings;
+    }
+
+    public static void UpdateSettings(SettableSettings newSettings)
+    {
+        if (newSettings.JumpStyle.HasValue)
+        {
+            settableSettings.JumpStyle = newSettings.JumpStyle;
+        }
+        if (newSettings.Difficulty.HasValue)
+        {
+            settableSettings.Difficulty = newSettings.Difficulty;
+        }
+        if (newSettings.JumpPower.HasValue)
+        {
+            settableSettings.JumpPower = newSettings.JumpPower;
+        }
     }
 }
