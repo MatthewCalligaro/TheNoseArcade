@@ -29,7 +29,7 @@ let vidHeight = 240;
 let mode = "active";
 let delay = 500; // ms
 let threshold = vidHeight / 2; // Inverted! NOT measured in canvas coordinates. 
-let velocityMin = 300; // px / s
+let velocityMin = 150; // px / s
 let velocityScalar = vidHeight / 3; // Currently not controllable by user.
 let magScaling = "constant";
 
