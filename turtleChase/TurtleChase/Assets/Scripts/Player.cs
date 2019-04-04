@@ -158,7 +158,7 @@ public class Player : MonoBehaviour
         HUD.UpdateDistance((int)this.transform.position.x);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!this.loss)
         {

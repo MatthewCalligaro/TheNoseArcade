@@ -73,7 +73,7 @@ public class GodTutorial : God
         new TutorialEvent
         {
             Text = $"You gain {consumableStats[Consumables.Silver.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : string.Empty)} and a small boost when you collect silver",
-            TaskCountText = "Remaining silver",
+            TaskCountText = "Remaining silver to collect",
             Task = TutorialTask.Consumable,
             RequiredConsumable = Consumables.Silver,
             ConsumableIndex = Consumables.Silver.GetHashCode(),
@@ -83,7 +83,7 @@ public class GodTutorial : God
         new TutorialEvent
         {
             Text = $"You gain {consumableStats[Consumables.Gold.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : string.Empty)} and a larger boost when you collect gold",
-            TaskCountText = "Remaining gold",
+            TaskCountText = "Remaining gold to collect",
             Task = TutorialTask.Consumable,
             RequiredConsumable = Consumables.Gold,
             ConsumableIndex = Consumables.Gold.GetHashCode(),
@@ -152,12 +152,12 @@ public class GodTutorial : God
     private void LoadNextEvent()
     {
         this.eventIndex++;
-        if (eventIndex >= events.Length)
+        if (this.eventIndex == events.Length) // Intentionally not >= so that repeating the final task does not reset finishX
         {
             HUD.UpdateTutorialText("Congratulations, you finished the Tutorial!");
             this.finishX = this.transform.position.x + 10;
         }
-        else
+        else if (this.eventIndex < events.Length)
         {
             this.taskCount = 0;
             this.curEvent = events[this.eventIndex];

@@ -45,6 +45,11 @@ public class Environment : MonoBehaviour
     public float Speed { get; set; }
 
     /// <summary>
+    /// The type of the consumable if the environment object is a consumable, otherwise null
+    /// </summary>
+    public Consumables? Consumable { get; set; }
+
+    /// <summary>
     /// A vector specifying the range of motion for the environment object
     /// </summary>
     public Vector2 Movement

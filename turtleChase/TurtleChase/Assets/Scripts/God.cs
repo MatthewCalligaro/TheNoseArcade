@@ -51,6 +51,11 @@ public class God : MonoBehaviour
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
+    /// Prevents the camera from scrolling forward when true
+    /// </summary>
+    public static bool Stopped { get; set; }
+
+    /// <summary>
     /// The speed at which the camera scrolls in the positive X direction
     /// </summary>
     public static float ScrollSpeed
@@ -312,6 +317,11 @@ public class God : MonoBehaviour
     /// </summary>
     private Camera gameCamera;
 
+    /// <summary>
+    /// Prevents the camera from progressing when true
+    /// </summary>
+    private bool stopped = false;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -395,7 +405,10 @@ public class God : MonoBehaviour
 	protected virtual void Update()
     {
         // Scroll camera
-        this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
+        if (!Stopped)
+        {
+            this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
+        }
 
         // Spawn the next boundary when we are past the middle of the rightmost boundary
         if (this.transform.position.x > this.rightBoundaryX)
@@ -586,5 +599,6 @@ public class God : MonoBehaviour
         newObst.Score = stats.Score;
         newObst.Force = stats.Force;
         newObst.SpeedMultiplier = stats.SpeedMultiplier;
+        newObst.Consumable = (Consumables)index;
     }
 }
