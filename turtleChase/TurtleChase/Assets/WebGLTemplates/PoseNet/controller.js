@@ -105,8 +105,10 @@ function setup() {
 // Function that p5 calls repeatedly to render graphics
 function draw() {
     // Adjust mouse coords.
-    adjMouseX = 3*vidWidth-mouseX;
-    adjMouseY = mouseY+20;
+    // adjMouseX = 3*vidWidth-mouseX;
+    // adjMouseY = mouseY+20;
+    adjMouseX = 4*vidWidth-mouseX+100; // on deploy
+    adjMouseY = mouseY+180;
 
     pg.clear();
 
