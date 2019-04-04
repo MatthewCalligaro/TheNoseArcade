@@ -521,20 +521,20 @@ public class God : MonoBehaviour
     /// </summary>
     /// <param name="index">The Obstacle index of the obstacle type to be spawned</param>
     /// <param name="position">The position at which to center the obstacle type</param>
-    /// <param name="forceStatic">Forces the object to have no movement when true</param>
-    protected void SpawnObstaclePre(int index, Vector3 position, bool forceStatic = false)
+    /// <param name="forceStatic">Forces obstacle to either move (true) or not move (false)</param>
+    protected void SpawnObstaclePre(int index, Vector3 position, bool? forceMove = null)
     {
         ObstacleStats stats = obstacleStats[index];
         if (index == Obstacles.Pipe.GetHashCode())
         {
             float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-            this.SpawnObstacle(index, position + Vector3.down * spacing, forceStatic: forceStatic);
-            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180), forceStatic: forceStatic);
+            this.SpawnObstacle(index, position + Vector3.down * spacing, forceMove: forceMove);
+            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180), forceMove: forceMove);
             this.SpawnConsumable(Consumables.Pipe.GetHashCode(), position);
         }
         else
         {
-            this.SpawnObstacle(index, position, forceStatic: forceStatic);
+            this.SpawnObstacle(index, position, forceMove: forceMove);
         }
     }
 
@@ -544,8 +544,8 @@ public class God : MonoBehaviour
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    /// <param name="forceStatic">Forces the object to have no movement when true</param>
-    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion(), bool forceStatic = false)
+    /// <param name="forceMove">Forces obstacle to either move (true) or not move (false)</param>
+    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion(), bool? forceMove = null)
     { 
         // Spawn the specified obstacle at the specified position and rotation
         GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
@@ -553,8 +553,10 @@ public class God : MonoBehaviour
         // Set the obstacle's public properties based on its stats in obstacleStats
         ObstacleStats stats = obstacleStats[index];
         Environment newObst = newObstacle.GetComponent<Environment>();
-        newObst.EnvironmentType = EnvironmentType.Obstacle;
-        if (!forceStatic && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier))
+        newObst.EnvironmentType = EnvironmentType.Obstacle; 
+        
+        // Make the object move first based on forceMove (if not null) and otherwise based on a random probability
+        if ((!(forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false))
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);
