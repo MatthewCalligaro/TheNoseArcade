@@ -60,6 +60,11 @@ let arrowDelay = 1000; // ms
 let adjMouseX;
 let adjMouseY;
 
+// Time stamps for the data collection.
+let timeStampChunks = [];
+let nosePositions = {timeStamp: [], x: [], y: []};
+let videoFrames = [];
+
 /**
  * Function that p5 calls initially to set up graphics
  */
@@ -93,6 +98,9 @@ function setup() {
 
   poseNet.on('pose', function(results) {
     poses = results;
+    let currTime = Date.now();
+    timeStampChunks.push(currTime);
+    nosePositions.timeStamp.push(currTime);
   });
 
   // Hide the video so we can render it flipped in the draw loop. 
@@ -148,6 +156,11 @@ function mouseDragged() {
 function detectNose() {
   // No poses detected, nothing to do. 
   if (poses.length <= 0) {
+    while(nosePositions.timeStamp.length > nosePositions.x.length){
+      // Both of these are in parallel.
+      nosePositions.timeStamp.pop();
+      timeStampChunks.pop();
+    }
     return;
   }
 
@@ -158,6 +171,9 @@ function detectNose() {
   let nose = poses[0].pose.keypoints[0];
   noseX = nose.position.x;
   noseY = nose.position.y;
+
+  nosePositions.x.push(noseX);
+  nosePositions.y.push(noseY);
 
   // Decide what to do with nose position. 
   if (inMenu) {
@@ -426,4 +442,25 @@ function setFill(colorName) {
       break;
     default:
   }
+}
+
+function download(blob, filename){
+  // uses the <a download> to download a Blob
+  let a = document.createElement('a'); 
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+function downloadData(){
+  // Calls the download function for each blob in the set.
+  
+  let blob1 = new Blob(nosePositions, {type: "text/plain;charset=utf-8"});
+  download(blob1, "nose_positions_with_time_stamps.txt");
+  let blob2 = new Blob(timeStampChunks, {type: "text/plain;charset=utf-8"});
+  download(blob2, "image_time_stamps.txt");
+
+  let blob3 = new Blob(videoFrames, {type: "application/json"})
 }
