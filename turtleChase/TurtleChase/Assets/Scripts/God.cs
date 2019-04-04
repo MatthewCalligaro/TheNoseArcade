@@ -70,7 +70,7 @@ public class God : MonoBehaviour
     {
         get
         {
-            return this.transform.position.x * Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
+            return this.transform.position.x * Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()];
         }
     }
 
@@ -287,7 +287,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Position of the ideal path at the X position where the next environment object will be spawned
     /// </summary>
-    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
+    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()], 0, envZ);
 
     /// <summary>
     /// List of Y positions which are blocked by a horizontal obstacle as (rightmost X position, blocked Y position)
@@ -307,7 +307,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Probability of spawning a consumable
     /// </summary>
-    private float consumableProb = 0.25f / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
+    private float consumableProb = 0.25f / Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()];
 
     /// <summary>
     /// Reference to the Camera child of God

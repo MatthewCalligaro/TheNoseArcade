@@ -51,12 +51,17 @@ public class Settings
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
     /// </summary>
-    public static readonly float[] difficultyMultiers = { 1.0f, 1.5f, 2.0f };
+    public static readonly float[] difficultyMultipliers = { 1.0f, 1.5f, 2.0f };
 
     /// <summary>
     /// Maxmium value for JumpPower
     /// </summary>
-    public static float maxJumpPower = 2.0f;
+    public static float maxJumpPower = 1.5f;
+
+    /// <summary>
+    /// Minimum value for JumpPower
+    /// </summary>
+    public static float minJumpPower = 0.5f;
 
     /// <summary>
     /// Default value for JumpStyle

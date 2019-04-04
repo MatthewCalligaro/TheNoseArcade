@@ -64,7 +64,7 @@ public class OptionMenu : UIElement
     /// </summary>
     public void ChangeJumpPower()
     {
-        Settings.JumpPower = this.sliders[Sliders.JumpPower.GetHashCode()].value * Settings.maxJumpPower;
+        Settings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
     }
 
     /// <summary>
@@ -113,6 +113,6 @@ public class OptionMenu : UIElement
     {
         this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value = Settings.Difficulty.GetHashCode();
         this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
-        this.sliders[Sliders.JumpPower.GetHashCode()].value = Settings.JumpPower / Settings.maxJumpPower;
+        this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.minJumpPower) / (Settings.maxJumpPower - Settings.minJumpPower);
     }
 }
