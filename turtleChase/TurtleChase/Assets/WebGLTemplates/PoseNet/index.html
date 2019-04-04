@@ -22,7 +22,7 @@
     <!-- Unity -->
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
     </script>
     
     <script src="settings.js"></script>
@@ -33,6 +33,8 @@
   </head>
   
   <body>
+
+    <div id="linkback" href="../.."></div>
 
     <!-- Unity loads game here -->
     <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>

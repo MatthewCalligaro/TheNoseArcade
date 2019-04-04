@@ -4,6 +4,10 @@ const DOWN = 1;
 const RIGHT = 2;
 const LEFT = 3;
 
+// Canvas size
+let vidWidth = 320;
+let vidHeight = 240;
+
 // Display elements
 let defaultCanvas;
 let video;
@@ -37,10 +41,6 @@ let lastNoseDetect;
 
 // Is the in-game menu open? 
 let inMenu;
-
-// Canvas size
-let vidWidth = 320;
-let vidHeight = 240;
 
 // Size of open menu button
 let openMenuWidth = 100;
@@ -161,7 +161,7 @@ function detectNose() {
 
   // Decide what to do with nose position. 
   if (inMenu) {
-    arrowRegion = getRegion(noseX, noseY);
+    arrowRegion = getNoseRegion();
     if (arrowRegion != lastArrowRegion) {
       lastArrowChange = Date.now();
       lastArrowRegion = arrowRegion; // Only need to update last region if they are different. 
@@ -341,17 +341,7 @@ function getNoseRegion() {
  * Render all graphics for the overlay.
  */
 function updateVisuals() {
-  // Render nose dot
-  overlay.stroke(0, 225, 0); // Green
-  overlay.strokeWeight(5);
-  overlay.ellipse(noseX, noseY, 1, 1);
-
-  // Render mouse crosshairs. 
-  overlay.stroke(255, 255, 0); // Yellow
-  overlay.strokeWeight(1);
-  overlay.line(0, adjMouseY, vidWidth, adjMouseY);
-  overlay.line(adjMouseX, 0, adjMouseX, vidHeight);
-
+  // Render active areas. 
   if (inMenu) {
     // Render arrow key areas.
     let percentLoaded = (Date.now() - lastArrowChange) / arrowDelay;
@@ -397,6 +387,17 @@ function updateVisuals() {
       overlay.line(0, threshold, vidWidth, threshold);
     }
   }
+
+  // Render nose dot
+  overlay.stroke(0, 225, 0); // Green
+  overlay.strokeWeight(5);
+  overlay.ellipse(noseX, noseY, 1, 1);
+
+  // Render mouse crosshairs. 
+  overlay.stroke(255, 255, 0); // Yellow
+  overlay.strokeWeight(1);
+  overlay.line(0, adjMouseY, vidWidth, adjMouseY);
+  overlay.line(adjMouseX, 0, adjMouseX, vidHeight);
 }
 
 /**
