@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-<<<<<<< HEAD
-using UnityEngine.SceneManagement;
-=======
->>>>>>> turtle-chase
 
 /// <summary>
 /// Controller for the main menu
