@@ -83,7 +83,7 @@ $(document).ready(function(){
     // Delay slider
     $("#delaySlider").slider({
         min: 0,
-        max: 1000,
+        max: 3000,
         step: 1,
         value: delay,
         slide: function(event, ui) {
@@ -119,7 +119,7 @@ $(document).ready(function(){
     // Velocity min slider
     $("#velocityMinSlider").slider({
         min: 0,
-        max: vidHeight/3, // TODO no don't do that. 
+        max: 500,
         step: 1,
         value: velocityMin,
         slide: function(event, ui) {
