@@ -2,6 +2,35 @@
 using UnityEngine;
 
 /// <summary>
+/// The obstacles which can be added to the level
+/// </summary>
+public enum Obstacles
+{
+    Pipe,
+    Rock,
+    LedgeS,
+    LedgeM,
+    LedgeL,
+    Plane
+}
+
+
+
+/// <summary>
+/// The consumable objects which can be added to the level
+/// </summary>
+public enum Consumables
+{
+    Pipe,
+    Silver,
+    Gold,
+    Speed,
+    Knockback
+}
+
+
+
+/// <summary>
 /// Controls the camera and procedurally generates the level
 /// </summary>
 public class God : MonoBehaviour
@@ -14,37 +43,6 @@ public class God : MonoBehaviour
     public GameObject[] ConsumablePrefabs;
     public GameObject Ground;
     public GameObject Sky;
-
-
-
-    ////////////////////////////////////////////////////////////////
-    // Enums
-    ////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// The obstacles which can be added to the level
-    /// </summary>
-    protected enum Obstacles
-    {
-        Pipe,
-        Rock,
-        LedgeS,
-        LedgeM,
-        LedgeL, 
-        Plane
-    }
-
-    /// <summary>
-    /// The consumable objects which can be added to the level
-    /// </summary>
-    protected enum Consumables
-    {
-        Pipe,
-        Silver,
-        Gold,
-        Speed, 
-        Knockback
-    }
 
 
 
@@ -225,19 +223,19 @@ public class God : MonoBehaviour
     protected const float envZ = 2;
 
     /// <summary>
-    /// X position at which the first environment object is spawned
-    /// </summary>
-    private const float firstEnvX = 20;
-
-    /// <summary>
     /// Amount that environment objects spawn ahead of the player in the X direction
     /// </summary>
-    private const float envXLead = 15;
+    protected const float envXLead = 15;
 
     /// <summary>
     /// Maximum Y position of environment objects
     /// </summary>
-    private const float envMaxY = 4.25f;
+    protected const float envMaxY = 4.25f;
+
+    /// <summary>
+    /// X position at which the first environment object is spawned
+    /// </summary>
+    private const float firstEnvX = 20;
 
     /// <summary>
     /// Multiplier to the speed at which the camera skips forward to catch up with the player
@@ -556,7 +554,7 @@ public class God : MonoBehaviour
         newObst.EnvironmentType = EnvironmentType.Obstacle; 
         
         // Make the object move first based on forceMove (if not null) and otherwise based on a random probability
-        if ((!(forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false))
+        if (((forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false))
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);

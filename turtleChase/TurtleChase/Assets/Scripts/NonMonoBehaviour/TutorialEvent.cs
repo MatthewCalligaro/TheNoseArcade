@@ -8,13 +8,17 @@ public class TutorialEvent
 
     public int TaskNum { get; set; }
 
-    public float Distance { get; set; }
+    public float? RequiredDistance { get; set; }
+
+    public Consumables? RequiredConsumable { get; set; }
 
     public int[] ObstacleIndices { get; set; }
 
     public Vector3[] ObstaclePositions { get; set; }
 
-    public int[] ConsumableIndices { get; set; }
+    public bool ObstacleMovement { get; set; }
 
-    public Vector3[] ConsumablePositions { get; set; }
+    public int? ConsumableIndex { get; set; }
+
+    public bool ContinuousSpawn { get; set; }
 }
