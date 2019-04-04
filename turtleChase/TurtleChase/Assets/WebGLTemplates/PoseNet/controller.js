@@ -60,6 +60,9 @@ let arrowDelay = 1000; // ms
 let adjMouseX;
 let adjMouseY;
 
+// Should we display the mouse location on the canvas? 
+let renderMouseCrosshairs;
+
 /**
  * Function that p5 calls initially to set up graphics
  */
@@ -114,8 +117,18 @@ function setup() {
  */
 function draw() {
   // Adjust mouse coords.
-  adjMouseX = vidWidth - mouseX
-  adjMouseY = mouseY
+  let unboundedMouseX = vidWidth - mouseX
+  let unboundedMouseY = mouseY
+  // Only render crosshairs if mouse within canvas. 
+  if (unboundedMouseX > vidWidth || unboundedMouseX < 0 || unboundedMouseY > vidHeight || unboundedMouseY < 0) {
+    renderMouseCrosshairs = false
+  }
+  else {
+    renderMouseCrosshairs = true
+  }
+  // Bound mouse coords.
+  adjMouseX = min(max(unboundedMouseX, 0), vidWidth);
+  adjMouseY = min(max(unboundedMouseY, 0), vidHeight);
 
   overlay.clear();
 
@@ -375,10 +388,12 @@ function updateVisuals() {
       overlay.rect(xLimMax, yLimMax, percentLoaded * xLimMax, yLimMin - yLimMax);
     }
   } else {
-    // Render area to open menu. 
-    overlay.noStroke();
-    setFill('cyan');
-    overlay.rect(vidWidth - openMenuWidth, vidHeight - openMenuHeight, openMenuWidth, openMenuHeight);
+    if (false) { // TODO menu not yet implemented. 
+      // Render area to open menu. 
+      overlay.noStroke();
+      setFill('cyan');
+      overlay.rect(vidWidth - openMenuWidth, vidHeight - openMenuHeight, openMenuWidth, openMenuHeight);
+    }
 
     // Only render line in active mode. 
     if (mode == 'active') { 
@@ -394,10 +409,12 @@ function updateVisuals() {
   overlay.ellipse(noseX, noseY, 1, 1);
 
   // Render mouse crosshairs. 
-  overlay.stroke(255, 255, 0); // Yellow
-  overlay.strokeWeight(1);
-  overlay.line(0, adjMouseY, vidWidth, adjMouseY);
-  overlay.line(adjMouseX, 0, adjMouseX, vidHeight);
+  if (renderMouseCrosshairs) {
+    overlay.stroke(255, 255, 0); // Yellow
+    overlay.strokeWeight(1);
+    overlay.line(0, adjMouseY, vidWidth, adjMouseY);
+    overlay.line(adjMouseX, 0, adjMouseX, vidHeight);
+  }
 }
 
 /**
