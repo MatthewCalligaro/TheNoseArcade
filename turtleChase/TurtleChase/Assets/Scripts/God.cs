@@ -66,7 +66,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Current relative difficulty based on Difficulty setting and X position
     /// </summary>
-    private float DifficultyMultiplier
+    protected virtual float DifficultyMultiplier
     {
         get
         {
@@ -220,6 +220,11 @@ public class God : MonoBehaviour
     protected bool generateLevel = true;
 
     /// <summary>
+    /// Z position of environment objects
+    /// </summary>
+    protected const float envZ = 2;
+
+    /// <summary>
     /// X position at which the first environment object is spawned
     /// </summary>
     private const float firstEnvX = 20;
@@ -228,11 +233,6 @@ public class God : MonoBehaviour
     /// Amount that environment objects spawn ahead of the player in the X direction
     /// </summary>
     private const float envXLead = 15;
-
-    /// <summary>
-    /// Z position of environment objects
-    /// </summary>
-    private const float envZ = 2;
 
     /// <summary>
     /// Maximum Y position of environment objects
@@ -521,19 +521,20 @@ public class God : MonoBehaviour
     /// </summary>
     /// <param name="index">The Obstacle index of the obstacle type to be spawned</param>
     /// <param name="position">The position at which to center the obstacle type</param>
-    protected void SpawnObstaclePre(int index, Vector3 position)
+    /// <param name="forceStatic">Forces the object to have no movement when true</param>
+    protected void SpawnObstaclePre(int index, Vector3 position, bool forceStatic = false)
     {
         ObstacleStats stats = obstacleStats[index];
         if (index == Obstacles.Pipe.GetHashCode())
         {
             float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-            this.SpawnObstacle(index, position + Vector3.down * spacing);
-            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180));
+            this.SpawnObstacle(index, position + Vector3.down * spacing, forceStatic: forceStatic);
+            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180), forceStatic: forceStatic);
             this.SpawnConsumable(Consumables.Pipe.GetHashCode(), position);
         }
         else
         {
-            this.SpawnObstacle(index, position);
+            this.SpawnObstacle(index, position, forceStatic: forceStatic);
         }
     }
 
@@ -543,7 +544,8 @@ public class God : MonoBehaviour
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion())
+    /// <param name="forceStatic">Forces the object to have no movement when true</param>
+    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion(), bool forceStatic = false)
     { 
         // Spawn the specified obstacle at the specified position and rotation
         GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
@@ -552,7 +554,7 @@ public class God : MonoBehaviour
         ObstacleStats stats = obstacleStats[index];
         Environment newObst = newObstacle.GetComponent<Environment>();
         newObst.EnvironmentType = EnvironmentType.Obstacle;
-        if (Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier))
+        if (!forceStatic && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier))
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);

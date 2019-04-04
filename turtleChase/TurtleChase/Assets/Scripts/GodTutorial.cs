@@ -15,6 +15,14 @@ public enum TutorialTask
 
 public class GodTutorial : God
 {
+    protected override float DifficultyMultiplier
+    {
+        get
+        {
+            return tutorialDifficulty;
+        }
+    }
+
     private static readonly TutorialEvent[] events =
     {
         new TutorialEvent
@@ -44,7 +52,7 @@ public class GodTutorial : God
             Task = TutorialTask.Distance,
             Distance = 35,
             ObstacleIndices = new int[]{1, 1, 1},
-            ObstaclePositions = new Vector3[]{new Vector3(10, -3.5f, 0), new Vector3(20, -3, 0), new Vector3(30, 0, 0)},
+            ObstaclePositions = new Vector3[]{new Vector3(10, -3.5f, envZ), new Vector3(20, -3, envZ), new Vector3(30, 0, envZ)},
             TaskNum = 1
         },
 
@@ -54,10 +62,12 @@ public class GodTutorial : God
             Task = TutorialTask.Consumable,
             Distance = 35,
             ObstacleIndices = new int[]{0, 0, 0},
-            ObstaclePositions = new Vector3[]{new Vector3(10, -2, 0), new Vector3(20, 0, 0), new Vector3(30, 2, 0)},
+            ObstaclePositions = new Vector3[]{new Vector3(10, -2, envZ), new Vector3(20, 0, envZ), new Vector3(30, 2, envZ)},
             TaskNum = 3
         }
     };
+    private const float tutorialDifficulty = 10;
+
 
     private static GodTutorial instance;
 
@@ -100,7 +110,7 @@ public class GodTutorial : God
             {
                 for (int i = 0; i < curEvent.ObstacleIndices.Length; i++)
                 {
-                    SpawnObstaclePre(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x);
+                    SpawnObstaclePre(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x, forceStatic: true);
                 }
             }
 

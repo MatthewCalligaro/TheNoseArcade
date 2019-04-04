@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Handles when the player recieves the command to jump
     /// </summary>
-    /// <param name="magnitude"></param>
+    /// <param name="magnitude">Additional multiplier to apply to the jump's force</param>
     public virtual void JumpEnter(float magnitude = 1.0f)
     {
         switch (Settings.JumpStyle)
