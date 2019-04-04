@@ -35,17 +35,17 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Upward velocity after jumping for JumpStyle.Velocity
     /// </summary>
-    private const float jumpVelocity = 8;
+    private const float jumpVelocity = 12;
 
     /// <summary>
     /// Upward force applied from a jump for JumpStyle.Force
     /// </summary>
-    private const float jumpForce = 500;
+    private const float jumpForce = 650;
 
     /// <summary>
     /// Upward force applied per second for JumpStyle.Jetpack
     /// </summary>
-    private const float jumpJetpackForce = 1500;
+    private const float jumpJetpackForce = 2000;
 
     /// <summary>
     /// Time for which a speed multiplier lasts
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Handles when the player recieves the command to jump
     /// </summary>
-    /// <param name="magnitude"></param>
+    /// <param name="magnitude">Additional multiplier to apply to the jump's force</param>
     public virtual void JumpEnter(float magnitude = 1.0f)
     {
         switch (Settings.JumpStyle)
@@ -139,7 +139,7 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Applies a force vector to the player
     /// </summary>
-    /// <param name="force">The force vector ot apply to the player</param>
+    /// <param name="force">The force vector to apply to the player</param>
     public void ApplyForce(Vector2 force)
     {
         this.GetComponent<Rigidbody2D>().AddForce(force);
@@ -158,7 +158,7 @@ public class Player : MonoBehaviour
         HUD.UpdateDistance((int)this.transform.position.x);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!this.loss)
         {

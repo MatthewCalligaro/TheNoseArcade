@@ -3,7 +3,7 @@
 /// <summary>
 /// Controller for the option menu
 /// </summary>
-public class OptionMenu : UIElement
+public class OptionMenu : Menu
 {
     /// <summary>
     /// The dropdowns contained in the option menu
@@ -27,6 +27,11 @@ public class OptionMenu : UIElement
     /// </summary>
     private static OptionMenu instance;
 
+    /// <summary>
+    /// Settings which have been updated since the OptionMenu was opened
+    /// </summary>
+    private SettableSettings curSettings;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -40,6 +45,7 @@ public class OptionMenu : UIElement
     {
         Player.BlockingPause++;
         instance.gameObject.SetActive(true);
+        instance.curSettings = new SettableSettings();
         instance.ResetUIValues();
     }
 
@@ -48,7 +54,7 @@ public class OptionMenu : UIElement
     /// </summary>
     public void ChangeDifficulty()
     {
-        Settings.Difficulty = (Difficulty)this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value;
+        curSettings.Difficulty = (Difficulty)this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value;
     }
 
     /// <summary>
@@ -56,7 +62,10 @@ public class OptionMenu : UIElement
     /// </summary>
     public void ChangeJumpStyle()
     {
-        Settings.JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value;
+        if (curSettings != null)
+        {
+            curSettings.JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value;
+        }
     }
 
     /// <summary>
@@ -64,7 +73,7 @@ public class OptionMenu : UIElement
     /// </summary>
     public void ChangeJumpPower()
     {
-        Settings.JumpPower = this.sliders[Sliders.JumpPower.GetHashCode()].value * Settings.maxJumpPower;
+        curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
     }
 
     /// <summary>
@@ -77,12 +86,21 @@ public class OptionMenu : UIElement
     }
 
     /// <summary>
-    /// Handles when the Close button is pressed by closing the option's menu
+    /// Handles when the Quit button is pressed by closing the options menu without saving changes
     /// </summary>
-    public void HandleClose()
+    public void HandleQuit()
     {
         Player.BlockingPause--;
         this.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Handles when the Save button is pressed by saving the new settings and closing the options menu
+    /// </summary>
+    public void HandleSave()
+    {
+        Settings.UpdateSettings(this.curSettings);
+        this.HandleQuit();
     }
 
 
@@ -107,12 +125,12 @@ public class OptionMenu : UIElement
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Reset all UI dropdown
+    /// Reset all UI dropdowns and sliders to reflect current Settings
     /// </summary>
     private void ResetUIValues()
     {
         this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value = Settings.Difficulty.GetHashCode();
         this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
-        this.sliders[Sliders.JumpPower.GetHashCode()].value = Settings.JumpPower / Settings.maxJumpPower;
+        this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.minJumpPower) / (Settings.maxJumpPower - Settings.minJumpPower);
     }
 }

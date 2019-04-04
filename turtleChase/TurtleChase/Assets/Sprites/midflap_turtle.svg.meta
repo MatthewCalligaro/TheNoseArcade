@@ -7,11 +7,12 @@ ScriptedImporter:
     21200000: gameObject/midflap_turtle/SpriteRenderer
     21300000: sprite
     100100000: gameObject
+    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-  script: {fileID: 11500000, guid: a57477913897c46af95d590f580878bd, type: 3}
+  script: {instanceID: 0}
   svgType: 0
   texturedSpriteMeshType: 0
   svgPixelsPerUnit: 100
@@ -51,5 +52,5 @@ ScriptedImporter:
         y: 0
         width: 0
         height: 0
-      spriteID: be06db8bb357ca0489d6af5e7f202a12
+      spriteID: 9b4a4ff0ecb14f9479c505d68ed7dfa7
     PhysicsOutlines: []

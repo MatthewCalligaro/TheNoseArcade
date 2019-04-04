@@ -7,11 +7,12 @@ ScriptedImporter:
     21200000: gameObject/upflap_turtle/SpriteRenderer
     21300000: sprite
     100100000: gameObject
+    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-  script: {fileID: 11500000, guid: a57477913897c46af95d590f580878bd, type: 3}
+  script: {instanceID: 0}
   svgType: 0
   texturedSpriteMeshType: 0
   svgPixelsPerUnit: 100
@@ -51,9 +52,5 @@ ScriptedImporter:
         y: 0
         width: 0
         height: 0
-<<<<<<< HEAD
-      spriteID: ffbd0d692e12b4649bc9eda91a88a4f4
-=======
-      spriteID: e9ff071682e75424788b5496d1016d0e
->>>>>>> turtle-chase
+      spriteID: 44734abb311cf1d47bc69d13d72aa5de
     PhysicsOutlines: []

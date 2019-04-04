@@ -2,6 +2,35 @@
 using UnityEngine;
 
 /// <summary>
+/// The obstacles which can be added to the level
+/// </summary>
+public enum Obstacles
+{
+    Pipe,
+    Rock,
+    LedgeS,
+    LedgeM,
+    LedgeL,
+    Plane
+}
+
+
+
+/// <summary>
+/// The consumable objects which can be added to the level
+/// </summary>
+public enum Consumables
+{
+    Pipe,
+    Silver,
+    Gold,
+    Speed,
+    Knockback
+}
+
+
+
+/// <summary>
 /// Controls the camera and procedurally generates the level
 /// </summary>
 public class God : MonoBehaviour
@@ -18,39 +47,13 @@ public class God : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Enums
-    ////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// The obstacles which can be added to the level
-    /// </summary>
-    protected enum Obstacles
-    {
-        Pipe,
-        Rock,
-        LedgeS,
-        LedgeM,
-        LedgeL, 
-        Plane
-    }
-
-    /// <summary>
-    /// The consumable objects which can be added to the level
-    /// </summary>
-    protected enum Consumables
-    {
-        Pipe,
-        Silver,
-        Gold,
-        Speed, 
-        Knockback
-    }
-
-
-
-    ////////////////////////////////////////////////////////////////
     // Properties
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Prevents the camera from scrolling forward when true
+    /// </summary>
+    public static bool Stopped { get; set; }
 
     /// <summary>
     /// The speed at which the camera scrolls in the positive X direction
@@ -66,11 +69,11 @@ public class God : MonoBehaviour
     /// <summary>
     /// Current relative difficulty based on Difficulty setting and X position
     /// </summary>
-    private float DifficultyMultiplier
+    protected virtual float DifficultyMultiplier
     {
         get
         {
-            return this.transform.position.x * Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
+            return this.transform.position.x * Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()];
         }
     }
 
@@ -78,6 +81,21 @@ public class God : MonoBehaviour
     ////////////////////////////////////////////////////////////////
     // Fields
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Z position of environment objects
+    /// </summary>
+    protected const float envZ = 2;
+
+    /// <summary>
+    /// Amount that environment objects spawn ahead of the player in the X direction
+    /// </summary>
+    protected const float envXLead = 15;
+
+    /// <summary>
+    /// Maximum Y position of environment objects
+    /// </summary>
+    protected const float envMaxY = 4.25f;
 
     /// <summary>
     /// Stats defining obstacles
@@ -225,21 +243,6 @@ public class God : MonoBehaviour
     private const float firstEnvX = 20;
 
     /// <summary>
-    /// Amount that environment objects spawn ahead of the player in the X direction
-    /// </summary>
-    private const float envXLead = 15;
-
-    /// <summary>
-    /// Z position of environment objects
-    /// </summary>
-    private const float envZ = 2;
-
-    /// <summary>
-    /// Maximum Y position of environment objects
-    /// </summary>
-    private const float envMaxY = 4.25f;
-
-    /// <summary>
     /// Multiplier to the speed at which the camera skips forward to catch up with the player
     /// </summary>
     private const float skipMultiplier = 0.5f;
@@ -287,7 +290,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Position of the ideal path at the X position where the next environment object will be spawned
     /// </summary>
-    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()], 0, envZ);
+    private Vector3 nextEnv = new Vector3(firstEnvX / Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()], 0, envZ);
 
     /// <summary>
     /// List of Y positions which are blocked by a horizontal obstacle as (rightmost X position, blocked Y position)
@@ -307,7 +310,7 @@ public class God : MonoBehaviour
     /// <summary>
     /// Probability of spawning a consumable
     /// </summary>
-    private float consumableProb = 0.25f / Settings.difficultyMultiers[Settings.Difficulty.GetHashCode()];
+    private float consumableProb = 0.25f / Settings.difficultyMultipliers[Settings.Difficulty.GetHashCode()];
 
     /// <summary>
     /// Reference to the Camera child of God
@@ -397,7 +400,10 @@ public class God : MonoBehaviour
 	protected virtual void Update()
     {
         // Scroll camera
-        this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
+        if (!Stopped)
+        {
+            this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
+        }
 
         // Spawn the next boundary when we are past the middle of the rightmost boundary
         if (this.transform.position.x > this.rightBoundaryX)
@@ -504,12 +510,7 @@ public class God : MonoBehaviour
                     yOffset -= 2 * stats.YOffset;
                 }
 
-                // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
                 this.SpawnObstaclePre(index, this.nextEnv + Vector3.up * yOffset);
-            }
-            else
-            {
-                Debug.Log("pass: (" + minY + ", " + maxY + ")");
             }
 
             this.nextEnv.x += stats.XDelay.GetValue(this.DifficultyMultiplier);
@@ -521,19 +522,23 @@ public class God : MonoBehaviour
     /// </summary>
     /// <param name="index">The Obstacle index of the obstacle type to be spawned</param>
     /// <param name="position">The position at which to center the obstacle type</param>
-    protected void SpawnObstaclePre(int index, Vector3 position)
+    /// <param name="forceStatic">Forces obstacle to either move (true) or not move (false)</param>
+    protected void SpawnObstaclePre(int index, Vector3 position, bool? forceMove = null)
     {
         ObstacleStats stats = obstacleStats[index];
+        bool moving = ((forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false);
+
+        // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
         if (index == Obstacles.Pipe.GetHashCode())
         {
             float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-            this.SpawnObstacle(index, position + Vector3.down * spacing);
-            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180));
+            this.SpawnObstacle(index, position + Vector3.down * spacing, moving);
+            this.SpawnObstacle(index, position + Vector3.up * spacing, moving, Quaternion.Euler(0, 0, 180));
             this.SpawnConsumable(Consumables.Pipe.GetHashCode(), position);
         }
         else
         {
-            this.SpawnObstacle(index, position);
+            this.SpawnObstacle(index, position, moving);
         }
     }
 
@@ -542,8 +547,9 @@ public class God : MonoBehaviour
     /// </summary>
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
+    /// <param name="moving">Whether the object should move</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion())
+    protected void SpawnObstacle(int index, Vector3 position, bool moving, Quaternion rotation = new Quaternion())
     { 
         // Spawn the specified obstacle at the specified position and rotation
         GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
@@ -551,8 +557,10 @@ public class God : MonoBehaviour
         // Set the obstacle's public properties based on its stats in obstacleStats
         ObstacleStats stats = obstacleStats[index];
         Environment newObst = newObstacle.GetComponent<Environment>();
-        newObst.EnvironmentType = EnvironmentType.Obstacle;
-        if (Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier))
+        newObst.EnvironmentType = EnvironmentType.Obstacle; 
+        
+        // Make the object move first based on forceMove (if not null) and otherwise based on a random probability
+        if (moving)
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);
@@ -561,8 +569,8 @@ public class God : MonoBehaviour
         // If the obstacle blocks its Y position, add its top and bottom to curYBlocks
         if (stats.YBlock > 0)
         {
-            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y + stats.YOffset));
-            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y - stats.YOffset));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock + playerSpace * 2, position.y + stats.YOffset));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock + playerSpace * 2, position.y - stats.YOffset));
         }
     }
 
@@ -584,5 +592,6 @@ public class God : MonoBehaviour
         newObst.Score = stats.Score;
         newObst.Force = stats.Force;
         newObst.SpeedMultiplier = stats.SpeedMultiplier;
+        newObst.Consumable = (Consumables)index;
     }
 }

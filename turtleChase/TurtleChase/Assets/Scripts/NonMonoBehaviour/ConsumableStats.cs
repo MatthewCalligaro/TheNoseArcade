@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 /// <summary>
-/// Organizes the statistics allociated with a consumable object
+/// Organizes the statistics associated with a consumable object
 /// </summary>
 public class ConsumableStats
 {
