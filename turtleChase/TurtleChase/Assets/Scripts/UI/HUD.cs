@@ -12,6 +12,8 @@ public class HUD : UIElement
     {
         Score,
         Distance,
+        Tutorial,
+        TutorialTaskCount
     }
 
     /// <summary>
@@ -34,9 +36,40 @@ public class HUD : UIElement
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
     }
 
+    /// <summary>
+    /// Updates the distance shown on the HUD
+    /// </summary>
+    /// <param name="distance">New distance to show</param>
     public static void UpdateDistance(int distance)
     {
         instance.texts[Texts.Distance.GetHashCode()].text = "Distance: " + distance + "m";
+    }
+
+    /// <summary>
+    /// Updates the tutorial text
+    /// </summary>
+    /// <param name="text">New tutorial text</param>
+    public static void UpdateTutorialText(string text)
+    {
+        instance.texts[Texts.Tutorial.GetHashCode()].text = text;
+    }
+
+    /// <summary>
+    /// Updates the tutorial task text of the form: "text": "remainingCount"
+    /// </summary>
+    /// <param name="text">Text describing the task</param>
+    /// <param name="remainingCount">Remaining number to complete</param>
+    public static void UpdateTutorialTaskCountText(string text, int remainingCount)
+    {
+        instance.texts[Texts.TutorialTaskCount.GetHashCode()].text = $"{text}: {remainingCount}";
+    }
+
+    /// <summary>
+    /// Removes the tutorial task count text
+    /// </summary>
+    public static void ClearTutorialTaskCountText()
+    {
+        instance.texts[Texts.TutorialTaskCount.GetHashCode()].text = string.Empty;
     }
 
     protected override void Awake()

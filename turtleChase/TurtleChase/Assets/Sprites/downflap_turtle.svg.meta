@@ -7,11 +7,12 @@ ScriptedImporter:
     21200000: gameObject/downflap_turtle/SpriteRenderer
     21300000: sprite
     100100000: gameObject
+    2186277476908879412: ImportLogs
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-  script: {fileID: 11500000, guid: a57477913897c46af95d590f580878bd, type: 3}
+  script: {instanceID: 0}
   svgType: 0
   texturedSpriteMeshType: 0
   svgPixelsPerUnit: 100
@@ -51,5 +52,5 @@ ScriptedImporter:
         y: 0
         width: 0
         height: 0
-      spriteID: 0018e0f477a58324c9ed9f05377e4c6b
+      spriteID: 1eb5266f35a1a7a42b30de724af23abc
     PhysicsOutlines: []

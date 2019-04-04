@@ -40,17 +40,17 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Upward velocity after jumping for JumpStyle.Velocity
     /// </summary>
-    private const float jumpVelocity = 8;
+    private const float jumpVelocity = 12;
 
     /// <summary>
     /// Upward force applied from a jump for JumpStyle.Force
     /// </summary>
-    private const float jumpForce = 500;
+    private const float jumpForce = 650;
 
     /// <summary>
     /// Upward force applied per second for JumpStyle.Jetpack
     /// </summary>
-    private const float jumpJetpackForce = 1500;
+    private const float jumpJetpackForce = 2000;
 
     /// <summary>
     /// Time for which a speed multiplier lasts
@@ -102,8 +102,8 @@ public class Player : MonoBehaviour
     /// <summary>
     /// Handles when the player recieves the command to jump
     /// </summary>
-    /// <param name="magnitude"></param>
-    public void JumpEnter(float magnitude = 1.0f)
+    /// <param name="magnitude">Additional multiplier to apply to the jump's force</param>
+    public virtual void JumpEnter(float magnitude = 1.0f)
     {
         updateMenuStatus(isJetpacking); // TODO or whatever
 
@@ -133,9 +133,20 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// Handles when the player recieves the command to pause the game
+    /// </summary>
+    public virtual void Pause()
+    {
+        if (BlockingPause <= 0)
+        {
+            PauseMenu.Pause();
+        }
+    }
+
+    /// <summary>
     /// Applies a force vector to the player
     /// </summary>
-    /// <param name="force">The force vector ot apply to the player</param>
+    /// <param name="force">The force vector to apply to the player</param>
     public void ApplyForce(Vector2 force)
     {
         this.GetComponent<Rigidbody2D>().AddForce(force);
@@ -154,7 +165,7 @@ public class Player : MonoBehaviour
         HUD.UpdateDistance((int)this.transform.position.x);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (!this.loss)
         {
@@ -180,9 +191,9 @@ public class Player : MonoBehaviour
             }
 
             // Use escape to pause
-            if (Input.GetKeyDown(KeyCode.Escape) && BlockingPause <= 0)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                PauseMenu.Pause();
+                this.Pause();
             }
 
             // The player loses if they fall outside of the camera
@@ -226,14 +237,14 @@ public class Player : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Methods
+    // Protected and Private Methods
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Handles collisions with any type of game object
     /// </summary>
     /// <param name="other">The game object with which the player collided</param>
-    private void HandleCollision(GameObject other)
+    protected virtual void HandleCollision(GameObject other)
     {
         // If other is a consumable object, apply its relevant stats and remove it
         if (other.gameObject.GetComponent<Environment>() && other.gameObject.GetComponent<Environment>().EnvironmentType == EnvironmentType.Consumable)

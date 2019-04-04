@@ -40,36 +40,6 @@ public abstract class UIElement : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Public Methods
-    ////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// Handles when the Restart button is pressed by reloading the current scene
-    /// </summary>
-    public void HandleRestart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    /// <summary>
-    /// Handles when the MainMenu button is pressed by loading the main menu scene
-    /// </summary>
-    public void HandleMainMenu()
-    {
-        SceneManager.LoadScene(0);
-    }
-
-    /// <summary>
-    /// Handles when the Options button is pressed by opening the Options UI element
-    /// </summary>
-    public void HandleOptions()
-    {
-        OptionMenu.HandleOpen();
-    }
-
-
-
-    ////////////////////////////////////////////////////////////////
     // Unity Methods
     ////////////////////////////////////////////////////////////////
 

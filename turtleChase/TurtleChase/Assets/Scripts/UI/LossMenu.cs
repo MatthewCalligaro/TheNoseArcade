@@ -3,7 +3,7 @@
 /// <summary>
 /// Controller for the loss menu (shown when the game ends)
 /// </summary>
-public class LossMenu : UIElement
+public class LossMenu : Menu
 {
     /// <summary>
     /// The text objects contained in the loss menu

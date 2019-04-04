@@ -3,7 +3,7 @@
 /// <summary>
 /// Controller for the pause menu
 /// </summary>
-public class PauseMenu : UIElement
+public class PauseMenu : Menu
 {
     /// <summary>
     /// Static reference to the one PauseMenu object in the scene to enable static methods
@@ -46,6 +46,7 @@ public class PauseMenu : UIElement
     /// </summary>
     public void HandleResume()
     {
+        GodTutorial.RegisterTask(TutorialTask.MenuSelect);
         Pause(false);
     }
 
