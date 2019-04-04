@@ -3,11 +3,12 @@ const DOWN = 1;
 const RIGHT = 2;
 const LEFT = 3;
 
+let defaultCanvas;
 let video;
+let overlay;
+
 let poseNet;
 let poses = [];
-
-let pg;
 
 let noseX;
 let noseY;
@@ -64,13 +65,18 @@ let adjMouseY;
 
 // Function that p5 calls initially to set up graphics
 function setup() {
+    // Insert default canvas in our container so it doesn't get added at the end of the DOM. 
+    // Note that this is where the mouse gets registered, so it is important to position properly. 
+    defaultCanvas = createCanvas(vidWidth, vidHeight);
+    defaultCanvas.parent('videoContainer');
+
     video = createCapture(VIDEO);
     video.size(vidWidth, vidHeight);
     video.parent('videoContainer')
 
     pixelDensity(1);
-    pg = createGraphics(vidWidth, vidHeight);
-    pg.parent('videoContainer');
+    overlay = createGraphics(vidWidth, vidHeight);
+    overlay.parent('videoContainer');
 
     // Options for PoseNet
     let options = { 
@@ -92,10 +98,10 @@ function setup() {
     video.hide();
 
     // Show graphics
-    pg.show();
+    overlay.show();
     // Flip graphics so you get proper mirroring of video and nose dot
-    pg.translate(vidWidth,0);
-    pg.scale(-1.0, 1.0);
+    overlay.translate(vidWidth,0);
+    overlay.scale(-1.0, 1.0);
 
     lastJump = Date.now();
     thisDetect = Date.now();
@@ -105,15 +111,13 @@ function setup() {
 // Function that p5 calls repeatedly to render graphics
 function draw() {
     // Adjust mouse coords.
-    // adjMouseX = 3*vidWidth-mouseX;
-    // adjMouseY = mouseY+20;
-    adjMouseX = 4*vidWidth-mouseX+100; // on deploy
-    adjMouseY = mouseY+180;
+    adjMouseX = vidWidth - mouseX
+    adjMouseY = mouseY
 
-    pg.clear();
+    overlay.clear();
 
     // Render video
-    pg.image(video, 0, 0);
+    overlay.image(video, 0, 0);
 
     inMenu = $("#menuStatus").attr("menu-status") == "true";
 
@@ -239,9 +243,9 @@ function detectNose() {
     noseY = nose.position.y;
 
     // Render nose dot
-    pg.stroke(0, 225, 0); // Approximately Lime
-    pg.strokeWeight(5);
-    pg.ellipse(noseX, noseY, 1, 1);
+    overlay.stroke(0, 225, 0); // Approximately Lime
+    overlay.strokeWeight(5);
+    overlay.ellipse(noseX, noseY, 1, 1);
 
     // Decide what to do with nose position. 
     if(inMenu) {
@@ -341,52 +345,52 @@ function detectNose() {
 function updateVisuals() {
     if(inMenu) {
         // Render arrow key areas.
-        pg.noStroke();
+        overlay.noStroke();
 
         let percentLoaded = (Date.now()-lastArrowChange)/arrowDelay;
 
         // Up
-        pg.fill(255, 0, 0, 125); // Super Friggin Red
-        pg.rect(xLimMax, 0, xLimMin-xLimMax, yLimMin); 
+        overlay.fill(255, 0, 0, 125); // Super Friggin Red
+        overlay.rect(xLimMax, 0, xLimMin-xLimMax, yLimMin); 
         if(arrowRegion == UP) {
-            pg.rect(xLimMax, (1-percentLoaded)*yLimMin, xLimMin-xLimMax, percentLoaded*yLimMin); 
+            overlay.rect(xLimMax, (1-percentLoaded)*yLimMin, xLimMin-xLimMax, percentLoaded*yLimMin); 
         }
         // Down
-        pg.fill(0, 255, 0, 125); // Super Friggin Green
-        pg.rect(xLimMax, yLimMax, xLimMin-xLimMax, vidHeight); 
+        overlay.fill(0, 255, 0, 125); // Super Friggin Green
+        overlay.rect(xLimMax, yLimMax, xLimMin-xLimMax, vidHeight); 
         if(arrowRegion == DOWN) {
-            pg.rect(xLimMax, yLimMax, xLimMin-xLimMax, percentLoaded*yLimMax); 
+            overlay.rect(xLimMax, yLimMax, xLimMin-xLimMax, percentLoaded*yLimMax); 
         }
         // Right
-        pg.fill(0, 0, 255, 125); // Super Friggin Blue
-        pg.rect(0, yLimMax, xLimMin, yLimMin-yLimMax);
+        overlay.fill(0, 0, 255, 125); // Super Friggin Blue
+        overlay.rect(0, yLimMax, xLimMin, yLimMin-yLimMax);
         if(arrowRegion == RIGHT) {
-            pg.rect((1-percentLoaded)*xLimMin, yLimMax, percentLoaded*xLimMin, yLimMin-yLimMax);
+            overlay.rect((1-percentLoaded)*xLimMin, yLimMax, percentLoaded*xLimMin, yLimMin-yLimMax);
         }
         // Left
-        pg.fill(255, 0, 255, 125); // Super Friggin Not-Green
-        pg.rect(xLimMax, yLimMax, vidWidth, yLimMin-yLimMax);
+        overlay.fill(255, 0, 255, 125); // Super Friggin Not-Green
+        overlay.rect(xLimMax, yLimMax, vidWidth, yLimMin-yLimMax);
         if(arrowRegion == LEFT) {
-            pg.rect(xLimMax, yLimMax, percentLoaded*xLimMax, yLimMin-yLimMax);
+            overlay.rect(xLimMax, yLimMax, percentLoaded*xLimMax, yLimMin-yLimMax);
         }
     }
     else {
         // Render area to open menu. 
-        pg.noStroke();
-        pg.fill(0, 255, 255, 125); // Super Friggin Not-Red
-        pg.rect(vidWidth-openMenuWidth, vidHeight-openMenuHeight, openMenuWidth, openMenuHeight);
+        overlay.noStroke();
+        overlay.fill(0, 255, 255, 125); // Super Friggin Not-Red
+        overlay.rect(vidWidth-openMenuWidth, vidHeight-openMenuHeight, openMenuWidth, openMenuHeight);
 
         // Only render line in active mode. 
         if(mode == "active") { 
-            pg.stroke(230, 80, 0); // Kinda Red
-            pg.strokeWeight(2);
-            pg.line(0, threshold, vidWidth, threshold);
+            overlay.stroke(230, 80, 0); // Kinda Red
+            overlay.strokeWeight(2);
+            overlay.line(0, threshold, vidWidth, threshold);
         }
     }
 
     // Crosshairs the mouse. 
-    pg.stroke(255, 255, 0); // Jarate
-    pg.strokeWeight(1);
-    pg.line(0, adjMouseY, vidWidth, adjMouseY);
-    pg.line(adjMouseX, 0, adjMouseX, vidHeight);
+    overlay.stroke(255, 255, 0); // Jarate
+    overlay.strokeWeight(1);
+    overlay.line(0, adjMouseY, vidWidth, adjMouseY);
+    overlay.line(adjMouseX, 0, adjMouseX, vidHeight);
 }
