@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Types of tasks which the player can be required to perform in the tutorial
+/// </summary>
 public enum TutorialTask
 {
     Jump,
@@ -13,16 +14,43 @@ public enum TutorialTask
     Consumable
 }
 
+/// <summary>
+/// Version of God used during the tutorial
+/// </summary>
 public class GodTutorial : God
 {
+    ////////////////////////////////////////////////////////////////
+    // Properties
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Constant difficulty multiplier used during tutorial
+    /// </summary>
     protected override float DifficultyMultiplier
     {
         get
         {
-            return tutorialDifficulty;
+            return 10;
         }
     }
 
+    ////////////////////////////////////////////////////////////////
+    // Fields
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Static reference to the one GodTutorial object in the scene to enable static methods
+    /// </summary>
+    private static GodTutorial instance;
+
+    /// <summary>
+    /// Constant delay between consumable objects in tutorial
+    /// </summary>
+    private const float consumableDelay = 8;
+
+    /// <summary>
+    /// Defines the events which the player must complete in the tutorial
+    /// </summary>
     private static readonly TutorialEvent[] events =
     {
         new TutorialEvent
@@ -109,46 +137,83 @@ public class GodTutorial : God
         }
     };
 
-    private const float tutorialDifficulty = 10;
-
-    private const float consumableDelay = 5;
-
-
-    private static GodTutorial instance;
-
-    private int taskCount = 0;
+    /// <summary>
+    /// Current tutorial event
+    /// </summary>
     private TutorialEvent curEvent;
+
+    /// <summary>
+    /// Index of the current event in events
+    /// </summary>
     private int eventIndex;
+
+    /// <summary>
+    /// Times the current task has been completed
+    /// </summary>
+    private int taskCount = 0;
+
+    /// <summary>
+    /// X position of God at the start of this event
+    /// </summary>
     private float curEventStartX;
 
+    /// <summary>
+    /// The tutorial ends when God passes this X position
+    /// </summary>
     private float finishX = float.MaxValue;
 
+    /// <summary>
+    /// X position at which God will spawn the next consumable object
+    /// </summary>
     private float nextConsumableX;
 
 
+
+    ////////////////////////////////////////////////////////////////
+    // Public Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Registers when the player completes a certain task
+    /// </summary>
+    /// <param name="task">The task which the player completed</param>
     public static void RegisterTask(TutorialTask task)
     {
         if (instance != null && task == instance.curEvent.Task)
         {
             instance.taskCount++;
+
+            // If this was the last time they needed to repeat this task, load the next one
             if (instance.taskCount >= instance.curEvent.TaskNum)
             {
                 instance.LoadNextEvent();
             }
+
+            // Otherwise update the HUD task counter with the number of remaining repetitions
             else if (instance.curEvent.TaskCountText != null)
             {
                 HUD.UpdateTutorialTaskCountText(instance.curEvent.TaskCountText, instance.curEvent.TaskNum - instance.taskCount);
             }
         }
     }
+
+    /// <summary>
+    /// Registers when the player completes a certain task
+    /// </summary>
+    /// <param name="task">The task which the player completed</param>
+    /// <param name="consumable">The consumable which the player collected</param>
     public static void RegisterTask(TutorialTask task, Consumables consumable)
     {
+        // Only register the task if the player collected the correct consumable
         if (instance != null && instance.curEvent.RequiredConsumable.HasValue && consumable == instance.curEvent.RequiredConsumable.Value)
         {
             RegisterTask(task);
         }
     }
 
+    /// <summary>
+    /// Begins the next tutorial event
+    /// </summary>
     private void LoadNextEvent()
     {
         this.eventIndex++;
@@ -162,6 +227,7 @@ public class GodTutorial : God
             this.taskCount = 0;
             this.curEvent = events[this.eventIndex];
             this.curEventStartX = this.transform.position.x;
+            this.nextConsumableX = this.transform.position.x;
 
             // Spawn obstacles for this event
             if (this.curEvent.ObstacleIndices != null)
@@ -175,7 +241,7 @@ public class GodTutorial : God
                 }
             }
 
-            this.nextConsumableX = this.transform.position.x;
+            // Update the instruction text and counter text if necessary
             HUD.UpdateTutorialText(this.curEvent.Text);
             if (this.curEvent.TaskCountText == null)
             {
@@ -187,6 +253,11 @@ public class GodTutorial : God
             }
         }
     }
+
+
+    ////////////////////////////////////////////////////////////////
+    // Unity Methods
+    ////////////////////////////////////////////////////////////////
 
     private void Awake()
     {
@@ -204,6 +275,7 @@ public class GodTutorial : God
 
     protected override void Update()
     {
+        // Handle completion of Distance events
         if (this.curEvent.RequiredDistance.HasValue && this.transform.position.x - this.curEventStartX > this.curEvent.RequiredDistance)
         {
             this.LoadNextEvent();
@@ -214,6 +286,7 @@ public class GodTutorial : God
             SceneManager.LoadScene(0);
         }
 
+        // Spawn the next consumable if we surpassed nextConsumableX
         if (this.curEvent.ConsumableIndex.HasValue && this.transform.position.x >= this.nextConsumableX)
         {
             this.SpawnConsumable(

@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Defines generalized behavior for all menus
+/// </summary>
 public abstract class Menu : UIElement
 {
-    ////////////////////////////////////////////////////////////////
-    // Public Methods
-    ////////////////////////////////////////////////////////////////
-
     /// <summary>
     /// Handles when the Restart button is pressed by reloading the current scene
     /// </summary>

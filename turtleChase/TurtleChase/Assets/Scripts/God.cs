@@ -83,6 +83,21 @@ public class God : MonoBehaviour
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
+    /// Z position of environment objects
+    /// </summary>
+    protected const float envZ = 2;
+
+    /// <summary>
+    /// Amount that environment objects spawn ahead of the player in the X direction
+    /// </summary>
+    protected const float envXLead = 15;
+
+    /// <summary>
+    /// Maximum Y position of environment objects
+    /// </summary>
+    protected const float envMaxY = 4.25f;
+
+    /// <summary>
     /// Stats defining obstacles
     /// </summary>
     protected static readonly ObstacleStats[] obstacleStats =
@@ -223,21 +238,6 @@ public class God : MonoBehaviour
     protected bool generateLevel = true;
 
     /// <summary>
-    /// Z position of environment objects
-    /// </summary>
-    protected const float envZ = 2;
-
-    /// <summary>
-    /// Amount that environment objects spawn ahead of the player in the X direction
-    /// </summary>
-    protected const float envXLead = 15;
-
-    /// <summary>
-    /// Maximum Y position of environment objects
-    /// </summary>
-    protected const float envMaxY = 4.25f;
-
-    /// <summary>
     /// X position at which the first environment object is spawned
     /// </summary>
     private const float firstEnvX = 20;
@@ -316,11 +316,6 @@ public class God : MonoBehaviour
     /// Reference to the Camera child of God
     /// </summary>
     private Camera gameCamera;
-
-    /// <summary>
-    /// Prevents the camera from progressing when true
-    /// </summary>
-    private bool stopped = false;
 
 
 
@@ -515,12 +510,7 @@ public class God : MonoBehaviour
                     yOffset -= 2 * stats.YOffset;
                 }
 
-                // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
                 this.SpawnObstaclePre(index, this.nextEnv + Vector3.up * yOffset);
-            }
-            else
-            {
-                Debug.Log("pass: (" + minY + ", " + maxY + ")");
             }
 
             this.nextEnv.x += stats.XDelay.GetValue(this.DifficultyMultiplier);
@@ -536,16 +526,19 @@ public class God : MonoBehaviour
     protected void SpawnObstaclePre(int index, Vector3 position, bool? forceMove = null)
     {
         ObstacleStats stats = obstacleStats[index];
+        bool moving = ((forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false);
+
+        // For pipes, spawn two obstacles (top and bottom) and a pipe score in between
         if (index == Obstacles.Pipe.GetHashCode())
         {
             float spacing = stats.YGap.GetValue(DifficultyMultiplier);
-            this.SpawnObstacle(index, position + Vector3.down * spacing, forceMove: forceMove);
-            this.SpawnObstacle(index, position + Vector3.up * spacing, Quaternion.Euler(0, 0, 180), forceMove: forceMove);
+            this.SpawnObstacle(index, position + Vector3.down * spacing, moving);
+            this.SpawnObstacle(index, position + Vector3.up * spacing, moving, Quaternion.Euler(0, 0, 180));
             this.SpawnConsumable(Consumables.Pipe.GetHashCode(), position);
         }
         else
         {
-            this.SpawnObstacle(index, position, forceMove: forceMove);
+            this.SpawnObstacle(index, position, moving);
         }
     }
 
@@ -554,9 +547,9 @@ public class God : MonoBehaviour
     /// </summary>
     /// <param name="index">The Obstacles index of the object to be spawned</param>
     /// <param name="position">The position at which to spawn the obstacle</param>
+    /// <param name="moving">Whether the object should move</param>
     /// <param name="rotation">The amount to rotate the object</param>
-    /// <param name="forceMove">Forces obstacle to either move (true) or not move (false)</param>
-    protected void SpawnObstacle(int index, Vector3 position, Quaternion rotation = new Quaternion(), bool? forceMove = null)
+    protected void SpawnObstacle(int index, Vector3 position, bool moving, Quaternion rotation = new Quaternion())
     { 
         // Spawn the specified obstacle at the specified position and rotation
         GameObject newObstacle = Instantiate(this.ObstaclePrefabs[index], position, rotation);
@@ -567,7 +560,7 @@ public class God : MonoBehaviour
         newObst.EnvironmentType = EnvironmentType.Obstacle; 
         
         // Make the object move first based on forceMove (if not null) and otherwise based on a random probability
-        if (((forceMove ?? true) && Random.value < stats.MovementProb.GetValue(this.DifficultyMultiplier)) || (forceMove ?? false))
+        if (moving)
         {
             newObst.Movement = stats.Movement;
             newObst.Speed = stats.Speed.GetValue(this.DifficultyMultiplier);

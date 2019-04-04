@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿/// <summary>
+/// Encapsulates the settings which the player can update
+/// </summary>
 public class SettableSettings
 {
     /// <summary>

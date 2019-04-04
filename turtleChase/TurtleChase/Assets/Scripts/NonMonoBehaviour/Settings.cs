@@ -85,6 +85,9 @@ public class Settings
     /// </summary>
     public static readonly float[] difficultyMultipliers = { 1.0f, 1.5f, 2.0f };
 
+    /// <summary>
+    /// Default values for the settable settings
+    /// </summary>
     public static readonly SettableSettings defaultSettings = new SettableSettings
     {
         JumpStyle = JumpStyle.Velocity,
@@ -92,6 +95,9 @@ public class Settings
         JumpPower = 1.0f
     };
 
+    /// <summary>
+    /// Current values of settable settings
+    /// </summary>
     private static SettableSettings settableSettings;
 
 
@@ -108,8 +114,13 @@ public class Settings
         settableSettings = defaultSettings;
     }
 
+    /// <summary>
+    /// Updates the current settable settings with new values
+    /// </summary>
+    /// <param name="newSettings">Encapsulates new settings values (null values will be ignored)</param>
     public static void UpdateSettings(SettableSettings newSettings)
     {
+        // Only take the non-null settings in newSettings
         if (newSettings.JumpStyle.HasValue)
         {
             settableSettings.JumpStyle = newSettings.JumpStyle;

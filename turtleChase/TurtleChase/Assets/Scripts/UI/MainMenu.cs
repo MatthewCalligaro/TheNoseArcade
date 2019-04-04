@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Controller for the main menu
@@ -10,12 +9,6 @@ public class MainMenu : Menu
     /// Static reference to the one MainMenu object in the scene to enable static methods
     /// </summary>
     private static MainMenu instance;
-
-
-
-    ////////////////////////////////////////////////////////////////
-    // Methods
-    ////////////////////////////////////////////////////////////////
 
     protected override void Awake()
     {

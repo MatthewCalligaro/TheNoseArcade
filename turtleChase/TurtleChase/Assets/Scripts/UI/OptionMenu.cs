@@ -27,6 +27,9 @@ public class OptionMenu : Menu
     /// </summary>
     private static OptionMenu instance;
 
+    /// <summary>
+    /// Settings which have been updated since the OptionMenu was opened
+    /// </summary>
     private SettableSettings curSettings;
 
 
