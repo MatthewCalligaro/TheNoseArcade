@@ -4,6 +4,8 @@ public class TutorialEvent
 {
     public string Text { get; set; }
 
+    public string TaskCountText { get; set; }
+
     public TutorialTask Task { get; set; }
 
     public int TaskNum { get; set; }

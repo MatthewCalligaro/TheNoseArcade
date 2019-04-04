@@ -28,6 +28,7 @@ public class GodTutorial : God
         new TutorialEvent
         {
             Text = "Raise your nose or press the spacebar to jump",
+            TaskCountText = "Remaining jumps",
             Task = TutorialTask.Jump,
             TaskNum = 3
         },
@@ -59,7 +60,8 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = $"You gain {consumableStats[Consumables.Pipe.GetHashCode()].Score} point{(consumableStats[Consumables.Pipe.GetHashCode()].Score > 1 ? "s" : "")} when you pass between pipe obstacles",
+            Text = $"You gain {consumableStats[Consumables.Pipe.GetHashCode()].Score} point{(consumableStats[Consumables.Pipe.GetHashCode()].Score > 1 ? "s" : string.Empty)} when you pass between pipe obstacles",
+            TaskCountText = "Remaining pipes",
             Task = TutorialTask.Consumable,
             RequiredConsumable = Consumables.Pipe,
             ObstacleIndices = new int[]{Obstacles.Pipe.GetHashCode(), Obstacles.Pipe.GetHashCode(), Obstacles.Pipe.GetHashCode()},
@@ -70,7 +72,8 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = $"You gain {consumableStats[Consumables.Silver.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : "")} and a small boost when you collect silver",
+            Text = $"You gain {consumableStats[Consumables.Silver.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : string.Empty)} and a small boost when you collect silver",
+            TaskCountText = "Remaining silver",
             Task = TutorialTask.Consumable,
             RequiredConsumable = Consumables.Silver,
             ConsumableIndex = Consumables.Silver.GetHashCode(),
@@ -79,7 +82,8 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = $"You gain {consumableStats[Consumables.Gold.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : "")} and a larger boost when you collect gold",
+            Text = $"You gain {consumableStats[Consumables.Gold.GetHashCode()].Score} point{(consumableStats[Consumables.Silver.GetHashCode()].Score > 1 ? "s" : string.Empty)} and a larger boost when you collect gold",
+            TaskCountText = "Remaining gold",
             Task = TutorialTask.Consumable,
             RequiredConsumable = Consumables.Gold,
             ConsumableIndex = Consumables.Gold.GetHashCode(),
@@ -131,6 +135,10 @@ public class GodTutorial : God
             {
                 instance.LoadNextEvent();
             }
+            else if (instance.curEvent.TaskCountText != null)
+            {
+                HUD.UpdateTutorialTaskCountText(instance.curEvent.TaskCountText, instance.curEvent.TaskNum - instance.taskCount);
+            }
         }
     }
     public static void RegisterTask(TutorialTask task, Consumables consumable)
@@ -143,7 +151,7 @@ public class GodTutorial : God
 
     private void LoadNextEvent()
     {
-        eventIndex++;
+        this.eventIndex++;
         if (eventIndex >= events.Length)
         {
             HUD.UpdateTutorialText("Congratulations, you finished the Tutorial!");
@@ -151,21 +159,32 @@ public class GodTutorial : God
         }
         else
         {
-            taskCount = 0;
-            curEvent = events[eventIndex];
-            curEventStartX = this.transform.position.x;
+            this.taskCount = 0;
+            this.curEvent = events[this.eventIndex];
+            this.curEventStartX = this.transform.position.x;
 
             // Spawn obstacles for this event
-            if (curEvent.ObstacleIndices != null)
+            if (this.curEvent.ObstacleIndices != null)
             {
-                for (int i = 0; i < curEvent.ObstacleIndices.Length; i++)
+                for (int i = 0; i < this.curEvent.ObstacleIndices.Length; i++)
                 {
-                    SpawnObstaclePre(curEvent.ObstacleIndices[i], curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x, forceMove: curEvent.ObstacleMovement);
+                    this.SpawnObstaclePre(
+                        this.curEvent.ObstacleIndices[i], 
+                        this.curEvent.ObstaclePositions[i] + Vector3.right * this.transform.position.x, 
+                        forceMove: this.curEvent.ObstacleMovement);
                 }
             }
 
             this.nextConsumableX = this.transform.position.x;
-            HUD.UpdateTutorialText(curEvent.Text);
+            HUD.UpdateTutorialText(this.curEvent.Text);
+            if (this.curEvent.TaskCountText == null)
+            {
+                HUD.ClearTutorialTaskCountText();
+            }
+            else
+            {
+                HUD.UpdateTutorialTaskCountText(this.curEvent.TaskCountText, this.curEvent.TaskNum - this.taskCount);
+            }
         }
     }
 
@@ -185,7 +204,7 @@ public class GodTutorial : God
 
     protected override void Update()
     {
-        if (this.curEvent.Task == TutorialTask.Distance && this.transform.position.x - this.curEventStartX > this.curEvent.RequiredDistance)
+        if (this.curEvent.RequiredDistance.HasValue && this.transform.position.x - this.curEventStartX > this.curEvent.RequiredDistance)
         {
             this.LoadNextEvent();
         }
@@ -197,7 +216,9 @@ public class GodTutorial : God
 
         if (this.curEvent.ConsumableIndex.HasValue && this.transform.position.x >= this.nextConsumableX)
         {
-            SpawnConsumable(this.curEvent.ConsumableIndex.Value, new Vector3(this.transform.position.x + envXLead, Random.Range(-envMaxY, envMaxY), envZ));
+            this.SpawnConsumable(
+                this.curEvent.ConsumableIndex.Value, 
+                new Vector3(this.transform.position.x + envXLead, Random.Range(-envMaxY, envMaxY), envZ));
             this.nextConsumableX += consumableDelay;
         }
 
