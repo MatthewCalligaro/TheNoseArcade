@@ -3,7 +3,7 @@
 /// <summary>
 /// Controller for the option menu
 /// </summary>
-public class OptionMenu : UIElement
+public class OptionMenu : Menu
 {
     /// <summary>
     /// The dropdowns contained in the option menu

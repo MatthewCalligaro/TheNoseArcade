@@ -576,8 +576,8 @@ public class God : MonoBehaviour
         // If the obstacle blocks its Y position, add its top and bottom to curYBlocks
         if (stats.YBlock > 0)
         {
-            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y + stats.YOffset));
-            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock, position.y - stats.YOffset));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock + playerSpace * 2, position.y + stats.YOffset));
+            this.curYBlocks.Add(new Vector2(position.x + stats.YBlock + playerSpace * 2, position.y - stats.YOffset));
         }
     }
 
