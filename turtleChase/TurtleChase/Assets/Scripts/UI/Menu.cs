@@ -1,10 +1,15 @@
-﻿using UnityEngine.SceneManagement;
+﻿using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Defines generalized behavior for all menus
 /// </summary>
 public abstract class Menu : UIElement
 {
+    protected IMenuItem[] items;
+
+    protected int curItem = 0;
+
     /// <summary>
     /// Handles when the Restart button is pressed by reloading the current scene
     /// </summary>
@@ -45,5 +50,29 @@ public abstract class Menu : UIElement
     public void HandleOptions()
     {
         OptionMenu.HandleOpen();
+    }
+
+    public void HandleUp()
+    {
+        items[curItem].HandleExit();
+        curItem = (curItem + 1) % items.Length;
+        items[curItem].HandleEnter();
+    }
+
+    public void HandleDown()
+    {
+        items[curItem].HandleExit();
+        curItem = (curItem - 1 + items.Length) % items.Length;
+        items[curItem].HandleEnter();
+    }
+
+    public void HandleRight()
+    {
+        items[curItem].HandleRight();
+    }
+
+    public void HandleLeft()
+    {
+        items[curItem].HandleLeft();
     }
 }

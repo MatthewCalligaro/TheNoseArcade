@@ -79,7 +79,7 @@ public class Controller : MonoBehaviour, INoseController
     {
         if (openMenus.Count > 0)
         {
-
+            openMenus.Peek().HandleUp();
         }
         else if (player != null)
         {
@@ -93,7 +93,7 @@ public class Controller : MonoBehaviour, INoseController
     {
         if (openMenus.Count > 0)
         {
-
+            openMenus.Peek().HandleDown();
         }
     }
 
@@ -101,13 +101,17 @@ public class Controller : MonoBehaviour, INoseController
     {
         if (openMenus.Count > 0)
         {
-
+            openMenus.Peek().HandleRight();
         }
     }
 
     private void Left()
     {
-        if (player != null)
+        if (openMenus.Count > 0)
+        {
+            openMenus.Peek().HandleLeft();
+        }
+        else if (player != null)
         {
             player.Pause();
             counter = Settings.JumpReloadTime;
