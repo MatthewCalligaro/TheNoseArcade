@@ -1,4 +1,5 @@
-﻿/// <summary>
+﻿using UnityEngine;
+/// <summary>
 /// The different styles in which the player can jump
 /// </summary>
 public enum JumpStyle
@@ -73,6 +74,10 @@ public class Settings
         {
             return settableSettings.Sensitivity.Value;
         }
+        set
+        {
+            settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, maxSensitivity), minSensitivity);
+        }
     }
 
 
@@ -90,6 +95,10 @@ public class Settings
     /// Minimum value for JumpPower
     /// </summary>
     public const float minJumpPower = 0.5f;
+
+    public const int minSensitivity = 5;
+
+    public const int maxSensitivity = 150;
 
     /// <summary>
     /// Minimum delay between jumps
@@ -109,7 +118,7 @@ public class Settings
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
         JumpPower = 1.0f,
-        Sensitivity = 5,
+        Sensitivity = 50,
     };
 
     /// <summary>
