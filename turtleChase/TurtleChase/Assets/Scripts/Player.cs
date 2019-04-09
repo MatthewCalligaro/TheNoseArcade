@@ -156,6 +156,7 @@ public class Player : MonoBehaviour
         BlockingPause = 0;
         HUD.UpdateScore(this.score);
         HUD.UpdateDistance((int)this.transform.position.x);
+        Controller.SetPlayer(this);
     }
 
     protected virtual void Update()
