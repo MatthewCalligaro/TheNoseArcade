@@ -107,6 +107,10 @@ public class Controller : MonoBehaviour, INoseController
 
     private void Left()
     {
-
+        if (player != null)
+        {
+            player.Pause();
+            counter = Settings.JumpReloadTime;
+        }
     }
 }
