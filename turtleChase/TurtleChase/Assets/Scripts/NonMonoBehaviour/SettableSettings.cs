@@ -17,4 +17,9 @@ public class SettableSettings
     /// Baseline magnitude of player jump
     /// </summary>
     public float? JumpPower { get; set; }
+
+    /// <summary>
+    /// Minimum number of pixels for a nose movement to be interpreted as a gesture
+    /// </summary>
+    public int? Sensitivity { get; set; }
 }

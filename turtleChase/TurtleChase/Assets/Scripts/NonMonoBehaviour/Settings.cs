@@ -64,6 +64,17 @@ public class Settings
         }
     }
 
+    /// <summary>
+    /// Minimum number of pixels for a nose movement to be interpreted as a gesture
+    /// </summary>
+    public static int Sensitivity
+    {
+        get
+        {
+            return settableSettings.Sensitivity.Value;
+        }
+    }
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -81,6 +92,11 @@ public class Settings
     public const float minJumpPower = 0.5f;
 
     /// <summary>
+    /// Minimum delay between jumps
+    /// </summary>
+    public const float JumpReloadTime = 0.5f;
+
+    /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
     /// </summary>
     public static readonly float[] difficultyMultipliers = { 1.0f, 1.5f, 2.0f };
@@ -92,7 +108,8 @@ public class Settings
     {
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
-        JumpPower = 1.0f
+        JumpPower = 1.0f,
+        Sensitivity = 5,
     };
 
     /// <summary>
