@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Calibration : MonoBehaviour, INoseController
 {
-    private const float calibrationFactor = 0.6f;
+    private const float calibrationFactor = 0.75f;
 
     private static readonly string[] messages = 
     {
@@ -19,15 +18,20 @@ public class Calibration : MonoBehaviour, INoseController
 
     private int lastY;
 
-    private int maxDy = 0;
+    private DateTime lastTime;
 
-    private int sensitivity;
+    private float maxDy = 0;
+
+    private float sensitivity;
 
     public void UpdateFacePosition(int packed)
     {
         int y = (packed >> 16) & 0xFFFF;
-        this.maxDy = Mathf.Max(y - this.lastY, this.maxDy);
+        DateTime now = DateTime.Now;
+        this.maxDy = Mathf.Max((y - lastY) / ((float)(now - lastTime).TotalMilliseconds), this.maxDy);
+
         this.lastY = y;
+        this.lastTime = now;
     }
 
     private void Update()
@@ -43,9 +47,9 @@ public class Calibration : MonoBehaviour, INoseController
             this.curStage++;
             if (this.curStage >= messages.Length)
             {
-                Settings.Sensitivity = (int)((this.sensitivity / 3) * calibrationFactor);
+                Settings.Sensitivity = (this.sensitivity / 3) * calibrationFactor;
                 Debug.Log(Settings.Sensitivity);
-                SceneManager.LoadScene(0);
+                SceneManager.LoadScene("MainMenu");
             }
             else
             {

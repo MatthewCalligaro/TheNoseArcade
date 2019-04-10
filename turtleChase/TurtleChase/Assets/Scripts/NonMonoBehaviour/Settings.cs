@@ -66,9 +66,9 @@ public class Settings
     }
 
     /// <summary>
-    /// Minimum number of pixels for a nose movement to be interpreted as a gesture
+    /// Minimum number of pixels/millisecond for a nose movement to be interpreted as a gesture
     /// </summary>
-    public static int Sensitivity
+    public static float Sensitivity
     {
         get
         {
@@ -87,24 +87,33 @@ public class Settings
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
+    /// Minimum value for JumpPower
+    /// </summary>
+    public const float minJumpPower = 0.5f;
+
+    /// <summary>
     /// Maximum value for JumpPower
     /// </summary>
     public const float maxJumpPower = 1.5f;
 
     /// <summary>
-    /// Minimum value for JumpPower
+    /// Minimum value for Sensitivity
     /// </summary>
-    public const float minJumpPower = 0.5f;
+    public const float minSensitivity = 0.2f;
 
-    public const int minSensitivity = 5;
-
-    public const int maxSensitivity = 150;
+    /// <summary>
+    /// Maximum value for Sensitivity
+    /// </summary>
+    public const float maxSensitivity = 5.0f;
 
     /// <summary>
     /// Minimum delay between jumps
     /// </summary>
     public const float JumpReloadTime = 0.5f;
 
+    /// <summary>
+    /// Minimum time between Menu actions
+    /// </summary>
     public const float MenuMoveReloadTime = 0.5f;
 
     /// <summary>
@@ -120,7 +129,7 @@ public class Settings
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
         JumpPower = 1.0f,
-        Sensitivity = 50,
+        Sensitivity = 2.0f,
     };
 
     /// <summary>

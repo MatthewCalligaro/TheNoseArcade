@@ -283,7 +283,7 @@ public class GodTutorial : God
 
         if (this.transform.position.x > this.finishX)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("MainMenu");
         }
 
         // Spawn the next consumable if we surpassed nextConsumableX

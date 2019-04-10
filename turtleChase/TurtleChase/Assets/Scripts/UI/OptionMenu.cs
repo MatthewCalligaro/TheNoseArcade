@@ -60,7 +60,7 @@ public class OptionMenu : Menu
         {
             // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
             // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
-            curSettings.Sensitivity = Settings.maxSensitivity - (int)(this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.maxSensitivity - Settings.minSensitivity));
+            curSettings.Sensitivity = Settings.maxSensitivity - this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.maxSensitivity - Settings.minSensitivity);
         }
     }
 

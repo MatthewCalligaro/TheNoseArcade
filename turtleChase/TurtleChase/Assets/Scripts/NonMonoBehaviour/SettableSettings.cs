@@ -19,7 +19,7 @@ public class SettableSettings
     public float? JumpPower { get; set; }
 
     /// <summary>
-    /// Minimum number of pixels for a nose movement to be interpreted as a gesture
+    /// Minimum number of pixels/millisecond for a nose movement to be interpreted as a gesture
     /// </summary>
-    public int? Sensitivity { get; set; }
+    public float? Sensitivity { get; set; }
 }

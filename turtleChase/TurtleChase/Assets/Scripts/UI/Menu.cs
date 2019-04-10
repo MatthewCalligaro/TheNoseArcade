@@ -27,7 +27,7 @@ public abstract class Menu : UIElement
     {
         Time.timeScale = 1;
         this.MenuClose();
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public abstract class Menu : UIElement
     {
         Settings.Difficulty = (Difficulty)difficulty;
         this.MenuClose();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Main");
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public abstract class Menu : UIElement
     public void HandleTutorial()
     {
         this.MenuClose();
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene("Tutorial");
     }
 
     /// <summary>

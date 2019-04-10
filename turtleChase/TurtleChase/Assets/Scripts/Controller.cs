@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Controller : MonoBehaviour, INoseController
 {
+    private const float initalWaitTime = 0.5f;
+
     private Player player;
 
     private static Controller instance;
@@ -11,9 +13,11 @@ public class Controller : MonoBehaviour, INoseController
     private int lastX;
     private int lastY;
 
+    private DateTime lastTime;
+
     private Stack<Menu> openMenus = new Stack<Menu>();
 
-    private float counter = 1;
+    private float counter = initalWaitTime;
 
     public static void SetPlayer(Player player)
     {
@@ -34,22 +38,26 @@ public class Controller : MonoBehaviour, INoseController
     {
         int x = packed & 0xFFFF;
         int y = (packed >> 16) & 0xFFFF;
+        DateTime now = DateTime.Now;
+
+        float dx = (x - lastX) / ((float)(now - lastTime).TotalMilliseconds);
+        float dy = (y - lastY) / ((float)(now - lastTime).TotalMilliseconds);
 
         if (counter == 0)
         {
-            if (y - this.lastY > Settings.Sensitivity)
+            if (dy > Settings.Sensitivity)
             {
                 Up();
             }
-            else if (this.lastY - y > Settings.Sensitivity)
+            else if (dy < -Settings.Sensitivity)
             {
                 Down();
             }
-            else if (x - this.lastX > Settings.Sensitivity)
+            else if (dx > Settings.Sensitivity)
             {
                 Right();
             }
-            else if (this.lastX - x > Settings.Sensitivity)
+            else if (dx < -Settings.Sensitivity)
             {
                 Left();            
             }
@@ -57,6 +65,7 @@ public class Controller : MonoBehaviour, INoseController
 
         this.lastX = x;
         this.lastY = y;
+        this.lastTime = now;
     }
 
 
