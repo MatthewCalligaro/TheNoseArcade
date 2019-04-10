@@ -44,11 +44,10 @@ public class OptionMenu : Menu
     public static void HandleOpen()
     {
         Player.BlockingPause++;
-        Controller.AddMenu(instance);
         instance.gameObject.SetActive(true);
         instance.curSettings = new SettableSettings();
         instance.ResetUIValues();
-        instance.items[instance.curItem].HandleEnter();
+        instance.MenuOpen();
     }
 
     /// <summary>
@@ -101,7 +100,7 @@ public class OptionMenu : Menu
     public void HandleQuit()
     {
         Player.BlockingPause--;
-        Controller.RemoveMenu();
+        this.MenuClose();
         this.gameObject.SetActive(false);
     }
 

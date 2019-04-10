@@ -6,9 +6,21 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public abstract class Menu : UIElement
 {
+    /// <summary>
+    /// Menu items which can be interacted with through face controls
+    /// </summary>
     protected IMenuItem[] items;
 
+    /// <summary>
+    /// The current item selected by face controls
+    /// </summary>
     protected int curItem = 0;
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Public Methods
+    ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Handles when the Restart button is pressed by reloading the current scene
@@ -58,6 +70,9 @@ public abstract class Menu : UIElement
         OptionMenu.HandleOpen();
     }
 
+    /// <summary>
+    /// Handles when the user swipes their nose up by selecting the above item
+    /// </summary>
     public void HandleUp()
     {
         this.items[this.curItem].HandleExit();
@@ -65,6 +80,9 @@ public abstract class Menu : UIElement
         this.items[this.curItem].HandleEnter();
     }
 
+    /// <summary>
+    /// Handles when the user swipes their nose down by selecting the below item
+    /// </summary>
     public void HandleDown()
     {
         this.items[this.curItem].HandleExit();
@@ -72,15 +90,27 @@ public abstract class Menu : UIElement
         this.items[this.curItem].HandleEnter();
     }
 
+    /// <summary>
+    /// Handles when the user swipes their nose right by passing this on to the selected item
+    /// </summary>
     public void HandleRight()
     {
         this.items[this.curItem].HandleRight();
     }
 
+    /// <summary>
+    /// Handles when the user swipes their nose left by passing this on to the selected item
+    /// </summary>
     public void HandleLeft()
     {
         this.items[this.curItem].HandleLeft();
     }
+    
+
+
+    ////////////////////////////////////////////////////////////////
+    // Unity Methods
+    ////////////////////////////////////////////////////////////////
 
     protected override void Start()
     {
@@ -88,12 +118,24 @@ public abstract class Menu : UIElement
         this.items = this.GetComponentsInChildren<IMenuItem>();
     }
 
+
+
+    ////////////////////////////////////////////////////////////////
+    // Protected Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Called when the Menu is opened to register itself with the Controller
+    /// </summary>
     protected virtual void MenuOpen()
     {
         Controller.AddMenu(this);
         this.items[this.curItem].HandleEnter();
     }
 
+    /// <summary>
+    /// Called when the Menu is closed to remove itself from the Controller
+    /// </summary>
     protected virtual void MenuClose()
     {
         this.items[this.curItem].HandleExit();

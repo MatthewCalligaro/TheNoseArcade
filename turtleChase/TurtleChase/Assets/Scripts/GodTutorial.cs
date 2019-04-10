@@ -34,6 +34,9 @@ public class GodTutorial : God
         }
     }
 
+    /// <summary>
+    /// Whether the tutorial blocks the PauseMenu's MainMenu button
+    /// </summary>
     public static bool BlockingMainMenu
     {
         get

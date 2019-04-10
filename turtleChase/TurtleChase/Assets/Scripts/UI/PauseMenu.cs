@@ -15,6 +15,9 @@ public class PauseMenu : Menu
     /// </summary>
     private bool paused = false;
 
+    /// <summary>
+    /// UI elements which help direct the user to the resume button in the tutorial
+    /// </summary>
     private GameObject tutorialHelper;
 
 
@@ -53,8 +56,12 @@ public class PauseMenu : Menu
         Pause();
     }
 
+    /// <summary>
+    /// Handles when the MainMenu button is pressed by returning to the main menu
+    /// </summary>
     public override void HandleMainMenu()
     {
+        // First make sure that we are not being blocked by the tutorial
         if (GodTutorial.BlockingMainMenu)
         {
             this.tutorialHelper.SetActive(true);
@@ -79,6 +86,7 @@ public class PauseMenu : Menu
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
 
+        // Find the tutorialHelper gameobject (which is one of our children)
         this.tutorialHelper = this.transform.Find("TutorialHelper").gameObject;
         this.tutorialHelper.SetActive(false);
     }

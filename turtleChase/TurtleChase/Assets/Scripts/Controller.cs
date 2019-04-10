@@ -4,36 +4,83 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour, INoseController
 {
+    /// <summary>
+    /// Time before the controlle begins responding to input when first instantiated
+    /// </summary>
     private const float initalWaitTime = 0.5f;
 
-    private Player player;
-
+    /// <summary>
+    /// Static reference to the one Controller object in the scene to enable static methods
+    /// </summary>
     private static Controller instance;
 
-    private int lastX;
-    private int lastY;
+    /// <summary>
+    /// The player object currently controlled by the Controller
+    /// </summary>
+    private Player player;
 
-    private DateTime lastTime;
-
+    /// <summary>
+    /// Menus currently open with the "top" menu on top
+    /// </summary>
     private Stack<Menu> openMenus = new Stack<Menu>();
 
+    /// <summary>
+    /// The X pixel position of the last recieved face position
+    /// </summary>
+    private int lastX;
+
+    /// <summary>
+    /// The Y pixel position of the last recieved face position
+    /// </summary>
+    private int lastY;
+
+    /// <summary>
+    /// The time at which the last face position was recieved
+    /// </summary>
+    private DateTime lastTime;
+
+    /// <summary>
+    /// Time until the next action can occur
+    /// </summary>
     private float counter = initalWaitTime;
 
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Public Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Sets the player controlled by the current Controller
+    /// </summary>
+    /// <param name="player">Player object for the controller to control</param>
     public static void SetPlayer(Player player)
     {
         instance.player = player;
     }
 
+    /// <summary>
+    /// Adds a Menu for the Controller to control
+    /// </summary>
+    /// <param name="menu">The newest menu to control</param>
     public static void AddMenu(Menu menu)
     {
         instance.openMenus.Push(menu);
     }
 
+    /// <summary>
+    /// Removes the highest level menu from the Controller
+    /// </summary>
     public static void RemoveMenu()
     {
         instance.openMenus.Pop();
     }
 
+    /// <summary>
+    /// Updates the controller with the current user's face position
+    /// </summary>
+    /// <param name="packed">32 bit signed int with the 16 least significant bits representing the x pixel and the 16 most significant bits representing the y pixel</param>
     public void UpdateFacePosition(int packed)
     {
         int x = packed & 0xFFFF;
@@ -69,6 +116,11 @@ public class Controller : MonoBehaviour, INoseController
     }
 
 
+
+    ////////////////////////////////////////////////////////////////
+    // Unity Methods
+    ////////////////////////////////////////////////////////////////
+
     private void Awake()
     {
         instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<Controller>();
@@ -84,6 +136,15 @@ public class Controller : MonoBehaviour, INoseController
         }
     }
 
+
+
+    ////////////////////////////////////////////////////////////////
+    // Private Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Handles an upward face swipe (jump or menu action)
+    /// </summary>
     private void Up()
     {
         if (openMenus.Count > 0)
@@ -99,6 +160,9 @@ public class Controller : MonoBehaviour, INoseController
         }
     }
 
+    /// <summary>
+    /// Handles a downward face swipe (menu action)
+    /// </summary>
     private void Down()
     {
         if (openMenus.Count > 0)
@@ -108,6 +172,9 @@ public class Controller : MonoBehaviour, INoseController
         }
     }
 
+    /// <summary>
+    /// Handles a right face swipe (menu action)
+    /// </summary>
     private void Right()
     {
         if (openMenus.Count > 0)
@@ -116,7 +183,10 @@ public class Controller : MonoBehaviour, INoseController
             counter = Settings.MenuMoveReloadTime;
         }
     }
-
+    
+    /// <summary>
+    /// Handles a left face swipe (pause or menu action)
+    /// </summary>
     private void Left()
     {
         if (openMenus.Count > 0)
