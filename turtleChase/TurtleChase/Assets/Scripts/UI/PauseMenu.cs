@@ -13,7 +13,12 @@ public class PauseMenu : Menu
     /// <summary>
     /// True if the game is currently paused
     /// </summary>
-    private static bool paused;
+    private bool paused = false;
+
+    /// <summary>
+    /// UI elements which help direct the user to the resume button in the tutorial
+    /// </summary>
+    private GameObject tutorialHelper;
 
 
 
@@ -26,19 +31,19 @@ public class PauseMenu : Menu
     /// </summary>
     public static void Pause()
     {
-        paused = !paused;
-        Time.timeScale = paused ? 0 : 1;
-        instance.gameObject.SetActive(paused);
-    }
+        instance.paused = !instance.paused;
+        instance.gameObject.SetActive(instance.paused);
 
-    /// <summary>
-    /// Pauses or unpauses the game
-    /// </summary>
-    /// <param name="pause">True to pause the game, false to unpause</param>
-    public static void Pause(bool pause)
-    {
-        paused = !pause;
-        Pause();
+        if (instance.paused)
+        {
+            instance.MenuOpen();
+            Time.timeScale = 0;
+        }
+        else
+        {
+            instance.MenuClose();
+            Time.timeScale = 1;
+        }
     }
     
     /// <summary>
@@ -46,8 +51,25 @@ public class PauseMenu : Menu
     /// </summary>
     public void HandleResume()
     {
-        GodTutorial.RegisterTask(TutorialTask.MenuSelect);
-        Pause(false);
+        GodTutorial.RegisterTask(TutorialTask.PressPause);
+        this.tutorialHelper.SetActive(false);
+        Pause();
+    }
+
+    /// <summary>
+    /// Handles when the MainMenu button is pressed by returning to the main menu
+    /// </summary>
+    public override void HandleMainMenu()
+    {
+        // First make sure that we are not being blocked by the tutorial
+        if (GodTutorial.BlockingMainMenu)
+        {
+            this.tutorialHelper.SetActive(true);
+        }
+        else
+        {
+            base.HandleMainMenu();
+        }
     }
 
 
@@ -63,11 +85,9 @@ public class PauseMenu : Menu
 
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
-    }
 
-    protected override void Start()
-    {
-        base.Start();
-        Pause(false);
+        // Find the tutorialHelper gameobject (which is one of our children)
+        this.tutorialHelper = this.transform.Find("TutorialHelper").gameObject;
+        this.tutorialHelper.SetActive(false);
     }
 }

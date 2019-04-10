@@ -35,6 +35,7 @@ public class LossMenu : Menu
         Time.timeScale = 0;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+        instance.MenuOpen();
     }
 
     protected override void Awake()

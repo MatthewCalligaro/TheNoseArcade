@@ -9,7 +9,7 @@ public enum TutorialTask
     Jump,
     Pause,
     MenuMove,
-    MenuSelect,
+    PressPause,
     Distance,
     Consumable
 }
@@ -34,6 +34,17 @@ public class GodTutorial : God
         }
     }
 
+    /// <summary>
+    /// Whether the tutorial blocks the PauseMenu's MainMenu button
+    /// </summary>
+    public static bool BlockingMainMenu
+    {
+        get
+        {
+            return instance.curEventIndex == 2;
+        }
+    }
+
     ////////////////////////////////////////////////////////////////
     // Fields
     ////////////////////////////////////////////////////////////////
@@ -55,7 +66,7 @@ public class GodTutorial : God
     {
         new TutorialEvent
         {
-            Text = "Raise your nose or press the spacebar to jump",
+            Text = "Raise your nose (or press the spacebar) to jump",
             TaskCountText = "Remaining jumps",
             Task = TutorialTask.Jump,
             TaskNum = 3
@@ -63,15 +74,15 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = "Press the escape key to pause",
+            Text = "Swipe your nose left (or press the escape key) to pause the game",
             Task = TutorialTask.Pause,
             TaskNum = 1
         },
 
         new TutorialEvent
         {
-            Text = "Left click the resume button with the mouse to resume",
-            Task = TutorialTask.MenuSelect,
+            Text = "You can toggle which button is selected by swiping your nose up and down and press the selected button by swiping right.  Press the resume button now",
+            Task = TutorialTask.PressPause,
             TaskNum = 1
         },
 
@@ -145,7 +156,7 @@ public class GodTutorial : God
     /// <summary>
     /// Index of the current event in events
     /// </summary>
-    private int eventIndex;
+    private int curEventIndex;
 
     /// <summary>
     /// Times the current task has been completed
@@ -216,16 +227,16 @@ public class GodTutorial : God
     /// </summary>
     private void LoadNextEvent()
     {
-        this.eventIndex++;
-        if (this.eventIndex == events.Length) // Intentionally not >= so that repeating the final task does not reset finishX
+        this.curEventIndex++;
+        if (this.curEventIndex == events.Length) // Intentionally not >= so that repeating the final task does not reset finishX
         {
             HUD.UpdateTutorialText("Congratulations, you finished the Tutorial!");
             this.finishX = this.transform.position.x + 10;
         }
-        else if (this.eventIndex < events.Length)
+        else if (this.curEventIndex < events.Length)
         {
             this.taskCount = 0;
-            this.curEvent = events[this.eventIndex];
+            this.curEvent = events[this.curEventIndex];
             this.curEventStartX = this.transform.position.x;
             this.nextConsumableX = this.transform.position.x;
 
@@ -267,9 +278,9 @@ public class GodTutorial : God
     protected override void Start()
     {
         base.Start();
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<GodTutorial>();
+        instance = GameObject.FindGameObjectsWithTag("God")[0].GetComponent<GodTutorial>();
 
-        this.eventIndex = -1;
+        this.curEventIndex = -1;
         this.LoadNextEvent();
     }
 
@@ -283,7 +294,7 @@ public class GodTutorial : God
 
         if (this.transform.position.x > this.finishX)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("MainMenu");
         }
 
         // Spawn the next consumable if we surpassed nextConsumableX

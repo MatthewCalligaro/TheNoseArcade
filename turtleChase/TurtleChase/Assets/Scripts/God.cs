@@ -372,7 +372,7 @@ public class God : MonoBehaviour
     protected virtual void Start ()
     {
         // Find self and camera
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
+        instance = GameObject.FindGameObjectsWithTag("God")[0].GetComponent<God>();
         this.gameCamera = this.GetComponentInChildren<Camera>();
 
         // Spawn first two pairs of boundaries

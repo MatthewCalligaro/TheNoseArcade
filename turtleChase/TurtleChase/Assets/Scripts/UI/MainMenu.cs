@@ -22,4 +22,10 @@ public class MainMenu : Menu
         // Find the single MainMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("MainMenu")[0].GetComponent<MainMenu>();
     }
+
+    protected override void Start()
+    {
+        base.Start();
+        this.MenuOpen();
+    }
 }

@@ -1,4 +1,5 @@
-﻿/// <summary>
+﻿using UnityEngine;
+/// <summary>
 /// The different styles in which the player can jump
 /// </summary>
 public enum JumpStyle
@@ -64,6 +65,21 @@ public class Settings
         }
     }
 
+    /// <summary>
+    /// Minimum number of pixels/millisecond for a nose movement to be interpreted as a gesture
+    /// </summary>
+    public static float Sensitivity
+    {
+        get
+        {
+            return settableSettings.Sensitivity.Value;
+        }
+        set
+        {
+            settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, maxSensitivity), minSensitivity);
+        }
+    }
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -71,14 +87,34 @@ public class Settings
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
+    /// Minimum value for JumpPower
+    /// </summary>
+    public const float minJumpPower = 0.5f;
+
+    /// <summary>
     /// Maximum value for JumpPower
     /// </summary>
     public const float maxJumpPower = 1.5f;
 
     /// <summary>
-    /// Minimum value for JumpPower
+    /// Minimum value for Sensitivity
     /// </summary>
-    public const float minJumpPower = 0.5f;
+    public const float minSensitivity = 0.2f;
+
+    /// <summary>
+    /// Maximum value for Sensitivity
+    /// </summary>
+    public const float maxSensitivity = 5.0f;
+
+    /// <summary>
+    /// Minimum delay between jumps
+    /// </summary>
+    public const float JumpReloadTime = 0.5f;
+
+    /// <summary>
+    /// Minimum time between Menu actions
+    /// </summary>
+    public const float MenuMoveReloadTime = 0.5f;
 
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
@@ -92,7 +128,8 @@ public class Settings
     {
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
-        JumpPower = 1.0f
+        JumpPower = 1.0f,
+        Sensitivity = 2.0f,
     };
 
     /// <summary>
@@ -132,6 +169,11 @@ public class Settings
         if (newSettings.JumpPower.HasValue)
         {
             settableSettings.JumpPower = newSettings.JumpPower;
+        }
+        if (newSettings.Sensitivity.HasValue)
+        {
+            Debug.Log(newSettings.Sensitivity.Value);
+            settableSettings.Sensitivity = newSettings.Sensitivity;
         }
     }
 }
