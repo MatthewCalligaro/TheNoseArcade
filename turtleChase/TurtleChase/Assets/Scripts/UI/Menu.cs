@@ -23,7 +23,7 @@ public abstract class Menu : UIElement
     /// <summary>
     /// Handles when the MainMenu button is pressed by loading the main menu scene
     /// </summary>
-    public void HandleMainMenu()
+    public virtual void HandleMainMenu()
     {
         Time.timeScale = 1;
         this.MenuClose();

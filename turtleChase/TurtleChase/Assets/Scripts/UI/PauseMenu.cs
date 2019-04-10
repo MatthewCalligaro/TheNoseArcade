@@ -15,6 +15,8 @@ public class PauseMenu : Menu
     /// </summary>
     private bool paused = false;
 
+    private GameObject tutorialHelper;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -46,8 +48,21 @@ public class PauseMenu : Menu
     /// </summary>
     public void HandleResume()
     {
-        GodTutorial.RegisterTask(TutorialTask.MenuSelect);
+        GodTutorial.RegisterTask(TutorialTask.PressPause);
+        this.tutorialHelper.SetActive(false);
         Pause();
+    }
+
+    public override void HandleMainMenu()
+    {
+        if (GodTutorial.BlockingMainMenu)
+        {
+            this.tutorialHelper.SetActive(true);
+        }
+        else
+        {
+            base.HandleMainMenu();
+        }
     }
 
 
@@ -63,5 +78,8 @@ public class PauseMenu : Menu
 
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
+
+        this.tutorialHelper = this.transform.Find("TutorialHelper").gameObject;
+        this.tutorialHelper.SetActive(false);
     }
 }
