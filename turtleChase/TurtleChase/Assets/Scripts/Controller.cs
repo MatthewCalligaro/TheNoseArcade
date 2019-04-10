@@ -60,12 +60,12 @@ public class Controller : MonoBehaviour, INoseController
     }
 
 
-    void Start()
+    private void Awake()
     {
         instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<Controller>();
     }
 
-    void Update()
+    private void Update()
     {
         counter = Mathf.Max(counter - Time.deltaTime, 0);
 
@@ -80,6 +80,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleUp();
+            counter = Settings.MenuMoveReloadTime;
         }
         else if (player != null)
         {
@@ -94,6 +95,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleDown();
+            counter = Settings.MenuMoveReloadTime;
         }
     }
 
@@ -102,6 +104,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleRight();
+            counter = Settings.MenuMoveReloadTime;
         }
     }
 
@@ -110,6 +113,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleLeft();
+            counter = Settings.MenuMoveReloadTime;
         }
         else if (player != null)
         {

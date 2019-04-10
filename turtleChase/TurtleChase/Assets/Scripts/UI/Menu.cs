@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -15,6 +15,7 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleRestart()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -23,6 +24,7 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleMainMenu()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
 
@@ -54,25 +56,25 @@ public abstract class Menu : UIElement
 
     public void HandleUp()
     {
-        items[curItem].HandleExit();
-        curItem = (curItem + 1) % items.Length;
-        items[curItem].HandleEnter();
+        this.items[this.curItem].HandleExit();
+        this.curItem = (this.curItem - 1 + this.items.Length) % this.items.Length;
+        this.items[this.curItem].HandleEnter();
     }
 
     public void HandleDown()
     {
-        items[curItem].HandleExit();
-        curItem = (curItem - 1 + items.Length) % items.Length;
-        items[curItem].HandleEnter();
+        this.items[this.curItem].HandleExit();
+        this.curItem = (this.curItem + 1 + this.items.Length) % this.items.Length;
+        this.items[this.curItem].HandleEnter();
     }
 
     public void HandleRight()
     {
-        items[curItem].HandleRight();
+        this.items[this.curItem].HandleRight();
     }
 
     public void HandleLeft()
     {
-        items[curItem].HandleLeft();
+        this.items[this.curItem].HandleLeft();
     }
 }

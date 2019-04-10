@@ -32,6 +32,7 @@ public class LossMenu : Menu
     public static void HandleLoss(int score)
     {
         Player.BlockingPause++;
+        Controller.AddMenu(instance);
         Time.timeScale = 0;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
@@ -44,5 +45,8 @@ public class LossMenu : Menu
 
         // Find the single LossMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("LossMenu")[0].GetComponent<LossMenu>();
+
+        // MenuButtons are the only type of interactable MenuItem in LossMenu
+        this.items = this.GetComponentsInChildren<MenuButton>();
     }
 }

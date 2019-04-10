@@ -105,6 +105,8 @@ public class Settings
     /// </summary>
     public const float JumpReloadTime = 0.5f;
 
+    public const float MenuMoveReloadTime = 0.5f;
+
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
     /// </summary>

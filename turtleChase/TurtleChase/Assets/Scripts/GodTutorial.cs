@@ -267,7 +267,7 @@ public class GodTutorial : God
     protected override void Start()
     {
         base.Start();
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<GodTutorial>();
+        instance = GameObject.FindGameObjectsWithTag("God")[0].GetComponent<GodTutorial>();
 
         this.eventIndex = -1;
         this.LoadNextEvent();

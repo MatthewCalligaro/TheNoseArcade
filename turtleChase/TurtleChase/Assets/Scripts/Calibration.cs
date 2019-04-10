@@ -23,10 +23,6 @@ public class Calibration : MonoBehaviour, INoseController
 
     private int sensitivity;
 
-
-
-
-
     public void UpdateFacePosition(int packed)
     {
         int y = (packed >> 16) & 0xFFFF;

@@ -13,7 +13,7 @@ public class PauseMenu : Menu
     /// <summary>
     /// True if the game is currently paused
     /// </summary>
-    private static bool paused;
+    private bool paused = false;
 
 
 
@@ -26,19 +26,20 @@ public class PauseMenu : Menu
     /// </summary>
     public static void Pause()
     {
-        paused = !paused;
-        Time.timeScale = paused ? 0 : 1;
-        instance.gameObject.SetActive(paused);
-    }
+        instance.paused = !instance.paused;
+        instance.gameObject.SetActive(instance.paused);
 
-    /// <summary>
-    /// Pauses or unpauses the game
-    /// </summary>
-    /// <param name="pause">True to pause the game, false to unpause</param>
-    public static void Pause(bool pause)
-    {
-        paused = !pause;
-        Pause();
+        if (instance.paused)
+        {
+            Controller.AddMenu(instance);
+            Time.timeScale = 0;
+            instance.items[instance.curItem].HandleEnter();
+        }
+        else
+        {
+            Controller.RemoveMenu();
+            Time.timeScale = 1;
+        }
     }
     
     /// <summary>
@@ -47,7 +48,7 @@ public class PauseMenu : Menu
     public void HandleResume()
     {
         GodTutorial.RegisterTask(TutorialTask.MenuSelect);
-        Pause(false);
+        Pause();
     }
 
 
@@ -63,11 +64,8 @@ public class PauseMenu : Menu
 
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
-    }
 
-    protected override void Start()
-    {
-        base.Start();
-        Pause(false);
+        // MenuButtons are the only type of interactable MenuItem in PauseMenu
+        this.items = this.GetComponentsInChildren<MenuButton>();
     }
 }

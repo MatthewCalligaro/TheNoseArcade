@@ -5,14 +5,17 @@ using UnityEngine.UI;
 
 public class MenuButton : MonoBehaviour, IMenuItem
 {
+    private static readonly Color pressedColor = new Color(0.75f, 1, 1);
+    private static readonly Color releasedColor = Color.white;
+
     public void HandleEnter()
     {
-
+        this.GetComponent<Image>().color = pressedColor;
     }
 
     public void HandleExit()
     {
-        throw new System.NotImplementedException();
+        this.GetComponent<Image>().color = releasedColor;
     }
 
     public void HandleLeft()
@@ -22,6 +25,6 @@ public class MenuButton : MonoBehaviour, IMenuItem
 
     public void HandleRight()
     {
-
+        this.GetComponent<Button>().onClick.Invoke();
     }
 }
