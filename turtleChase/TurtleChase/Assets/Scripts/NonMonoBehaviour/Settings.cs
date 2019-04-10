@@ -161,5 +161,10 @@ public class Settings
         {
             settableSettings.JumpPower = newSettings.JumpPower;
         }
+        if (newSettings.Sensitivity.HasValue)
+        {
+            Debug.Log(newSettings.Sensitivity.Value);
+            settableSettings.Sensitivity = newSettings.Sensitivity;
+        }
     }
 }

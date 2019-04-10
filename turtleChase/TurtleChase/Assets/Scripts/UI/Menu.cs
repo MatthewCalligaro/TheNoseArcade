@@ -77,4 +77,10 @@ public abstract class Menu : UIElement
     {
         this.items[this.curItem].HandleLeft();
     }
+
+    protected override void Start()
+    {
+        base.Start();
+        this.items = this.GetComponentsInChildren<IMenuItem>();
+    }
 }

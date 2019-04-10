@@ -64,8 +64,5 @@ public class PauseMenu : Menu
 
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
-
-        // MenuButtons are the only type of interactable MenuItem in PauseMenu
-        this.items = this.GetComponentsInChildren<MenuButton>();
     }
 }

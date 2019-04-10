@@ -43,7 +43,7 @@ public class MenuSlider : MonoBehaviour, IMenuItem
     /// </summary>
     public void HandleLeft()
     {
-        this.GetComponent<Slider>().value = Mathf.Min(this.GetComponent<Slider>().value - 0.1f, 0);
+        this.GetComponent<Slider>().value = Mathf.Max(this.GetComponent<Slider>().value - 0.1f, 0);
     }
 
     /// <summary>

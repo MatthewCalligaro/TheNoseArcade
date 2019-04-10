@@ -10,7 +10,6 @@ public class OptionMenu : Menu
     /// </summary>
     private enum Dropdowns
     {
-        Difficulty,
         JumpStyle
     }
 
@@ -19,6 +18,7 @@ public class OptionMenu : Menu
     /// </summary>
     private enum Sliders
     {
+        Sensitivity,
         JumpPower
     }
 
@@ -52,11 +52,21 @@ public class OptionMenu : Menu
     }
 
     /// <summary>
-    /// Handles when the Difficulty dropdown is changed by updating the relevant setting
+    /// Handles when the Sensitivity slider is changed by updating the relevant setting
     /// </summary>
-    public void ChangeDifficulty()
+    public void ChangeSensitivity()
     {
-        curSettings.Difficulty = (Difficulty)this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value;
+        // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
+        // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
+        curSettings.Sensitivity = Settings.maxSensitivity - (int)(this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.maxSensitivity - Settings.minSensitivity));
+    }
+
+    /// <summary>
+    /// Handles when the JumpPower slider is changed by updating the relevant setting
+    /// </summary>
+    public void ChangeJumpPower()
+    {
+        curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
     }
 
     /// <summary>
@@ -68,14 +78,6 @@ public class OptionMenu : Menu
         {
             curSettings.JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value;
         }
-    }
-
-    /// <summary>
-    /// Handles when the JumpPower slider is changed by updating the relevant setting
-    /// </summary>
-    public void ChangeJumpPower()
-    {
-        curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
     }
 
     /// <summary>
@@ -93,6 +95,7 @@ public class OptionMenu : Menu
     public void HandleQuit()
     {
         Player.BlockingPause--;
+        Controller.RemoveMenu();
         this.gameObject.SetActive(false);
     }
 
@@ -131,8 +134,8 @@ public class OptionMenu : Menu
     /// </summary>
     private void ResetUIValues()
     {
-        this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value = Settings.Difficulty.GetHashCode();
-        this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
+        this.sliders[Sliders.Sensitivity.GetHashCode()].value = ((float)(Settings.maxSensitivity - Settings.Sensitivity)) / (Settings.maxSensitivity - Settings.minSensitivity);
         this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.minJumpPower) / (Settings.maxJumpPower - Settings.minJumpPower);
+        this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
     }
 }
