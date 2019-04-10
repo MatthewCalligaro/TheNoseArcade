@@ -83,8 +83,8 @@ public class Controller : MonoBehaviour, INoseController
     /// <param name="packed">32 bit signed int with the 16 least significant bits representing the x pixel and the 16 most significant bits representing the y pixel</param>
     public void UpdateFacePosition(int packed)
     {
-        int x = packed & 0xFFFF;
-        int y = (packed >> 16) & 0xFFFF;
+        int x = (packed >> 9) & 0x3FF;
+        int y = (packed >> 19) & 0x3FF;
         DateTime now = DateTime.Now;
 
         float dx = (x - lastX) / ((float)(now - lastTime).TotalMilliseconds);

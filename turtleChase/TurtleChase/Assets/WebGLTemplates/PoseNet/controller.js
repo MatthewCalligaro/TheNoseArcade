@@ -82,13 +82,9 @@ function sendCoords(x, y) {
   // Bottom 9 bits get corrupted; move coords out of the way
   packedCoords = packedCoords << 9;
 
-  // TODO: add this to the C# code in place of existing
-  // int x = (packed >> 9) & 0x3FF;
-  // int y = (packed >> 19) & 0x3FF;
-
   // Attempt to send packed coordinates to the game
   try {
-    gameInstance.SendMessage('Player', 'UpdateFacePosition', packedCoords);
+    gameInstance.SendMessage('Controller', 'UpdateFacePosition', packedCoords);
     console.log('Success - Coordinates ' + fixedNoseX + ', ' + fixedNoseY + ' sent successfully.');
   } catch (err) {
     console.log('Failure - Coordinates ' + fixedNoseX + ', ' + fixedNoseY + ' failed to send: ' + err);
