@@ -32,10 +32,10 @@ public class LossMenu : Menu
     public static void HandleLoss(int score)
     {
         Player.BlockingPause++;
-        Controller.AddMenu(instance);
         Time.timeScale = 0;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+        instance.MenuOpen();
     }
 
     protected override void Awake()

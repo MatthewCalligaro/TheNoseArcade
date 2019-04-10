@@ -56,9 +56,12 @@ public class OptionMenu : Menu
     /// </summary>
     public void ChangeSensitivity()
     {
-        // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
-        // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
-        curSettings.Sensitivity = Settings.maxSensitivity - (int)(this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.maxSensitivity - Settings.minSensitivity));
+        if (this.sliders.Length > 0)
+        {
+            // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
+            // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
+            curSettings.Sensitivity = Settings.maxSensitivity - (int)(this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.maxSensitivity - Settings.minSensitivity));
+        }
     }
 
     /// <summary>
@@ -66,7 +69,10 @@ public class OptionMenu : Menu
     /// </summary>
     public void ChangeJumpPower()
     {
-        curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
+        if (this.sliders.Length > 0)
+        {
+            curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
+        }
     }
 
     /// <summary>

@@ -22,7 +22,6 @@ public class MainMenu : Menu
     protected override void Start()
     {
         base.Start();
-        Controller.AddMenu(this);
-        this.items[this.curItem].HandleEnter();
+        this.MenuOpen();
     }
 }

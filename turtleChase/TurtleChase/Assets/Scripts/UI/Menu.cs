@@ -16,6 +16,7 @@ public abstract class Menu : UIElement
     public void HandleRestart()
     {
         Time.timeScale = 1;
+        this.MenuClose();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -25,6 +26,7 @@ public abstract class Menu : UIElement
     public void HandleMainMenu()
     {
         Time.timeScale = 1;
+        this.MenuClose();
         SceneManager.LoadScene(0);
     }
 
@@ -35,6 +37,7 @@ public abstract class Menu : UIElement
     public void HandleNewGame(int difficulty)
     {
         Settings.Difficulty = (Difficulty)difficulty;
+        this.MenuClose();
         SceneManager.LoadScene(1);
     }
 
@@ -43,6 +46,7 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleTutorial()
     {
+        this.MenuClose();
         SceneManager.LoadScene(2);
     }
 
@@ -82,5 +86,17 @@ public abstract class Menu : UIElement
     {
         base.Start();
         this.items = this.GetComponentsInChildren<IMenuItem>();
+    }
+
+    protected virtual void MenuOpen()
+    {
+        Controller.AddMenu(this);
+        this.items[this.curItem].HandleEnter();
+    }
+
+    protected virtual void MenuClose()
+    {
+        this.items[this.curItem].HandleExit();
+        Controller.RemoveMenu();
     }
 }

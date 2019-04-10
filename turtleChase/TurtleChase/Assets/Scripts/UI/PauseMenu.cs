@@ -31,13 +31,12 @@ public class PauseMenu : Menu
 
         if (instance.paused)
         {
-            Controller.AddMenu(instance);
+            instance.MenuOpen();
             Time.timeScale = 0;
-            instance.items[instance.curItem].HandleEnter();
         }
         else
         {
-            Controller.RemoveMenu();
+            instance.MenuClose();
             Time.timeScale = 1;
         }
     }
