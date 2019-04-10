@@ -17,7 +17,7 @@ let noseY;
  * Function that p5 calls initially to set up graphics
  */
 function setup() {
-  // Insert default canvas in specific container so it doesn't become space junk at the end of the DOM
+  // Insert default canvas in specific container so it doesn't become junk at the end of the DOM
   defaultCanvas = createCanvas(vidWidth, vidHeight);
   defaultCanvas.parent('videoContainer');
   
@@ -47,7 +47,9 @@ function setup() {
   video.hide();
 }
 
-// TODO um leave me alone??
+/**
+ * Get the coordinates of the nose from PoseNet's return
+ */
 function getNewCoords() {
   // Don't bother if there are no poses detected
   if (poses.length < 1) {
@@ -58,21 +60,37 @@ function getNewCoords() {
   let nose = poses[0].pose.keypoints[0];
   let noseX = nose.position.x;
   let noseY = nose.position.y;
-  // Convert to fixed 4 not-dec and 12 dec bits
-  let fixedNoseX = parseInt(noseX * 10e12);
-  let fixedNoseY = parseInt(noseY * 10e12);
 
-  // Bitpack x into bits 0-15, y into 16-32
+  sendCoords(noseX, noseY);
+}
+
+/**
+ * Send new nose coordinates to the game
+ * @param x the x position of the nose
+ * @param y the y position of the nose
+ */
+function sendCoords(x, y) {
+  // Truncate to int
+  let fixedNoseX = parseInt(x);
+  let fixedNoseY = parseInt(y);
+
+  // Bitpack x into bits 0-9, y into 10-19
   let packedCoords = 0;
   packedCoords |= fixedNoseX;
-  packedCoords |= fixedNoseY << 16;
+  packedCoords |= fixedNoseY << 10;
 
-  console.log('Recognized coords ' + fixedNoseX + ', ' + fixedNoseY + '.');
+  // Bottom 9 bits get corrupted; move coords out of the way
+  packedCoords = packedCoords << 9;
+
+  // TODO: add this to the C# code in place of existing
+  // int x = (packed >> 9) & 0x3FF;
+  // int y = (packed >> 19) & 0x3FF;
+
   // Attempt to send packed coordinates to the game
   try {
-    gameInstance.SendMessage('Player', 'NewCoords', packedCoords);
-    console.log('Success - Coordinates ' + packedCoords.toString(16) + ' sent successfully.');
+    gameInstance.SendMessage('Player', 'UpdateFacePosition', packedCoords);
+    console.log('Success - Coordinates ' + fixedNoseX + ', ' + fixedNoseY + ' sent successfully.');
   } catch (err) {
-    console.log('Failure - Coordinates ' + packedCoords.toString(16) + ' failed to send: ' + err);
-  } // TODO: Ok so I'm worried about what it's going to come out as on the other side. Write that ish. 
+    console.log('Failure - Coordinates ' + fixedNoseX + ', ' + fixedNoseY + ' failed to send: ' + err);
+  }
 }
