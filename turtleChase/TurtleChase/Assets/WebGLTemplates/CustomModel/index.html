@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>The Nose Arcade | %UNITY_WEB_NAME%</title>
+    <title>The Nose Arcade | %UNITY_WEB_NAME% [Custom Model]</title>
 
     <!-- Unity -->
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
@@ -17,9 +17,16 @@
   </head>
   
   <body>
+
     <!-- Unity loads game here -->
-    <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>
-    <!-- Load run_model.js after the content of the page -->
+    <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+
+    <!-- Webcam video loads here -->
+    <!-- Hide video by dropping opacity to make sure it still plays -->
+    <video autoplay playsinline muted id="webcam" width="160" height="160" style="opacity:0"></video>
+    
+    <!-- Load customModel.js after the content of the page -->
     <script src='customModel.js'></script>
+
   </body>
 </html>

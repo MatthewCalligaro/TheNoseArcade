@@ -18,25 +18,26 @@ async function setupWebcam() {
       navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
       navigatorAny.msGetUserMedia;
     if (navigator.getUserMedia) {
-    navigator.getUserMedia({video: true},
+      navigator.getUserMedia({video: true},
       stream => {
-      webcamElement.srcObject = stream;
-      webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+        webcamElement.srcObject = stream;
+        webcamElement.addEventListener('loadeddata',  () => resolve(), false);
       },
       error => reject());
     } else {
-    reject();
+      reject();
     }
   });
 }
 
 // Start the loading process
-imported.src = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1";
+imported.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1';
 
 imported.onload = async function(){
   // Set up
   await setupWebcam();
-  model = await tf.loadLayersModel('https://nandeeka.github.io/nosearcade-pages/model.json');
+  model = await tf.loadLayersModel('https://matthewcalligaro.github.io/TheNoseArcade/playTurtleChase/custom/model.json');
+  // model = await tf.loadLayersModel('https://giselleserate.github.io/nosearcade-sandbox/playTurtleChase/custom/model.json');
 
   // Process the video
   interval = window.setInterval(function () {
