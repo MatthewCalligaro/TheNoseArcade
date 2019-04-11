@@ -6,3 +6,9 @@ body > div {
   display: inline-block;
   text-align: left;
 }
+
+#webcam {
+  /* Hide, but keep getting updates. */
+  opacity: 0;
+  position: fixed;
+}
