@@ -14,10 +14,20 @@ public class LossMenu : Menu
         Score
     }
 
+    public static bool GameOver
+    {
+        get
+        {
+            return instance.gameOver;
+        }
+    }
+
     /// <summary>
     /// Static reference to the one LossMenu object in the scene to enable static methods
     /// </summary>
     public static LossMenu instance;
+
+    private bool gameOver = false;
 
 
 
@@ -32,7 +42,7 @@ public class LossMenu : Menu
     public static void HandleLoss(int score)
     {
         Player.BlockingPause++;
-        Time.timeScale = 0;
+        instance.gameOver = true;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
         instance.MenuOpen();

@@ -6,6 +6,14 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public abstract class Menu : UIElement
 {
+    public static bool InPlay
+    {
+        get
+        {
+            return !PauseMenu.Paused && !LossMenu.GameOver;
+        }
+    }
+
     /// <summary>
     /// Menu items which can be interacted with through face controls
     /// </summary>
@@ -27,7 +35,6 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleRestart()
     {
-        Time.timeScale = 1;
         this.MenuClose();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -37,7 +44,6 @@ public abstract class Menu : UIElement
     /// </summary>
     public virtual void HandleMainMenu()
     {
-        Time.timeScale = 1;
         this.MenuClose();
         SceneManager.LoadScene("MainMenu");
     }
