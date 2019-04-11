@@ -5,6 +5,14 @@
 /// </summary>
 public class PauseMenu : Menu
 {
+    public static bool Paused
+    {
+        get
+        {
+            return instance.paused;
+        }
+    }
+    
     /// <summary>
     /// Static reference to the one PauseMenu object in the scene to enable static methods
     /// </summary>
@@ -27,22 +35,23 @@ public class PauseMenu : Menu
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Toggles whether the game is paused or unpaused
+    /// Toggles whether the pause menu is opened or closed
     /// </summary>
-    public static void Pause()
+    public static void TogglePauseMenu()
     {
-        instance.paused = !instance.paused;
-        instance.gameObject.SetActive(instance.paused);
+        if (!LossMenu.GameOver)
+        {
+            instance.paused = !instance.paused;
+            instance.gameObject.SetActive(instance.paused);
 
-        if (instance.paused)
-        {
-            instance.MenuOpen();
-            Time.timeScale = 0;
-        }
-        else
-        {
-            instance.MenuClose();
-            Time.timeScale = 1;
+            if (instance.paused)
+            {
+                instance.MenuOpen();
+            }
+            else
+            {
+                instance.MenuClose();
+            }
         }
     }
     
@@ -53,7 +62,7 @@ public class PauseMenu : Menu
     {
         GodTutorial.RegisterTask(TutorialTask.PressPause);
         this.tutorialHelper.SetActive(false);
-        Pause();
+        TogglePauseMenu();
     }
 
     /// <summary>
