@@ -466,9 +466,10 @@ function downloadData(){
   zip.file("nose_positions_with_time_stamps.txt", blob1);
   zip.file("image_time_stamps.txt", blob2);
 
-
-
-  let blob3 = new Blob(videoFrames, {type: "application/json"})
+  zip.generateAsync({type:"blob"})
+  .then(function(zip) {
+    saveAs(zip, "images_from_user_test.zip");
+    });
 }
 
 function clearphoto() {
