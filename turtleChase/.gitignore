@@ -1,2 +1,4 @@
 # Ignore generated build files
 CurrentBuild
+PoseBuild
+CustomBuild
