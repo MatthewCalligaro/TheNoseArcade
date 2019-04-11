@@ -471,23 +471,23 @@ function setFill(colorName) {
  */
 
 function downloadData(){
-  // Calls the download function for each blob in the set.
-  let x = ["UTC_Timestamp\tNose_X\tNose_Y\r\n"]
+  let noseText = ["UTC_Timestamp\tNose_X\tNose_Y\r\n"]
   for (i = 0; i<nosePositions.timeStamp.length; i++){
     let y = nosePositions.timeStamp[i].toString()+'\t'+nosePositions.x[i].toString()+'\t'+nosePositions.y[i].toString()+'\r\n';
-    x.push(y);
+    noseText.push(y);
   }
-  let blob1 = new Blob(x, {type: "text/plain;charset=utf-8"});
+  let blobNose = new Blob(noseText, {type: "text/plain;charset=utf-8"});
 
-  let blob2 = new Blob(timeStampChunks, {type: "text/plain;charset=utf-8"});
+  let blobTime = new Blob(timeStampChunks, {type: "text/plain;charset=utf-8"});
 
-  zip.file("nose_positions_with_time_stamps.txt", blob1);
-  zip.file("image_time_stamps.txt", blob2);
+  // Add the text files to the zip
+  zip.file("nose_positions_with_time_stamps.txt", blobNose);
+  zip.file("image_time_stamps.txt", blobTime);
 
   zip.generateAsync({type:"blob"})
   .then(function(zip) {
     saveAs(zip, "images_from_user_test.zip");
-    });
+    }); // Force the downlod of the zip file.
 
   // Reset the data parameters.
   timeStampChunks = ["Image UTC TimeStamps\r\n"];
@@ -502,37 +502,37 @@ function downloadData(){
  * zip file which contains the training elements.
  */
 function takeSnapShot(){
-  var hidden_canvas = document.createElement('canvas'),
+  let hiddenCanvas = document.createElement('canvas'),
   video = document.querySelector('video');
 
   // Get the exact size of the video element.
   width = video.videoWidth;
   height = video.videoHeight;
 
-  document.body.appendChild(hidden_canvas);
+  document.body.appendChild(hiddenCanvas);
   // Context object for working with the canvas.
-  context = hidden_canvas.getContext('2d');
+  context = hiddenCanvas.getContext('2d');
 
   // Set the canvas to the same dimensions as the video.
-  hidden_canvas.width = width;
-  hidden_canvas.height = height;
+  hiddenCanvas.width = width;
+  hiddenCanvas.height = height;
 
   // Draw a copy of the current frame from the video on the canvas.
   context.drawImage(video, 0, 0, width, height);
-  hidden_canvas.style.display = "none";
+  hiddenCanvas.style.display = "none";
   // Get an image dataURL from the canvas.
-  var imageDataURL = hidden_canvas.toDataURL('image/png');
+  let imageDataURL = hiddenCanvas.toDataURL('image/png');
 
   // Set the dataURL as source of an image element, hiding the captured photo.
   image.setAttribute('src', imageDataURL);
   image.style.display = "none";
 
-  hidden_canvas.toBlob(function(blob){
+  hiddenCanvas.toBlob(function(blob){
       let filename = "image"+snapNum+".png";
       zip.file(filename, blob);
       snapNum = snapNum + 1;
       console.log("The number of images in the zip file is", snapNum);
   },'image/png'); // Second arguement is the format to make the blob in.
   
-  document.body.removeChild(hidden_canvas); // Eliminate the canvas.
+  document.body.removeChild(hiddenCanvas); // Eliminate the canvas.
 }
