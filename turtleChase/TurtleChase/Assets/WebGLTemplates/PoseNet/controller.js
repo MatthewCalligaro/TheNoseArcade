@@ -4,6 +4,7 @@ let vidHeight = 240;
 
 // Display elements
 let video;
+let overlay;
 
 let poseNet;
 let poses = [];
@@ -17,15 +18,16 @@ let noseY;
  * Function that p5 calls initially to set up graphics
  */
 function setup() {
-  // Insert default canvas in specific container so it doesn't become junk at the end of the DOM
-  defaultCanvas = createCanvas(vidWidth, vidHeight);
-  defaultCanvas.parent('videoContainer');
-  
   // Webcam capture
   video = createCapture(VIDEO);
   video.size(vidWidth, vidHeight);
   video.parent('videoContainer')
 
+  // Graphics overlay for monitor annotations
+  pixelDensity(1);
+  overlay = createGraphics(vidWidth, vidHeight);
+  overlay.parent('videoContainer');
+  
   // Options for PoseNet
   let options = { 
     flipHorizontal: false,
@@ -45,6 +47,27 @@ function setup() {
 
   // Hide the video so it doesn't render
   video.hide();
+
+  // Show graphics
+  overlay.show();
+  // Flip graphics so you get proper mirroring of video and nose dot
+  overlay.translate(vidWidth,0);
+  overlay.scale(-1.0, 1.0);
+}
+
+/**
+ * Function that p5 calls repeatedly to render graphics
+ */
+function draw() {
+  overlay.clear();
+
+  // Render video
+  overlay.image(video, 0, 0);
+
+  // Render nose dot
+  overlay.stroke(0, 225, 0); // Green
+  overlay.strokeWeight(5);
+  overlay.ellipse(noseX, noseY, 1, 1);
 }
 
 /**
@@ -58,8 +81,8 @@ function getNewCoords() {
 
   // Only detect nose keypoint of first pose.
   let nose = poses[0].pose.keypoints[0];
-  let noseX = nose.position.x;
-  let noseY = nose.position.y;
+  noseX = nose.position.x;
+  noseY = nose.position.y;
 
   sendCoords(noseX, noseY);
 }
@@ -70,9 +93,9 @@ function getNewCoords() {
  * @param y the y position of the nose
  */
 function sendCoords(x, y) {
-  // Truncate to int
-  let fixedNoseX = parseInt(x);
-  let fixedNoseY = parseInt(y);
+  // Truncate to int and invert both axes
+  let fixedNoseX = parseInt(vidWidth - x);
+  let fixedNoseY = parseInt(vidHeight - y);
 
   // Bitpack x into bits 0-9, y into 10-19
   let packedCoords = 0;
