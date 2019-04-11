@@ -1,40 +1,43 @@
-let video = document.getElementById('videoInput');
-let cap = new cv.VideoCapture(video);
+var imported = document.createElement('script');
+document.head.appendChild(imported);
 
-// take first frame of the video
-let frame = new cv.Mat(video.height, video.width, cv.CV_8UC4);
-cap.read(frame);
+var model;
 
-// hardcode the initial location of window
-let trackWindow = new cv.Rect(150, 60, 63, 125);
+const webcamElement = document.getElementById('webcam');
 
-// Setup the termination criteria, either 10 iteration or move by atleast 1 pt
-let termCrit = new cv.TermCriteria(cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 1);
+async function setupWebcam() {
+    return new Promise((resolve, reject) => {
+      const navigatorAny = navigator;
+      navigator.getUserMedia = navigator.getUserMedia ||
+          navigatorAny.webkitGetUserMedia || navigatorAny.mozGetUserMedia ||
+          navigatorAny.msGetUserMedia;
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia({video: true},
+          stream => {
+            webcamElement.srcObject = stream;
+            webcamElement.addEventListener('loadeddata',  () => resolve(), false);
+          },
+          error => reject());
+      } else {
+        reject();
+      }
+    });
+  }
+
+// Start the loading process
+imported.src = "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0";
+
+imported.onload = async function(){
+    // Once the script has loaded tf should be available
+    // the rest of your program would need to be in this function
+    // await setupWebcam();
+    model = await tf.loadLayersModel('http://s000.tinyupload.com/download.php?file_id=67010513132490573297&t=6701051313249057329711571');
+    process_video();
+  };
 
 function process_video() {
-    try {
-        if (!streaming) {
-            // clean and stop.
-            frame.delete();
-            return;
-        }
-        let begin = Date.now();
-
-        // start processing.
-        cap.read(frame);
-
-        xhttp.open("POST", "http://0.0.0.0:8000/predict", true);
-        xhttp.send(frame);
-
-        // Draw it on image
-        let [x, y, w, h] = [trackWindow.x, trackWindow.y, trackWindow.width, trackWindow.height];
-        cv.rectangle(frame, new cv.Point(x, y), new cv.Point(x+w, y+h), [255, 0, 0, 255], 2);
-        cv.imshow('canvasOutput', frame);
-
-    } catch (err) {
-        utils.printError(err);
-    }
+    // const example = tf.browser.fromPixels(webcamElement);  // for example
+    // const prediction = model.predict(example);
+    // console.log(prediction);
+    console.log("Hello, world!")
 };
-
-// schedule the first one.
-setTimeout(processVideo, 0);
