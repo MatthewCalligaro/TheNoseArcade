@@ -15,8 +15,8 @@
     <script>
       var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
     </script>
-    
-    <script src="controller.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 
   </head>
   
@@ -24,8 +24,19 @@
 
     <div>
       <!-- Unity loads game here -->
-      <div id="gameContainer"></div>
+      <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
     </div>
+
+    <br>
+
+    <!-- Video renders here -->
+    <div id="videoContainer"></div>
+
+    <br>
+
+    <!-- Webcam video loads here -->
+    <!-- Hide video by dropping opacity to make sure it still plays -->
+    <video autoplay playsinline muted id="webcam" width="160" height="160" style="opacity:0"></video>
 
     <br>
 
@@ -35,12 +46,6 @@
         Tutorial coming soon. 
       </p>
     </div>
-
-    <br>
-
-    <!-- Webcam video loads here -->
-    <!-- Hide video by dropping opacity to make sure it still plays -->
-    <video autoplay playsinline muted id="webcam" width="160" height="160" style="opacity:0"></video>
     
     <!-- Load customModel.js after the content of the page -->
     <script src='customModel.js'></script>
