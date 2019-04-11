@@ -64,12 +64,22 @@ let adjMouseY;
 let timeStampChunks = ["Image UTC TimeStamps\r\n"];
 let nosePositions = {timeStamp: [], x: [], y: []};
 
-// Location to put the image for data collection.
-let image_container = document.createElement("img");
-let imageCanvas = document.createElement("imageCanvas");
+let snapNum = 0;
+// Image tag for saving the image.
+let image = document.createElement('image');
+image.style.display = "none"; // hide the image container.
 
 // To save a zip file.
 let zip = new JSZip();
+// Button to save the current data that you have taken.
+let downloadButton = document.getElementById('Download');
+
+downloadButton.addEventListener('click', (ev)=>{
+  // Call the snap shot function.
+  downloadData();
+  console.log("The data is being downloaded to the user's computer.")
+});
+
 
 /**
  * Function that p5 calls initially to set up graphics
@@ -107,6 +117,7 @@ function setup() {
     let currTime = Date.now();
     timeStampChunks.push(currTime+'\r\n');
     nosePositions.timeStamp.push(currTime);
+    console.log("PoseNet has been turned on.")
   });
 
   // Hide the video so we can render it flipped in the draw loop. 
@@ -181,7 +192,7 @@ function detectNose() {
   nosePositions.x.push(noseX);
   nosePositions.y.push(noseY);
 
-  
+  takeSnapShot(); // Take a photo and save it to the zip file that is being generated.
 
   // Decide what to do with nose position. 
   if (inMenu) {
@@ -452,6 +463,13 @@ function setFill(colorName) {
   }
 }
 
+/**
+ * Download a zip file which contains the timestamps of the video frames,
+ * the timestamps and the (X,Y) positions of the nose as measured by PoseNet.
+ * It also contains a PNG file for every image that registered a detectNose()
+ * event.
+ */
+
 function downloadData(){
   // Calls the download function for each blob in the set.
   let x = ["UTC_Timestamp\tNose_X\tNose_Y\r\n"]
@@ -470,29 +488,51 @@ function downloadData(){
   .then(function(zip) {
     saveAs(zip, "images_from_user_test.zip");
     });
+
+  // Reset the data parameters.
+  timeStampChunks = ["Image UTC TimeStamps\r\n"];
+  nosePositions = {timeStamp: [], x: [], y: []};
+  snapNum = 0;
 }
 
-function clearphoto() {
-  //Adapted from https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
-  var context = canvas.getContext('2d');
-  context.fillStyle = "#AAA";
-  context.fillRect(0, 0, canvas.width, canvas.height);
+/**
+ * Capture an image from the webcam stream and save it as a blob to the frames array.
+ *  It makes and then destroys a canvas upon which the frame from the video stream
+ *  is put and then transfered to the hidden image element. Saves the new image to the
+ * zip file which contains the training elements.
+ */
+function takeSnapShot(){
+  var hidden_canvas = document.createElement('canvas'),
+  video = document.querySelector('video');
 
-  var data = canvas.toDataURL('image/png');
-  image_container.setAttribute('src', data);
-}
+  // Get the exact size of the video element.
+  width = video.videoWidth;
+  height = video.videoHeight;
 
-function takepicture() {
-  //Adapted from https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
-  var context = canvas.getContext('2d');
-  if (width && height) {
-    canvas.width = width;
-    canvas.height = height;
-    context.drawImage(video, 0, 0, width, height); // draw the image from the camera onto the canvas.
+  document.body.appendChild(hidden_canvas);
+  // Context object for working with the canvas.
+  context = hidden_canvas.getContext('2d');
+
+  // Set the canvas to the same dimensions as the video.
+  hidden_canvas.width = width;
+  hidden_canvas.height = height;
+
+  // Draw a copy of the current frame from the video on the canvas.
+  context.drawImage(video, 0, 0, width, height);
+  hidden_canvas.style.display = "none";
+  // Get an image dataURL from the canvas.
+  var imageDataURL = hidden_canvas.toDataURL('image/png');
+
+  // Set the dataURL as source of an image element, hiding the captured photo.
+  image.setAttribute('src', imageDataURL);
+  image.style.display = "none";
+
+  hidden_canvas.toBlob(function(blob){
+      let filename = "image"+snapNum+".png";
+      zip.file(filename, blob);
+      snapNum = snapNum + 1;
+      console.log("The number of images in the zip file is", snapNum);
+  },'image/png'); // Second arguement is the format to make the blob in.
   
-    var data = canvas.toDataURL('image/png');
-    photo.setAttribute('src', data);
-  } else {
-    clearphoto();
-  }
+  document.body.removeChild(hidden_canvas); // Eliminate the canvas.
 }
