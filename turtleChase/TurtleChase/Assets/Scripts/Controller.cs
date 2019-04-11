@@ -7,7 +7,7 @@ public class Controller : MonoBehaviour, INoseController
     /// <summary>
     /// Time before the controlle begins responding to input when first instantiated
     /// </summary>
-    private const float initalWaitTime = 0.5f;
+    private const float initalWaitTime = 1.5f;
 
     /// <summary>
     /// Static reference to the one Controller object in the scene to enable static methods
@@ -100,11 +100,11 @@ public class Controller : MonoBehaviour, INoseController
             {
                 Down();
             }
-            else if (dx > Settings.Sensitivity)
+            else if (dx > Settings.Sensitivity * Settings.HorizontalSensitivityFactor)
             {
                 Right();
             }
-            else if (dx < -Settings.Sensitivity)
+            else if (dx < -Settings.Sensitivity * Settings.HorizontalSensitivityFactor)
             {
                 Left();            
             }

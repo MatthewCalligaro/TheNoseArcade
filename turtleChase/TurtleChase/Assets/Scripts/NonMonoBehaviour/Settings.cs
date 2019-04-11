@@ -76,7 +76,7 @@ public class Settings
         }
         set
         {
-            settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, maxSensitivity), minSensitivity);
+            settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, MaxSensitivity), MinSensitivity);
         }
     }
 
@@ -89,22 +89,27 @@ public class Settings
     /// <summary>
     /// Minimum value for JumpPower
     /// </summary>
-    public const float minJumpPower = 0.5f;
+    public const float MinJumpPower = 0.5f;
 
     /// <summary>
     /// Maximum value for JumpPower
     /// </summary>
-    public const float maxJumpPower = 1.5f;
+    public const float MaxJumpPower = 1.5f;
 
     /// <summary>
     /// Minimum value for Sensitivity
     /// </summary>
-    public const float minSensitivity = 0.05f;
+    public const float MinSensitivity = 0.01f;
 
     /// <summary>
     /// Maximum value for Sensitivity
     /// </summary>
-    public const float maxSensitivity = 1.0f;
+    public const float MaxSensitivity = 0.5f;
+
+    /// <summary>
+    /// Difference in sensitivity for horizontal vs. vertical movements
+    /// </summary>
+    public const float HorizontalSensitivityFactor = 1.5f;
 
     /// <summary>
     /// Minimum delay between jumps
@@ -124,7 +129,7 @@ public class Settings
     /// <summary>
     /// Default values for the settable settings
     /// </summary>
-    public static readonly SettableSettings defaultSettings = new SettableSettings
+    private static readonly SettableSettings defaultSettings = new SettableSettings
     {
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
