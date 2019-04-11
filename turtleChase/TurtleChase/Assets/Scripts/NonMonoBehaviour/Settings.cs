@@ -99,12 +99,12 @@ public class Settings
     /// <summary>
     /// Minimum value for Sensitivity
     /// </summary>
-    public const float minSensitivity = 0.2f;
+    public const float minSensitivity = 0.05f;
 
     /// <summary>
     /// Maximum value for Sensitivity
     /// </summary>
-    public const float maxSensitivity = 5.0f;
+    public const float maxSensitivity = 1.0f;
 
     /// <summary>
     /// Minimum delay between jumps
@@ -114,7 +114,7 @@ public class Settings
     /// <summary>
     /// Minimum time between Menu actions
     /// </summary>
-    public const float MenuMoveReloadTime = 0.5f;
+    public const float MenuMoveReloadTime = 1f;
 
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
