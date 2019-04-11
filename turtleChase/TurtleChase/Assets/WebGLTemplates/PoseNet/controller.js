@@ -61,9 +61,15 @@ let adjMouseX;
 let adjMouseY;
 
 // Time stamps for the data collection.
-let timeStampChunks = [];
+let timeStampChunks = ["Image UTC TimeStamps\r\n"];
 let nosePositions = {timeStamp: [], x: [], y: []};
-let videoFrames = [];
+
+// Location to put the image for data collection.
+let image_container = document.createElement("img");
+let imageCanvas = document.createElement("imageCanvas");
+
+// To save a zip file.
+let zip = new JSZip();
 
 /**
  * Function that p5 calls initially to set up graphics
@@ -99,7 +105,7 @@ function setup() {
   poseNet.on('pose', function(results) {
     poses = results;
     let currTime = Date.now();
-    timeStampChunks.push(currTime);
+    timeStampChunks.push(currTime+'\r\n');
     nosePositions.timeStamp.push(currTime);
   });
 
@@ -174,6 +180,8 @@ function detectNose() {
 
   nosePositions.x.push(noseX);
   nosePositions.y.push(noseY);
+
+  
 
   // Decide what to do with nose position. 
   if (inMenu) {
@@ -444,23 +452,46 @@ function setFill(colorName) {
   }
 }
 
-function download(blob, filename){
-  // uses the <a download> to download a Blob
-  let a = document.createElement('a'); 
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-};
-
 function downloadData(){
   // Calls the download function for each blob in the set.
-  
-  let blob1 = new Blob(nosePositions, {type: "text/plain;charset=utf-8"});
-  download(blob1, "nose_positions_with_time_stamps.txt");
+  let x = ["UTC_Timestamp\tNose_X\tNose_Y\r\n"]
+  for (i = 0; i<nosePositions.timeStamp.length; i++){
+    let y = nosePositions.timeStamp[i].toString()+'\t'+nosePositions.x[i].toString()+'\t'+nosePositions.y[i].toString()+'\r\n';
+    x.push(y);
+  }
+  let blob1 = new Blob(x, {type: "text/plain;charset=utf-8"});
+
   let blob2 = new Blob(timeStampChunks, {type: "text/plain;charset=utf-8"});
-  download(blob2, "image_time_stamps.txt");
+
+  zip.file("nose_positions_with_time_stamps.txt", blob1);
+  zip.file("image_time_stamps.txt", blob2);
+
+
 
   let blob3 = new Blob(videoFrames, {type: "application/json"})
+}
+
+function clearphoto() {
+  //Adapted from https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
+  var context = canvas.getContext('2d');
+  context.fillStyle = "#AAA";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  var data = canvas.toDataURL('image/png');
+  image_container.setAttribute('src', data);
+}
+
+function takepicture() {
+  //Adapted from https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
+  var context = canvas.getContext('2d');
+  if (width && height) {
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(video, 0, 0, width, height); // draw the image from the camera onto the canvas.
+  
+    var data = canvas.toDataURL('image/png');
+    photo.setAttribute('src', data);
+  } else {
+    clearphoto();
+  }
 }
