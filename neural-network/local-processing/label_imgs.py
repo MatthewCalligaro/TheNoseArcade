@@ -73,7 +73,12 @@ def process_dir(img_dir, show_comp):
 if __name__ == '__main__':
     # Set up paths
     top_dir = '/Users/nandeekanayak/Downloads/gt_db/'
-    done_dirs = ['s05', 's02', 's34', 's33', 's32', 's35', 's04']
+    done_dirs = ['s05', 's02', 's34', 's33', 's32', 's35', 's03', 's04', 's50', 
+        's44', 's43', 's26', 's19', 's21', 's17', 's28', 's10', 's42', 's45',
+        's11', 's16', 's29', 's20', 's27', 's18', 's01', 's39', 's06', 's30',
+        's08', 's37', 's09', 's36', 's31', 's38', 's07', 's22', 's25', 's13',
+        's14', 's40', 's47', 's49', 's15', 's12', 's24', 's23', 's48', 's46',
+        's41']
 
     # Check if the user wants to skip the above directories
     show_comp = input('Show completed?') == 'yes'
