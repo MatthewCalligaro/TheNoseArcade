@@ -1,11 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Defines generalized behavior for all menus
 /// </summary>
 public abstract class Menu : UIElement
 {
+    /// <summary>
+    /// True if the current game is in play, false if paused or game over
+    /// </summary>
     public static bool InPlay
     {
         get

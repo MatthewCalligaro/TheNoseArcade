@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 /// <summary>
 /// The different styles in which the player can jump
 /// </summary>
@@ -89,7 +90,7 @@ public class Settings
     /// <summary>
     /// Minimum value for JumpPower
     /// </summary>
-    public const float MinJumpPower = 0.5f;
+    public const float MinJumpPower = 0.025f;
 
     /// <summary>
     /// Maximum value for JumpPower
@@ -104,22 +105,12 @@ public class Settings
     /// <summary>
     /// Maximum value for Sensitivity
     /// </summary>
-    public const float MaxSensitivity = 0.5f;
+    public const float MaxSensitivity = 0.25f;
 
     /// <summary>
     /// Difference in sensitivity for horizontal vs. vertical movements
     /// </summary>
-    public const float HorizontalSensitivityFactor = 1.5f;
-
-    /// <summary>
-    /// Minimum delay between jumps
-    /// </summary>
-    public const float JumpReloadTime = 0.5f;
-
-    /// <summary>
-    /// Minimum time between Menu actions
-    /// </summary>
-    public const float MenuMoveReloadTime = 1f;
+    public const float HorizontalSensitivityFactor = 1.75f;
 
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
@@ -134,7 +125,7 @@ public class Settings
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
         JumpPower = 1.0f,
-        Sensitivity = 2.0f,
+        Sensitivity = 0.1f,
     };
 
     /// <summary>
@@ -177,7 +168,6 @@ public class Settings
         }
         if (newSettings.Sensitivity.HasValue)
         {
-            Debug.Log(newSettings.Sensitivity.Value);
             settableSettings.Sensitivity = newSettings.Sensitivity;
         }
     }

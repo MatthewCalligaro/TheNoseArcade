@@ -5,6 +5,9 @@
 /// </summary>
 public class PauseMenu : Menu
 {
+    /// <summary>
+    /// True if the game is currently paused
+    /// </summary>
     public static bool Paused
     {
         get

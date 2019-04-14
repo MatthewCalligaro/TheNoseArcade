@@ -5,9 +5,24 @@ using UnityEngine;
 public class Controller : MonoBehaviour, INoseController
 {
     /// <summary>
-    /// Time before the controlle begins responding to input when first instantiated
+    /// Time before the controller begins responding to input when first instantiated
     /// </summary>
     private const float initalWaitTime = 1.5f;
+
+    /// <summary>
+    /// Processing delay after a menu is opened or closed
+    /// </summary>
+    private const float menuDelay = 1.0f;
+
+    /// <summary>
+    /// Processing delay after a jump
+    /// </summary>
+    public const float jumpReloadTime = 0.5f;
+
+    /// <summary>
+    /// Processing delay after a menu is opened
+    /// </summary>
+    public const float menuMoveReloadTime = 1.0f;
 
     /// <summary>
     /// Static reference to the one Controller object in the scene to enable static methods
@@ -67,6 +82,7 @@ public class Controller : MonoBehaviour, INoseController
     public static void AddMenu(Menu menu)
     {
         instance.openMenus.Push(menu);
+        instance.counter = menuDelay;
     }
 
     /// <summary>
@@ -75,12 +91,13 @@ public class Controller : MonoBehaviour, INoseController
     public static void RemoveMenu()
     {
         instance.openMenus.Pop();
+        instance.counter = menuDelay;
     }
 
     /// <summary>
     /// Updates the controller with the current user's face position
     /// </summary>
-    /// <param name="packed">32 bit signed int with the 16 least significant bits representing the x pixel and the 16 most significant bits representing the y pixel</param>
+    /// <param name="packed">32 bit signed int with bits 9-18 representing the x pixel and bits 19-28 representing the y pixel</param>
     public void UpdateFacePosition(int packed)
     {
         int x = (packed >> 9) & 0x3FF;
@@ -89,6 +106,7 @@ public class Controller : MonoBehaviour, INoseController
 
         float dx = (x - lastX) / ((float)(now - lastTime).TotalMilliseconds);
         float dy = (y - lastY) / ((float)(now - lastTime).TotalMilliseconds);
+        Debug.Log(dy);
 
         if (counter == 0)
         {
@@ -150,13 +168,13 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleUp();
-            counter = Settings.MenuMoveReloadTime;
+            counter = menuMoveReloadTime;
         }
         else if (player != null)
         {
             player.JumpEnter();
             player.JumpExit();
-            counter = Settings.JumpReloadTime;
+            counter = jumpReloadTime;
         }
     }
 
@@ -168,7 +186,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleDown();
-            counter = Settings.MenuMoveReloadTime;
+            counter = menuMoveReloadTime;
         }
     }
 
@@ -180,7 +198,7 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleRight();
-            counter = Settings.MenuMoveReloadTime;
+            counter = menuMoveReloadTime;
         }
     }
     
@@ -192,12 +210,12 @@ public class Controller : MonoBehaviour, INoseController
         if (openMenus.Count > 0)
         {
             openMenus.Peek().HandleLeft();
-            counter = Settings.MenuMoveReloadTime;
+            counter = menuMoveReloadTime;
         }
         else if (player != null)
         {
             player.Pause();
-            counter = Settings.JumpReloadTime;
+            counter = jumpReloadTime;
         }
     }
 }

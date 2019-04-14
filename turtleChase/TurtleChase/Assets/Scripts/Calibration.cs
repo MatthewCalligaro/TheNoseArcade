@@ -10,17 +10,23 @@ public class Calibration : MonoBehaviour, INoseController
     /// <summary>
     /// Calibrated sensitivity is multiplied by this factor to produce final sensitivity
     /// </summary>
-    private const float calibrationFactor = 0.75f;
+    private const float calibrationFactor = 0.6f;
 
     /// <summary>
-    /// Messages shown to walk the user through calibrations
+    /// First stage in which user movement is used for calibration
+    /// </summary>
+    private const int firstCalibrationStage = 2;
+
+    /// <summary>
+    /// Messages shown to walk the user through calibration
     /// </summary>
     private static readonly string[] messages = 
     {
-        "Please adjust your position so that your nose is centered and within 18 inches of your webcam.  When you are ready to begin calibration, press the space bar.",
-        "In Turtle Chase, you jump by raising your nose.  It is easiest for us to detect large nose movements, so we recommend performing each jump by pointing your nose downward and then upward, as though you went from looking at the ground to looking at the ceiling.\n\n Please perform one jump now and press the space bar.",
-        "Please perform another jump and press the space bar (1/3 complete).",
-        "Please perform another jump and press the space bar (2/3 complete).",
+        "Please move your face within 12 inches of your webcam and center your nose in the webcam feed below.  A green dot should appear over your nose.\nPress space to continue.",
+        "In Turtle Chase, you jump by raising your nose.  This works best if you face directly towards the webcame at all times and change the position of your face rather than rotating it.\nPress space when you are ready to begin calibration.",
+        "Please perform one jump by raising your nose, then press the space bar (0/3 complete).",
+        "Please perform another jump, then press the space bar (1/3 complete).",
+        "Please perform another jump, then press the space bar (2/3 complete)."
     };
 
     /// <summary>
@@ -57,12 +63,14 @@ public class Calibration : MonoBehaviour, INoseController
     /// <summary>
     /// Updates the controller with the current user's face position
     /// </summary>
-    /// <param name="packed">32 bit signed int with the 16 least significant bits representing the x pixel and the 16 most significant bits representing the y pixel</param>
+    /// <param name="packed">32 bit signed int with bits 9-18 representing the x pixel and bits 19-28 representing the y pixel</param>
     public void UpdateFacePosition(int packed)
     {
-        int y = (packed >> 16) & 0xFFFF;
+        // Update maxDy with the most recent change in y if it was bigger
+        int y = (packed >> 19) & 0x3FF;
         DateTime now = DateTime.Now;
-        this.maxDy = Mathf.Max((y - lastY) / ((float)(now - lastTime).TotalMilliseconds), this.maxDy);
+        float dy = (y - lastY) / ((float)(now - lastTime).TotalMilliseconds);
+        this.maxDy = Mathf.Max(dy, this.maxDy);
 
         this.lastY = y;
         this.lastTime = now;
@@ -92,7 +100,7 @@ public class Calibration : MonoBehaviour, INoseController
     /// </summary>
     private void ProgressCalibration()
     {
-        if (this.curStage > 0)
+        if (this.curStage >= firstCalibrationStage)
         {
             this.maxDyTotal += this.maxDy;
             this.maxDy = 0;
@@ -101,8 +109,9 @@ public class Calibration : MonoBehaviour, INoseController
         this.curStage++;
         if (this.curStage >= messages.Length)
         {
+            // Update the Sensitivity with the average of the three calibration trials (scaled by calibrationFactor)
             Settings.Sensitivity = (this.maxDyTotal / 3) * calibrationFactor;
-            Debug.Log(Settings.Sensitivity);
+            Debug.Log("Calibrated Sensitivity:" + Settings.Sensitivity);
             SceneManager.LoadScene("MainMenu");
         }
         else

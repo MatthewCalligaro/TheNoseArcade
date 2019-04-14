@@ -41,7 +41,7 @@ public class GodTutorial : God
     {
         get
         {
-            return instance.curEventIndex == 2;
+            return instance != null && instance.curEventIndex == 2;
         }
     }
 
@@ -60,13 +60,23 @@ public class GodTutorial : God
     private const float consumableDelay = 8;
 
     /// <summary>
+    /// Time until we provide the user with additional help text for jumping
+    /// </summary>
+    private const float jumpHelpTextDelay = 8;
+
+    /// <summary>
+    /// Message shown to the user if they cannot successfully jump after a certain amount of time
+    /// </summary>
+    private const string jumpHelpText = "If you are having trouble registering a jump, try pausing the game (escape key) and changing the jump sensitivity in the options menu";
+
+    /// <summary>
     /// Defines the events which the player must complete in the tutorial
     /// </summary>
     private static readonly TutorialEvent[] events =
     {
         new TutorialEvent
         {
-            Text = "Raise your nose (or press the spacebar) to jump",
+            Text = "Raise your nose (or press the spacebar) to jump.  This works best if you move the position of your face rather then rotating it",
             TaskCountText = "Remaining jumps",
             Task = TutorialTask.Jump,
             TaskNum = 3
@@ -81,7 +91,7 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = "You can toggle which button is selected by swiping your nose up and down and press the selected button by swiping right.  Press the resume button now",
+            Text = "Toggle which button is selected by swiping your nose up and down and press the selected button by swiping right.  Press the resume button now",
             Task = TutorialTask.PressPause,
             TaskNum = 1
         },
@@ -178,6 +188,11 @@ public class GodTutorial : God
     /// </summary>
     private float nextConsumableX;
 
+    /// <summary>
+    /// Counts down time until we provide the user with additional help text for jumping
+    /// </summary>
+    private float jumpHelpCounter = jumpHelpTextDelay;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -193,6 +208,12 @@ public class GodTutorial : God
         if (instance != null && task == instance.curEvent.Task)
         {
             instance.taskCount++;
+
+            // Clear jump help text if they sucessfully jumped
+            if (task == TutorialTask.Jump)
+            {
+                HUD.UpdateTutorialHelpText("");
+            }
 
             // If this was the last time they needed to repeat this task, load the next one
             if (instance.taskCount >= instance.curEvent.TaskNum)
@@ -286,6 +307,16 @@ public class GodTutorial : God
 
     protected override void Update()
     {
+        // Provide jump help text if the user is unable to jump for a while
+        if (this.curEventIndex == 0 && this.taskCount == 0 && this.jumpHelpCounter > 0)
+        {
+            this.jumpHelpCounter -= Time.deltaTime;
+            if (this.jumpHelpCounter <= 0)
+            {
+                HUD.UpdateTutorialHelpText(jumpHelpText);
+            }
+        }
+        
         // Handle completion of Distance events
         if (this.curEvent.RequiredDistance.HasValue && this.transform.position.x - this.curEventStartX > this.curEvent.RequiredDistance)
         {

@@ -14,6 +14,9 @@ public class LossMenu : Menu
         Score
     }
 
+    /// <summary>
+    /// True if the current game has ended
+    /// </summary>
     public static bool GameOver
     {
         get
@@ -27,6 +30,9 @@ public class LossMenu : Menu
     /// </summary>
     public static LossMenu instance;
 
+    /// <summary>
+    /// True if the current game has ended
+    /// </summary>
     private bool gameOver = false;
 
 
