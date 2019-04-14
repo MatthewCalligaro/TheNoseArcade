@@ -1,0 +1,12 @@
+{
+"companyName": "TheNoseArcade",
+"productName": "TurtleChase",
+"dataUrl": "PoseBuild.data.unityweb",
+"wasmCodeUrl": "PoseBuild.wasm.code.unityweb",
+"wasmFrameworkUrl": "PoseBuild.wasm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20"
+}
