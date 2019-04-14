@@ -5,16 +5,25 @@ import os
 X = 0
 Y = 0
 
-# mouse callback function
 def get_points(event,x,y,flags,param):
+    '''
+    Mouse callback function that sets the value of global variables 
+    X and Y to the location of the mouse when it is clicked
+    '''
     global X
     global Y
+
+    # When the mouse is clicked, set the location
     if event == cv2.EVENT_LBUTTONDOWN:
         print(x, y)
         X = x
         Y = y
 
 def get_coors(img_fn):
+    '''
+    Display an image, and after the user has selected a location in the image,
+    write it to a file
+    '''
     global X
     global Y
 
@@ -38,6 +47,9 @@ def get_coors(img_fn):
     cv2.destroyAllWindows()
 
 def draw_labels(img_fn):
+    '''
+    Given an image, display the image with the nose labeled
+    '''
     # Open the image
     img = cv2.imread(img_fn)
 
@@ -62,6 +74,9 @@ def draw_labels(img_fn):
     cv2.destroyAllWindows()
 
 def process_dir(img_dir, show_comp):
+    '''
+    Process a directory, either by labeling it or displaying the labels
+    '''
     img_fns = os.listdir(img_dir)
     for fn in img_fns:
         if fn[-4:] == '.jpg':
@@ -70,7 +85,10 @@ def process_dir(img_dir, show_comp):
             else:
                 get_coors(img_dir+fn)
 
-if __name__ == '__main__':
+def main():
+    '''
+    For every directory in the path, if it has been labeled show labels otherwise allow the user to set them
+    '''
     # Set up paths
     top_dir = '/Users/nandeekanayak/Downloads/gt_db/'
     done_dirs = ['s05', 's02', 's34', 's33', 's32', 's35', 's03', 's04', 's50', 
@@ -92,4 +110,7 @@ if __name__ == '__main__':
             cont = input("Continue?")
             if cont != 'yes':
                 break
+
+if __name__ == '__main__':
+    main()
     
