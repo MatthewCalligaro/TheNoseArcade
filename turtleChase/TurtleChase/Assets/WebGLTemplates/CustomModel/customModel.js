@@ -18,7 +18,6 @@ let vidWidth = 160;
 let vidHeight = 160;
 
 // Set up the webcam
-// let webcamElement = document.querySelector('#videoContainer > video');
 const webcamElement = document.getElementById('webcam');
 async function setupWebcam() {
   return new Promise((resolve, reject) => {
