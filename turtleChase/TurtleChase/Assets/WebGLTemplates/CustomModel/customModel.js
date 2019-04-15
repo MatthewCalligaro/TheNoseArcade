@@ -14,8 +14,35 @@ var ticks = 0;
 let overlay;
 let video;
 
-let vidWidth = 160;
-let vidHeight = 160;
+let vidWidth = 240;
+let vidHeight = 240;
+
+// Bounding box overlay code
+// let boundX;
+// let boundY;
+// let boundWidth;
+// let boundHeight;
+
+let src;
+let cap;
+let gray;
+let face;
+let classifier;
+cv['onRuntimeInitialized']=()=>{
+  // Create desired matricies
+  src = new cv.Mat(webcamElement.height, webcamElement.width, cv.CV_8UC4);
+  cap = new cv.VideoCapture(webcam); 
+  gray = new cv.Mat();
+  face = new cv.Mat();
+
+  classifier = new cv.CascadeClassifier();  // initialize classifier
+  let utils = new Utils('errorMessage'); //use utils class
+  let faceCascadeFile = 'haarcascade_frontalface_default.xml'; // path to xml
+  // use createFileFromUrl to "pre-build" the xml
+  utils.createFileFromUrl(faceCascadeFile, faceCascadeFile, () => {
+    classifier.load(faceCascadeFile); // in the callback, load the cascade from file 
+  });
+}
 
 // Set up the webcam
 const webcamElement = document.getElementById('webcam');
@@ -54,20 +81,56 @@ imported.onload = async function(){
 };
 
 function processVideo() {
-  // Create the array
-  const image = tf.browser.fromPixels(webcamElement);  // for example
-  const img = image.reshape([1, vidWidth, vidHeight, 3]);
+  // Capture the image as an OpenCV.js image
+  cap.read(src);
+
+  // Identify the face
+  cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+  
+  // Initialize bounding box
+  let faces = new cv.RectVector();
+
+  // Detect faces
+  let msize = new cv.Size(0, 0);
+  classifier.detectMultiScale(gray, faces, 1.1, 3, 0, msize, msize);
+
+  // If no faces detected, stop
+  if (faces.size() == 0) {
+    return;
+  }
+
+  let faceTransforms = faces.get(0);
+
+  // Get region of interest
+  let roiSrc = src.roi(faceTransforms);
+
+  let dsize = new cv.Size(96, 96);
+  cv.resize(roiSrc, face, dsize, 0, 0, cv.INTER_AREA);
+
+  // Convert to ImageData
+  let imgData = new ImageData(new Uint8ClampedArray(face.data),face.cols,face.rows);
+
+  const image = tf.browser.fromPixels(imgData);
+  const img = image.reshape([1, 96, 96, 3]);
 
   // Predict
   const prediction = model.predict(img);
 
   // Record the result
   prediction.array().then(function(result) {
-    noseX = result[0][1];
-    noseY = result[0][0];
+
+    noseX = (result[0][0] * this.width / 93.0) + this.x;
+    // TODO This is pretty weird and I'm not sure if it jives with the coordinate system, but that is the nose.
+    noseY = this.height - (result[0][1] * this.height / 93.0) + this.y;
+
+    // Bounding box overlay code
+    // boundX = this.x;
+    // boundY = this.y;
+    // boundWidth = this.width;
+    // boundHeight = this.height;
 
     sendCoords(noseX, noseY);
-  });
+  }.bind(faceTransforms));
 }
 
 /**
@@ -107,6 +170,16 @@ function draw() {
   overlay.stroke(0, 225, 0); // Green
   overlay.strokeWeight(5);
   overlay.ellipse(noseX, noseY, 1, 1);
+
+  // Bounding box overlay code
+  // // Render bounding box
+  // overlay.stroke(255, 0, 0); // Red
+  // overlay.noFill();
+  // overlay.rect(boundX, boundY, boundWidth, boundHeight);
+
+  // // Render bounding origin dot
+  // overlay.stroke(0, 0, 255); // Blue
+  // overlay.ellipse(boundX, boundY, 1, 1);
 }
 
 
