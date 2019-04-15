@@ -12,14 +12,17 @@ public class MainMenu : Menu
 
     protected override void Awake()
     {
-        #if !UNITY_EDITOR && UNITY_WEBGL
-            WebGLInput.captureAllKeyboardInput = false;
-        #endif
         
         base.Awake();
         this.defaultActive = true;
 
         // Find the single MainMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("MainMenu")[0].GetComponent<MainMenu>();
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        this.MenuOpen();
     }
 }

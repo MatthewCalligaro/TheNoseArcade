@@ -9,7 +9,7 @@ public enum TutorialTask
     Jump,
     Pause,
     MenuMove,
-    MenuSelect,
+    PressPause,
     Distance,
     Consumable
 }
@@ -34,6 +34,17 @@ public class GodTutorial : God
         }
     }
 
+    /// <summary>
+    /// Whether the tutorial blocks the PauseMenu's MainMenu button
+    /// </summary>
+    public static bool BlockingMainMenu
+    {
+        get
+        {
+            return instance != null && instance.curEventIndex == 2;
+        }
+    }
+
     ////////////////////////////////////////////////////////////////
     // Fields
     ////////////////////////////////////////////////////////////////
@@ -49,13 +60,23 @@ public class GodTutorial : God
     private const float consumableDelay = 8;
 
     /// <summary>
+    /// Time until we provide the user with additional help text for jumping
+    /// </summary>
+    private const float jumpHelpTextDelay = 8;
+
+    /// <summary>
+    /// Message shown to the user if they cannot successfully jump after a certain amount of time
+    /// </summary>
+    private const string jumpHelpText = "If you are having trouble registering a jump, try pausing the game (escape key) and changing the jump sensitivity in the options menu";
+
+    /// <summary>
     /// Defines the events which the player must complete in the tutorial
     /// </summary>
     private static readonly TutorialEvent[] events =
     {
         new TutorialEvent
         {
-            Text = "Raise your nose or press the spacebar to jump",
+            Text = "Raise your nose (or press the spacebar) to jump.  This works best if you move the position of your face rather then rotating it",
             TaskCountText = "Remaining jumps",
             Task = TutorialTask.Jump,
             TaskNum = 3
@@ -63,15 +84,15 @@ public class GodTutorial : God
 
         new TutorialEvent
         {
-            Text = "Press the escape key to pause",
+            Text = "Swipe your nose left (or press the escape key) to pause the game",
             Task = TutorialTask.Pause,
             TaskNum = 1
         },
 
         new TutorialEvent
         {
-            Text = "Left click the resume button with the mouse to resume",
-            Task = TutorialTask.MenuSelect,
+            Text = "Toggle which button is selected by swiping your nose up and down and press the selected button by swiping right.  Press the resume button now",
+            Task = TutorialTask.PressPause,
             TaskNum = 1
         },
 
@@ -145,7 +166,7 @@ public class GodTutorial : God
     /// <summary>
     /// Index of the current event in events
     /// </summary>
-    private int eventIndex;
+    private int curEventIndex;
 
     /// <summary>
     /// Times the current task has been completed
@@ -167,6 +188,11 @@ public class GodTutorial : God
     /// </summary>
     private float nextConsumableX;
 
+    /// <summary>
+    /// Counts down time until we provide the user with additional help text for jumping
+    /// </summary>
+    private float jumpHelpCounter = jumpHelpTextDelay;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -182,6 +208,12 @@ public class GodTutorial : God
         if (instance != null && task == instance.curEvent.Task)
         {
             instance.taskCount++;
+
+            // Clear jump help text if they sucessfully jumped
+            if (task == TutorialTask.Jump)
+            {
+                HUD.UpdateTutorialHelpText("");
+            }
 
             // If this was the last time they needed to repeat this task, load the next one
             if (instance.taskCount >= instance.curEvent.TaskNum)
@@ -216,16 +248,16 @@ public class GodTutorial : God
     /// </summary>
     private void LoadNextEvent()
     {
-        this.eventIndex++;
-        if (this.eventIndex == events.Length) // Intentionally not >= so that repeating the final task does not reset finishX
+        this.curEventIndex++;
+        if (this.curEventIndex == events.Length) // Intentionally not >= so that repeating the final task does not reset finishX
         {
             HUD.UpdateTutorialText("Congratulations, you finished the Tutorial!");
             this.finishX = this.transform.position.x + 10;
         }
-        else if (this.eventIndex < events.Length)
+        else if (this.curEventIndex < events.Length)
         {
             this.taskCount = 0;
-            this.curEvent = events[this.eventIndex];
+            this.curEvent = events[this.curEventIndex];
             this.curEventStartX = this.transform.position.x;
             this.nextConsumableX = this.transform.position.x;
 
@@ -267,14 +299,24 @@ public class GodTutorial : God
     protected override void Start()
     {
         base.Start();
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<GodTutorial>();
+        instance = GameObject.FindGameObjectsWithTag("God")[0].GetComponent<GodTutorial>();
 
-        this.eventIndex = -1;
+        this.curEventIndex = -1;
         this.LoadNextEvent();
     }
 
     protected override void Update()
     {
+        // Provide jump help text if the user is unable to jump for a while
+        if (this.curEventIndex == 0 && this.taskCount == 0 && this.jumpHelpCounter > 0)
+        {
+            this.jumpHelpCounter -= Time.deltaTime;
+            if (this.jumpHelpCounter <= 0)
+            {
+                HUD.UpdateTutorialHelpText(jumpHelpText);
+            }
+        }
+        
         // Handle completion of Distance events
         if (this.curEvent.RequiredDistance.HasValue && this.transform.position.x - this.curEventStartX > this.curEvent.RequiredDistance)
         {
@@ -283,7 +325,7 @@ public class GodTutorial : God
 
         if (this.transform.position.x > this.finishX)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("MainMenu");
         }
 
         // Spawn the next consumable if we surpassed nextConsumableX

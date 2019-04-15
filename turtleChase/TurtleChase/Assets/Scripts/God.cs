@@ -372,7 +372,7 @@ public class God : MonoBehaviour
     protected virtual void Start ()
     {
         // Find self and camera
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
+        instance = GameObject.FindGameObjectsWithTag("God")[0].GetComponent<God>();
         this.gameCamera = this.GetComponentInChildren<Camera>();
 
         // Spawn first two pairs of boundaries
@@ -399,26 +399,26 @@ public class God : MonoBehaviour
 
 	protected virtual void Update()
     {
-        // Scroll camera
-        if (!Stopped)
+        if (!Stopped && Menu.InPlay)
         {
+            // Scroll camera
             this.transform.Translate(new Vector3(ScrollSpeed * Time.deltaTime, 0, 0));
-        }
 
-        // Spawn the next boundary when we are past the middle of the rightmost boundary
-        if (this.transform.position.x > this.rightBoundaryX)
-        {
-            Destroy(this.leftBoundaries[0]);
-            Destroy(this.leftBoundaries[1]);
-            this.rightBoundaryX += boundaryStats.x;
-            this.leftBoundaries = this.rightBoundaries;
-            this.rightBoundaries = this.SpawnBoundary(this.rightBoundaryX);
-        }
+            // Spawn the next boundary when we are past the middle of the rightmost boundary
+            if (this.transform.position.x > this.rightBoundaryX)
+            {
+                Destroy(this.leftBoundaries[0]);
+                Destroy(this.leftBoundaries[1]);
+                this.rightBoundaryX += boundaryStats.x;
+                this.leftBoundaries = this.rightBoundaries;
+                this.rightBoundaries = this.SpawnBoundary(this.rightBoundaryX);
+            }
 
-        // Spawn the next environment object
-        if (this.generateLevel && this.transform.position.x > this.nextEnv.x - envXLead)
-        {
-            this.SpawnNextEnv();
+            // Spawn the next environment object
+            if (this.generateLevel && this.transform.position.x > this.nextEnv.x - envXLead)
+            {
+                this.SpawnNextEnv();
+            }
         }
     }
 

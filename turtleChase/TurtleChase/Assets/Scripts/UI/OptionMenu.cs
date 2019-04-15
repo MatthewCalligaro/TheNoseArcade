@@ -10,7 +10,6 @@ public class OptionMenu : Menu
     /// </summary>
     private enum Dropdowns
     {
-        Difficulty,
         JumpStyle
     }
 
@@ -19,6 +18,7 @@ public class OptionMenu : Menu
     /// </summary>
     private enum Sliders
     {
+        Sensitivity,
         JumpPower
     }
 
@@ -47,14 +47,31 @@ public class OptionMenu : Menu
         instance.gameObject.SetActive(true);
         instance.curSettings = new SettableSettings();
         instance.ResetUIValues();
+        instance.MenuOpen();
     }
 
     /// <summary>
-    /// Handles when the Difficulty dropdown is changed by updating the relevant setting
+    /// Handles when the Sensitivity slider is changed by updating the relevant setting
     /// </summary>
-    public void ChangeDifficulty()
+    public void ChangeSensitivity()
     {
-        curSettings.Difficulty = (Difficulty)this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value;
+        if (this.sliders.Length > 0)
+        {
+            // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
+            // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
+            curSettings.Sensitivity = Settings.MaxSensitivity - this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.MaxSensitivity - Settings.MinSensitivity);
+        }
+    }
+
+    /// <summary>
+    /// Handles when the JumpPower slider is changed by updating the relevant setting
+    /// </summary>
+    public void ChangeJumpPower()
+    {
+        if (this.sliders.Length > 0)
+        {
+            curSettings.JumpPower = Settings.MinJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.MaxJumpPower - Settings.MinJumpPower);
+        }
     }
 
     /// <summary>
@@ -66,14 +83,6 @@ public class OptionMenu : Menu
         {
             curSettings.JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value;
         }
-    }
-
-    /// <summary>
-    /// Handles when the JumpPower slider is changed by updating the relevant setting
-    /// </summary>
-    public void ChangeJumpPower()
-    {
-        curSettings.JumpPower = Settings.minJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.maxJumpPower - Settings.minJumpPower);
     }
 
     /// <summary>
@@ -91,6 +100,7 @@ public class OptionMenu : Menu
     public void HandleQuit()
     {
         Player.BlockingPause--;
+        this.MenuClose();
         this.gameObject.SetActive(false);
     }
 
@@ -129,8 +139,8 @@ public class OptionMenu : Menu
     /// </summary>
     private void ResetUIValues()
     {
-        this.dropdowns[Dropdowns.Difficulty.GetHashCode()].value = Settings.Difficulty.GetHashCode();
+        this.sliders[Sliders.Sensitivity.GetHashCode()].value = ((float)(Settings.MaxSensitivity - Settings.Sensitivity)) / (Settings.MaxSensitivity - Settings.MinSensitivity);
+        this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.MinJumpPower) / (Settings.MaxJumpPower - Settings.MinJumpPower);
         this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
-        this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.minJumpPower) / (Settings.maxJumpPower - Settings.minJumpPower);
     }
 }

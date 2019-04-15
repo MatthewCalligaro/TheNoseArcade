@@ -15,9 +15,25 @@ public class LossMenu : Menu
     }
 
     /// <summary>
+    /// True if the current game has ended
+    /// </summary>
+    public static bool GameOver
+    {
+        get
+        {
+            return instance.gameOver;
+        }
+    }
+
+    /// <summary>
     /// Static reference to the one LossMenu object in the scene to enable static methods
     /// </summary>
     public static LossMenu instance;
+
+    /// <summary>
+    /// True if the current game has ended
+    /// </summary>
+    private bool gameOver = false;
 
 
 
@@ -32,9 +48,10 @@ public class LossMenu : Menu
     public static void HandleLoss(int score)
     {
         Player.BlockingPause++;
-        Time.timeScale = 0;
+        instance.gameOver = true;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+        instance.MenuOpen();
     }
 
     protected override void Awake()

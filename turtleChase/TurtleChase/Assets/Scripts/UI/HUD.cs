@@ -13,7 +13,8 @@ public class HUD : UIElement
         Score,
         Distance,
         Tutorial,
-        TutorialTaskCount
+        TutorialTaskCount,
+        TutorialHelpText
     }
 
     /// <summary>
@@ -62,6 +63,15 @@ public class HUD : UIElement
     public static void UpdateTutorialTaskCountText(string text, int remainingCount)
     {
         instance.texts[Texts.TutorialTaskCount.GetHashCode()].text = $"{text}: {remainingCount}";
+    }
+
+    /// <summary>
+    /// Updates the tutorial bonus help text
+    /// </summary>
+    /// <param name="text">New tutorial help text</param>
+    public static void UpdateTutorialHelpText(string text)
+    {
+        instance.texts[Texts.TutorialHelpText.GetHashCode()].text = text;
     }
 
     /// <summary>

@@ -1,66 +1,8 @@
 body {
-	display: grid;
-	grid-template-areas: 
-		"game settings"
-		"game video"
-		"game .";
-	grid-gap: 10px;
+  text-align: center;
 }
 
-#gameContainer {
-	grid-area: game;
-}
-
-#videoContainer {
-    grid-area: video;
-}
-
-#videoContainer > video, #videoContainer > canvas {
-    position: absolute;
-}
-
-#settingsContainer {
-	grid-area: settings;
-}
-
-
-
-/* SETTINGS */
-
-.slider-container {
-	display: grid;
-	grid-template-areas: 
-		"label"
-		"input"
-		"draggable";
-	grid-gap: 7px;
-	margin: 5px;
-}
-
-.checkbox-container {
-	display: grid;
-	grid-template-areas: 
-		"label"
-		"input";
-	grid-gap: 7px;
-	margin: 5px;
-}
-
-.radio-container {
-	display: grid;
-	grid-gap: 7px;
-	margin: 5px;
-}
-
-
-.settings-label {
-	grid-area: label;
-}
-
-.settings-input {
-	grid-area: input;
-}
-
-.settings-draggable {
-	grid-area: draggable;
+body > div {
+  display: inline-block;
+  text-align: left;
 }

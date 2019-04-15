@@ -6,19 +6,48 @@
 public abstract class Menu : UIElement
 {
     /// <summary>
+    /// True if the current game is in play, false if paused or game over
+    /// </summary>
+    public static bool InPlay
+    {
+        get
+        {
+            return !PauseMenu.Paused && !LossMenu.GameOver;
+        }
+    }
+
+    /// <summary>
+    /// Menu items which can be interacted with through face controls
+    /// </summary>
+    protected IMenuItem[] items;
+
+    /// <summary>
+    /// The current item selected by face controls
+    /// </summary>
+    protected int curItem = 0;
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Public Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
     /// Handles when the Restart button is pressed by reloading the current scene
     /// </summary>
     public void HandleRestart()
     {
+        this.MenuClose();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     /// <summary>
     /// Handles when the MainMenu button is pressed by loading the main menu scene
     /// </summary>
-    public void HandleMainMenu()
+    public virtual void HandleMainMenu()
     {
-        SceneManager.LoadScene(0);
+        this.MenuClose();
+        SceneManager.LoadScene("MainMenu");
     }
 
     /// <summary>
@@ -28,7 +57,8 @@ public abstract class Menu : UIElement
     public void HandleNewGame(int difficulty)
     {
         Settings.Difficulty = (Difficulty)difficulty;
-        SceneManager.LoadScene(1);
+        this.MenuClose();
+        SceneManager.LoadScene("Main");
     }
 
     /// <summary>
@@ -36,7 +66,8 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleTutorial()
     {
-        SceneManager.LoadScene(2);
+        this.MenuClose();
+        SceneManager.LoadScene("Tutorial");
     }
 
     /// <summary>
@@ -45,5 +76,77 @@ public abstract class Menu : UIElement
     public void HandleOptions()
     {
         OptionMenu.HandleOpen();
+    }
+
+    /// <summary>
+    /// Handles when the user swipes their nose up by selecting the above item
+    /// </summary>
+    public void HandleUp()
+    {
+        this.items[this.curItem].HandleExit();
+        this.curItem = (this.curItem - 1 + this.items.Length) % this.items.Length;
+        this.items[this.curItem].HandleEnter();
+    }
+
+    /// <summary>
+    /// Handles when the user swipes their nose down by selecting the below item
+    /// </summary>
+    public void HandleDown()
+    {
+        this.items[this.curItem].HandleExit();
+        this.curItem = (this.curItem + 1 + this.items.Length) % this.items.Length;
+        this.items[this.curItem].HandleEnter();
+    }
+
+    /// <summary>
+    /// Handles when the user swipes their nose right by passing this on to the selected item
+    /// </summary>
+    public void HandleRight()
+    {
+        this.items[this.curItem].HandleRight();
+    }
+
+    /// <summary>
+    /// Handles when the user swipes their nose left by passing this on to the selected item
+    /// </summary>
+    public void HandleLeft()
+    {
+        this.items[this.curItem].HandleLeft();
+    }
+    
+
+
+    ////////////////////////////////////////////////////////////////
+    // Unity Methods
+    ////////////////////////////////////////////////////////////////
+
+    protected override void Start()
+    {
+        base.Start();
+        this.items = this.GetComponentsInChildren<IMenuItem>();
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Protected Methods
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Called when the Menu is opened to register itself with the Controller
+    /// </summary>
+    protected virtual void MenuOpen()
+    {
+        Controller.AddMenu(this);
+        this.items[this.curItem].HandleEnter();
+    }
+
+    /// <summary>
+    /// Called when the Menu is closed to remove itself from the Controller
+    /// </summary>
+    protected virtual void MenuClose()
+    {
+        this.items[this.curItem].HandleExit();
+        Controller.RemoveMenu();
     }
 }

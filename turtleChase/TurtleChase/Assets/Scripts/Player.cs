@@ -57,6 +57,11 @@ public class Player : MonoBehaviour
     /// </summary>
     private const float maxScreenX = 0.75f;
 
+    /// <summary>
+    /// Gravity scale of player's Rigidbody2D when active
+    /// </summary>
+    private const float gravityScale = 1.2f;
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -72,11 +77,6 @@ public class Player : MonoBehaviour
     /// True if the player is receiving an upward force from jumping with JumpStyle.Jetpack
     /// </summary>
     private bool isJetpacking = false;
-
-    /// <summary>
-    /// True if the current game has been lost, preventing any player action
-    /// </summary>
-    private bool loss = false;
 
     /// <summary>
     /// Current multiplier applied to the player's speed
@@ -132,7 +132,7 @@ public class Player : MonoBehaviour
     {
         if (BlockingPause <= 0)
         {
-            PauseMenu.Pause();
+            PauseMenu.TogglePauseMenu();
         }
     }
 
@@ -156,11 +156,18 @@ public class Player : MonoBehaviour
         BlockingPause = 0;
         HUD.UpdateScore(this.score);
         HUD.UpdateDistance((int)this.transform.position.x);
+        Controller.SetPlayer(this);
     }
 
     protected virtual void Update()
     {
-        if (!this.loss)
+        // Use escape to pause
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            this.Pause();
+        }
+
+        if (Menu.InPlay)
         {
             // Remove the speedMultiplier when the timer expires
             if (this.speedCounter > 0)
@@ -183,16 +190,10 @@ public class Player : MonoBehaviour
                 this.JumpExit();
             }
 
-            // Use escape to pause
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                this.Pause();
-            }
-
             // The player loses if they fall outside of the camera
             if (!God.InCamera(this.transform.position))
             {
-                this.HandleLoss();
+                LossMenu.HandleLoss(this.score);
             }
 
             // Tell the camera to skip ahead if the player surpasses maxScreenX
@@ -215,6 +216,8 @@ public class Player : MonoBehaviour
                 HUD.UpdateDistance((int)this.transform.position.x);
             }
         }
+
+        this.GetComponent<Rigidbody2D>().bodyType = Menu.InPlay ? RigidbodyType2D.Dynamic : RigidbodyType2D.Static;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -249,14 +252,5 @@ public class Player : MonoBehaviour
             this.SpeedMultiplier *= otherObs.SpeedMultiplier;
             God.RemoveEnvironmentObj(other.gameObject);
         }
-    }
-
-    /// <summary>
-    /// Handles when the player loses
-    /// </summary>
-    private void HandleLoss()
-    {
-        this.loss = true;
-        LossMenu.HandleLoss(this.score);
     }
 }

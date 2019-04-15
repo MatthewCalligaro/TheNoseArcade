@@ -97,7 +97,7 @@ public class Environment : MonoBehaviour
     private void Update()
     {
         // If given a speed and movement, move along movement at the given speed and direction 
-        if (this.Speed > 0 && this.movement != Vector3.zero)
+        if (this.Speed > 0 && this.movement != Vector3.zero && Menu.InPlay)
         {
             this.transform.position += this.movement.normalized * this.direction * this.Speed * Time.deltaTime;
 

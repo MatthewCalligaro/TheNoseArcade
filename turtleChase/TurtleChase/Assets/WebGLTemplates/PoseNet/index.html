@@ -4,28 +4,19 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>The Nose Arcade | %UNITY_WEB_NAME%</title>
+    <title>The Nose Arcade | %UNITY_WEB_NAME% [PoseNet]</title>
 
     <!-- PoseNet -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
     <script src="https://unpkg.com/ml5@0.1.1/dist/ml5.min.js" type="text/javascript"></script>
 
-    <!-- JQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-    <!-- JQuery UI -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"></link>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
     <!-- Unity -->
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
     </script>
     
-    <script src="settings.js"></script>
     <script src="controller.js"></script>
 
     <link rel="stylesheet" href="styles.css">
@@ -34,73 +25,25 @@
   
   <body>
 
-    <!-- Unity loads game here -->
-    <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>
-
-    <!-- Settings -->
-    <div id="settingsContainer">
-
-      <!-- Input mode -->
-      <div class="radio-container">
-        <label data-helptext="Choose the type of movement to jump">Select a trigger method:</label>
-        <div>
-          <input type="radio" name="inputMode" value="active" checked data-helptext="Move your nose above the red line to jump">Active Zone
-        </div>
-        <div>  
-          <input type="radio" name="inputMode" value="velocity" data-helptext="Move your nose upward quickly to jump">Nose Velocity
-        </div>
-      </div>
-
-      <hr>
-
-      <!-- Delay -->
-      <div class="slider-container">
-        <label id="delayLabel" class="settings-label" data-helptext="Set how long to wait before detecting another jump">[General] Set delay between jumps:</label>
-        <div id="delay" class="settings-input">
-            <input type="text" name="delay" class="delayValue"/> ms
-        </div>
-        <div id="delaySlider" class="settings-draggable"></div>
-      </div>
-
-      <hr>
-
-      <!-- Threshold -->
-      <div class="slider-container">
-        <label id="thresholdLabel" class="settings-label" data-helptext="Change threshold in active mode">[Active Zone] Set threshold (red line):</label>
-        <div id="threshold" class="settings-input">
-            <input type="text" name="threshold" class="thresholdValue"/> px
-        </div>
-        <div id="thresholdSlider" class="settings-draggable"></div>
-      </div>
-
-      <hr>
-
-      <!-- Sensitivity -->
-      <div class="slider-container">
-        <label id="velocityMinLabel" class="settings-label" data-helptext="Set the minimum nose velocity to register a jump">[Nose Velocity] Set minimum velocity:</label>
-        <div id="velocityMin" class="settings-input">
-            <input type="text" name="velocityMin" class="velocityMinValue"/> px/s
-        </div>
-        <div id="velocityMinSlider" class="settings-draggable"></div>
-      </div>
-
-      <hr>
-
-      <!-- Constant magnitude -->
-      <div class="radio-container">
-        <label data-helptext="Set all jumps to the same magnitude">[Nose Velocity] Select jump magnitude scaling:</label>
-        <div>
-          <input type="radio" name="magScaling" value="constant" checked data-helptext="Normalize jump magnitude regardless of nose speed">Jump with constant magnitude
-        </div>
-        <div>  
-          <input type="radio" name="magScaling" value="proportional" data-helptext="Scale jump magnitude by nose speed">Jump with magnitude proportional to nose speed
-        </div>
-      </div>
-
+    <div>
+      <!-- Unity loads game here -->
+      <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
     </div>
 
-    <!-- Webcam video monitor -->
+    <br>
+
+    <!-- (Sometimes) invisible container for videos -->
     <div id="videoContainer"></div>
+    
+    <br>
+
+<!--     
+    <div>
+      <h1>How To Play</h1>
+      <p>
+        Tutorial coming soon. 
+      </p>
+    </div> -->
 
   </body>
   

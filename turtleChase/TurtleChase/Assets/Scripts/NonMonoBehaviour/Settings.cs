@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿using UnityEngine;
+
+/// <summary>
 /// The different styles in which the player can jump
 /// </summary>
 public enum JumpStyle
@@ -64,6 +66,21 @@ public class Settings
         }
     }
 
+    /// <summary>
+    /// Minimum number of pixels/millisecond for a nose movement to be interpreted as a gesture
+    /// </summary>
+    public static float Sensitivity
+    {
+        get
+        {
+            return settableSettings.Sensitivity.Value;
+        }
+        set
+        {
+            settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, MaxSensitivity), MinSensitivity);
+        }
+    }
+
 
 
     ////////////////////////////////////////////////////////////////
@@ -71,14 +88,29 @@ public class Settings
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Maximum value for JumpPower
-    /// </summary>
-    public const float maxJumpPower = 1.5f;
-
-    /// <summary>
     /// Minimum value for JumpPower
     /// </summary>
-    public const float minJumpPower = 0.5f;
+    public const float MinJumpPower = 0.025f;
+
+    /// <summary>
+    /// Maximum value for JumpPower
+    /// </summary>
+    public const float MaxJumpPower = 1.5f;
+
+    /// <summary>
+    /// Minimum value for Sensitivity
+    /// </summary>
+    public const float MinSensitivity = 0.01f;
+
+    /// <summary>
+    /// Maximum value for Sensitivity
+    /// </summary>
+    public const float MaxSensitivity = 0.25f;
+
+    /// <summary>
+    /// Difference in sensitivity for horizontal vs. vertical movements
+    /// </summary>
+    public const float HorizontalSensitivityFactor = 1.75f;
 
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
@@ -88,11 +120,12 @@ public class Settings
     /// <summary>
     /// Default values for the settable settings
     /// </summary>
-    public static readonly SettableSettings defaultSettings = new SettableSettings
+    private static readonly SettableSettings defaultSettings = new SettableSettings
     {
         JumpStyle = JumpStyle.Velocity,
         Difficulty = Difficulty.Medium,
-        JumpPower = 1.0f
+        JumpPower = 1.0f,
+        Sensitivity = 0.1f,
     };
 
     /// <summary>
@@ -132,6 +165,10 @@ public class Settings
         if (newSettings.JumpPower.HasValue)
         {
             settableSettings.JumpPower = newSettings.JumpPower;
+        }
+        if (newSettings.Sensitivity.HasValue)
+        {
+            settableSettings.Sensitivity = newSettings.Sensitivity;
         }
     }
 }
