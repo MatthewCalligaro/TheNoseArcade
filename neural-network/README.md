@@ -1,7 +1,13 @@
 # Neural Network Information
 
 ## Models
-* **Vanilla Model**: The most basic version of the model, taken directly from fast.ai's lesson3-head-pose.ipynb
+* **vanilla_model.pkl**: The most basic version of the model, taken directly from fast.ai's lesson3-head-pose.ipynb
+* **test_model.h5**: A poorly trained model, used mostly for testing integration
+* **one_trained_layer.h5**: A model with the following architecture: MobileNetV2, global average pooling, fully connected layer
+* **two_layer.h5**: A model with the following architecture: MobileNetV2, global average pooling, two fully connected layers
+* **two_layer_200.h5**: A model with the following architecture: MobileNetV2, global average pooling, two fully connected layers trained on a larger subset of the BIWI Kinect Headpose Dataset
+* **unfrozen_200.h5**: A model with the following architecture: MobileNetV2, global average pooling, two fully connected layers trained on a larger subset of the BIWI Kinect Headpose Dataset with the MobileNet layers unfrozen
+* **kaggle.h5** First network trained on the Kaggle dataset, requires OpenCV cascade classifier to run with the webcam
 
 ## Running Notebooks on Google Colab
 1. Go to https://colab.research.google.com/.
