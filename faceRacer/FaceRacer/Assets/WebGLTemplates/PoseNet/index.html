@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>The Nose Arcade | %UNITY_WEB_NAME%</title>
+    <title>The Nose Arcade | %UNITY_WEB_NAME% [PoseNet]</title>
 
     <!-- PoseNet -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
@@ -14,17 +14,36 @@
     <!-- Unity -->
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-    var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
     </script>
     
     <script src="controller.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 
   </head>
   
   <body>
 
-    <!-- Unity loads game here -->
-    <div id="gameContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px; margin: auto"></div>
+    <div>
+      <!-- Unity loads game here -->
+      <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+    </div>
+
+    <br>
+
+    <!-- (Sometimes) invisible container for videos -->
+    <div id="videoContainer"></div>
+    
+    <br>
+
+<!--     
+    <div>
+      <h1>How To Play</h1>
+      <p>
+        Tutorial coming soon. 
+      </p>
+    </div> -->
 
   </body>
   
