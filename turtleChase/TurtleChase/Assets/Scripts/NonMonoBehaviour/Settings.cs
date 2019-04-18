@@ -23,7 +23,7 @@ public enum Difficulty
 /// <summary>
 /// Stores the current game settings
 /// </summary>
-public class Settings
+public static class Settings
 {
     ////////////////////////////////////////////////////////////////
     // Properties
