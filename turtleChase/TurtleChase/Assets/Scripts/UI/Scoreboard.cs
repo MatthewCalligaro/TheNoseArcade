@@ -23,7 +23,7 @@ public class Scoreboard : Menu
         }
     }
 
-    private const int numScores = 10;
+    private const int numScores = 5;
 
     /// <summary>
     /// Static reference to the one Scoreboard object in the scene to enable static methods
