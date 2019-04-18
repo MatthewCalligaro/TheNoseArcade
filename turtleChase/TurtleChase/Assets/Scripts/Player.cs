@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Controls the player and player score
@@ -193,6 +194,7 @@ public class Player : MonoBehaviour
             // The player loses if they fall outside of the camera
             if (!God.InCamera(this.transform.position))
             {
+                Scoreboard.AddScore(new HighScore {Score = this.score, Distance = (int)this.transform.position.x, Date = DateTime.Now});
                 LossMenu.HandleLoss(this.score);
             }
 

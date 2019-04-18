@@ -20,7 +20,7 @@ public class Scoreboard : Menu
     {
         get
         {
-            return this.scores[0].Score;
+            return scores[0].Score;
         }
     }
 
@@ -31,7 +31,7 @@ public class Scoreboard : Menu
     /// </summary>
     private static Scoreboard instance;
 
-    private List<HighScore> scores = new List<global::HighScore>();
+    private static List<HighScore> scores = new List<global::HighScore>();
 
 
 
@@ -51,8 +51,8 @@ public class Scoreboard : Menu
 
     public static void AddScore(HighScore score)
     {
-        instance.scores.Add(score);
-        instance.scores.Sort();
+        scores.Add(score);
+        scores.Sort();
     }
 
     /// <summary>
@@ -87,25 +87,25 @@ public class Scoreboard : Menu
 
     private void PopulateScoreboard()
     {
-        if (this.scores.Count > 0)
+        if (scores.Count > 0)
         {
             this.texts[Texts.HelpText.GetHashCode()].gameObject.SetActive(false);
 
-            string scores = string.Empty;
-            string distances = string.Empty;
-            string dates = string.Empty;
+            string scoreText = string.Empty;
+            string distanceText = string.Empty;
+            string dateText = string.Empty;
 
-            for (int i = 0; i < Mathf.Min(numScores, this.scores.Count); i++)
+            for (int i = 0; i < Mathf.Min(numScores, scores.Count); i++)
             {
-                scores += $"{i + 1}: {this.scores[i].Score}\n";
-                distances += $"{this.scores[i].Distance} m\n";
-                dates += $"{this.scores[i].Date.ToString("dd/mm hh:mm")}\n";
+                scoreText += $"{i + 1}: {scores[i].Score}\n";
+                distanceText += $"{scores[i].Distance}m\n";
+                dateText += $"{scores[i].Date.ToString("dd/mm hh:mm")}\n";
             }
 
             // Load strings after removing trailing newlines
-            this.texts[Texts.Scores.GetHashCode()].text = scores.Substring(0, scores.Length - 2);
-            this.texts[Texts.Distances.GetHashCode()].text = distances.Substring(0, distances.Length - 2);
-            this.texts[Texts.Dates.GetHashCode()].text = dates.Substring(0, dates.Length - 2);
+            this.texts[Texts.Scores.GetHashCode()].text = scoreText.Substring(0, scoreText.Length - 1);
+            this.texts[Texts.Distances.GetHashCode()].text = distanceText.Substring(0, distanceText.Length - 1);
+            this.texts[Texts.Dates.GetHashCode()].text = dateText.Substring(0, dateText.Length - 1);
         }
         else
         {
