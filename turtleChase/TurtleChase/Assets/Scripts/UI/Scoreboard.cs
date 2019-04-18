@@ -7,12 +7,16 @@ public class Scoreboard : Menu
     private enum Texts
     {
         Title,
+        NumberTitle,
+        Numbers,
         ScoreTitle,
         Scores,
         DistanceTitle,
         Distances,
         DateTitle,
         Dates,
+        DifficultyTitle,
+        Difficulties,
         HelpText
     }
 
@@ -52,7 +56,9 @@ public class Scoreboard : Menu
     public static void AddScore(HighScore score)
     {
         scores.Add(score);
-        scores.Sort();
+
+        // Sort scores in descending order so highest score is on top
+        scores.Sort((a, b) => b.CompareTo(a));
     }
 
     /// <summary>
@@ -91,29 +97,54 @@ public class Scoreboard : Menu
         {
             this.texts[Texts.HelpText.GetHashCode()].gameObject.SetActive(false);
 
+            string numberText = string.Empty;
             string scoreText = string.Empty;
             string distanceText = string.Empty;
             string dateText = string.Empty;
+            string difficultyText = string.Empty;
 
             for (int i = 0; i < Mathf.Min(numScores, scores.Count); i++)
             {
-                scoreText += $"{i + 1}: {scores[i].Score}\n";
+                numberText += $"{i + 1}.\n";
+                scoreText += $"{scores[i].Score}\n";
                 distanceText += $"{scores[i].Distance}m\n";
-                dateText += $"{scores[i].Date.ToString("dd/mm hh:mm")}\n";
+                dateText += $"{scores[i].Date.ToString("MM/dd hh:mm")}\n";
+                difficultyText += $"{scores[i].Difficulty.ToString()}\n";
             }
 
-            // Load strings after removing trailing newlines
-            this.texts[Texts.Scores.GetHashCode()].text = scoreText.Substring(0, scoreText.Length - 1);
-            this.texts[Texts.Distances.GetHashCode()].text = distanceText.Substring(0, distanceText.Length - 1);
-            this.texts[Texts.Dates.GetHashCode()].text = dateText.Substring(0, dateText.Length - 1);
+            string emptyLines = string.Empty;
+            for (int i = scores.Count; i < numScores; i++)
+            {
+                emptyLines += "\n";
+            }
+
+            // Ensure every text field is exactly numScores lines long
+            numberText += emptyLines;
+            numberText = numberText.Substring(0, numberText.Length - 1);
+            scoreText += emptyLines;
+            scoreText = scoreText.Substring(0, scoreText.Length - 1);
+            distanceText += emptyLines;
+            distanceText = distanceText.Substring(0, distanceText.Length - 1);
+            dateText += emptyLines;
+            dateText = dateText.Substring(0, dateText.Length - 1);
+            difficultyText += emptyLines;
+            difficultyText = difficultyText.Substring(0, difficultyText.Length - 1);
+
+            this.texts[Texts.Numbers.GetHashCode()].text = numberText;
+            this.texts[Texts.Scores.GetHashCode()].text = scoreText;
+            this.texts[Texts.Distances.GetHashCode()].text = distanceText;
+            this.texts[Texts.Dates.GetHashCode()].text = dateText;
+            this.texts[Texts.Difficulties.GetHashCode()].text = difficultyText;
         }
         else
         {
             this.texts[Texts.HelpText.GetHashCode()].gameObject.SetActive(true);
 
+            this.texts[Texts.Numbers.GetHashCode()].text = string.Empty;
             this.texts[Texts.Scores.GetHashCode()].text = string.Empty;
             this.texts[Texts.Distances.GetHashCode()].text = string.Empty;
             this.texts[Texts.Dates.GetHashCode()].text = string.Empty;
+            this.texts[Texts.Difficulties.GetHashCode()].text = string.Empty;
         }
     }
 

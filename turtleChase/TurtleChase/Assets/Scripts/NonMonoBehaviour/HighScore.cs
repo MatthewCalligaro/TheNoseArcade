@@ -17,6 +17,11 @@ public class HighScore : IComparable<HighScore>
     /// </summary>
     public DateTime Date { get; set; }
 
+    /// <summary>
+    /// Difficulty at which the round was played
+    /// </summary>
+    public Difficulty Difficulty { get; set; }
+
     public int CompareTo(HighScore other)
     {
         return Score.CompareTo(other.Score);
