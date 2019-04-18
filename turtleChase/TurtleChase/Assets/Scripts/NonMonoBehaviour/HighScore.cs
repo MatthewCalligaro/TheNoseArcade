@@ -1,5 +1,8 @@
 ﻿using System;
 
+/// <summary>
+/// Encapsulates the information from a finished game
+/// </summary>
 public class HighScore : IComparable<HighScore>
 {
     /// <summary>
@@ -24,6 +27,12 @@ public class HighScore : IComparable<HighScore>
 
     public int CompareTo(HighScore other)
     {
-        return Score.CompareTo(other.Score);
+        // Compare by score and use distance to break ties
+        if (Score.CompareTo(other.Score) != 0)
+        {
+            return Score.CompareTo(other.Score);
+        }
+
+        return Distance.CompareTo(other.Distance);
     }
 }

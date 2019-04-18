@@ -11,7 +11,8 @@ public class LossMenu : Menu
     private enum Texts
     {
         Title,
-        Score
+        Score,
+        HighScore
     }
 
     /// <summary>
@@ -50,7 +51,8 @@ public class LossMenu : Menu
         Player.BlockingPause++;
         instance.gameOver = true;
         instance.gameObject.SetActive(true);
-        instance.texts[Texts.Score.GetHashCode()].text = "Score: " + score;
+        instance.texts[Texts.Score.GetHashCode()].text = $"Score: {score}";
+        instance.texts[Texts.HighScore.GetHashCode()].text = Scoreboard.HighScore >= score ? $"High Score: {Scoreboard.HighScore}" : "New high score!";
         instance.MenuOpen();
     }
 

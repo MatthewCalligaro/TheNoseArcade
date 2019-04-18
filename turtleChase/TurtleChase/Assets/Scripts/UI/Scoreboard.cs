@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Scoreboard : Menu
 {
+    /// <summary>
+    /// The text objects contained in the scoreboard
+    /// </summary>
     private enum Texts
     {
         Title,
@@ -19,8 +22,11 @@ public class Scoreboard : Menu
         Difficulties,
         HelpText
     }
-
-    public int HighScore
+    
+    /// <summary>
+    /// Highest score on the scoreboard
+    /// </summary>
+    public static int HighScore
     {
         get
         {
@@ -28,6 +34,9 @@ public class Scoreboard : Menu
         }
     }
 
+    /// <summary>
+    /// Number of scores shown on the scoreboard
+    /// </summary>
     private const int numScores = 5;
 
     /// <summary>
@@ -35,6 +44,9 @@ public class Scoreboard : Menu
     /// </summary>
     private static Scoreboard instance;
 
+    /// <summary>
+    /// Results of every completed game
+    /// </summary>
     private static List<HighScore> scores = new List<global::HighScore>();
 
 
@@ -44,7 +56,7 @@ public class Scoreboard : Menu
     ////////////////////////////////////////////////////////////////
 
     /// <summary>
-    /// Method called when the Scoreboard is opened
+    /// Method called when the scoreboard is opened
     /// </summary>
     public static void HandleOpen()
     {
@@ -53,6 +65,10 @@ public class Scoreboard : Menu
         instance.MenuOpen();
     }
 
+    /// <summary>
+    /// Adds the information associated with a finished game to the scoreboard
+    /// </summary>
+    /// <param name="score">Information associated with a finished game</param>
     public static void AddScore(HighScore score)
     {
         scores.Add(score);
@@ -62,7 +78,7 @@ public class Scoreboard : Menu
     }
 
     /// <summary>
-    /// Handles when the Close button is pressed by closing the Scoreboard
+    /// Handles when the Close button is pressed by closing the sScoreboard
     /// </summary>
     public void HandleClose()
     {
@@ -91,6 +107,9 @@ public class Scoreboard : Menu
     // Private Methods
     ////////////////////////////////////////////////////////////////
 
+    /// <summary>
+    /// Updates the text of the scoreboard based on the information in scores
+    /// </summary>
     private void PopulateScoreboard()
     {
         if (scores.Count > 0)
