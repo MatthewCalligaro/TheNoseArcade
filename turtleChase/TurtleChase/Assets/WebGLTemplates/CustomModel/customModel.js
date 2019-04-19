@@ -77,7 +77,7 @@ function setup() {
   // Webcam capture
   video = createCapture(VIDEO);
   video.size(vidWidth, vidHeight);
-  video.parent('videoContainer')
+  video.parent('videoContainer');
 
   // Graphics overlay for monitor annotations
   pixelDensity(1);
