@@ -53,6 +53,11 @@ imported.onload = async function(){
   }, 1);
 };
 
+/**
+ * Using the video stream get an image and then record the nose X and Y positions and 
+ * passes them to the game.
+ * @callback sendCoords(noseX,noseY)
+ */
 function processVideo() {
   // Create the array
   const image = tf.browser.fromPixels(webcamElement);  // for example
