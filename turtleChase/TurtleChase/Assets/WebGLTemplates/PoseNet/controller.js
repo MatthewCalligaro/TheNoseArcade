@@ -21,7 +21,7 @@ function setup() {
   // Webcam capture
   video = createCapture(VIDEO);
   video.size(vidWidth, vidHeight);
-  video.parent('videoContainer')
+  video.parent('videoContainer');
 
   // Graphics overlay for monitor annotations
   pixelDensity(1);
@@ -36,7 +36,7 @@ function setup() {
     scoreThreshold: 2,
     nmsRadius: 20,
     detectionType: 'single',
-  }
+  };
   // Create a new poseNet method with a single detection
   poseNet = ml5.poseNet(video, options, function() {});
 
