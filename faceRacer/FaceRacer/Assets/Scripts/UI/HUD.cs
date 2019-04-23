@@ -55,7 +55,7 @@ public class HUD : UIElement
 
     public static void UpdateLaps(int numerator, int denominator)
     {
-        instance.texts[Texts.Laps.GetHashCode()].text = $"{numerator}/{denominator}";
+        instance.texts[Texts.Laps.GetHashCode()].text = numerator <= 0 ? string.Empty : $"{numerator}/{denominator}";
     }
 
     protected override void Awake()

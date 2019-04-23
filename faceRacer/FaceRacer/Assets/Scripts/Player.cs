@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     private const float brakeAcceleration = 30;
     private const float turnSpeed = 90;
 
+    private const int maxLaps = 3;
+
     private float velocity = 0;
 
     private bool drifting = false;
@@ -38,6 +40,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.GetComponent<FinishLine>() != null)
+        {
+            this.laps++;
+            if (this.laps > maxLaps)
+            {
+                // Handle Win;
+            }
+            else
+            {
+                HUD.UpdateLaps(this.laps, maxLaps);
+            }
+        }
+    }
+
     private void UpdateKinetics()
     {
         if (Settings.Accelerate.Interpolate(Controller.Cursor.y) > 0)
@@ -60,7 +78,7 @@ public class Player : MonoBehaviour
 
         HUD.UpdateSpeed(this.velocity);
         HUD.UpdateTime(DateTime.Now - this.startTime);
-        HUD.UpdateLaps(this.laps + 1, 3);
+        HUD.UpdateLaps(this.laps, maxLaps);
     }
 
     private void Accelerate(float magnitude)
