@@ -13,47 +13,29 @@ public class Player : MonoBehaviour
 
     private bool drifting = false;
 
-    private Vector2 cursor = new Vector2(0.5f, 0.5f);
-    private Vector3 lastMousePosition;
 
-    public void UpdateCursor(float dx, float dy)
+	private void Start ()
     {
-        this.cursor.x = Mathf.Min(1, Mathf.Max(0, this.cursor.x + dx));
-        this.cursor.y = Mathf.Min(1, Mathf.Max(0, this.cursor.y + dy));
 
-        if (Settings.Accelerate.Interpolate(cursor.y) > 0)
+	}
+
+    private void Update()
+    {
+        if (Settings.Accelerate.Interpolate(Controller.Cursor.y) > 0)
         {
-            this.Accelerate(Settings.Accelerate.Interpolate(cursor.y));
+            this.Accelerate(Settings.Accelerate.Interpolate(Controller.Cursor.y));
         }
-        else if (Settings.Brake.Interpolate(cursor.y) > 0)
+        else if (Settings.Brake.Interpolate(Controller.Cursor.y) > 0)
         {
-            this.Brake(Settings.Brake.Interpolate(cursor.y));
+            this.Brake(Settings.Brake.Interpolate(Controller.Cursor.y));
         }
         else
         {
             this.velocity = Mathf.Max(0, this.velocity - decayAcceleration * Time.deltaTime);
         }
 
-        this.Turn(-Settings.Left.Interpolate(cursor.x));
-        this.Turn(Settings.Right.Interpolate(cursor.x));
-    }
-
-	private void Start ()
-    {
-        lastMousePosition = Input.mousePosition;
-        HUD.UpdateCursor(this.cursor);
-	}
-
-    private void Update()
-    {
-        if (!Input.GetMouseButton(1))
-        {
-            UpdateCursor(
-                (Input.mousePosition - this.lastMousePosition).x / Screen.width * Settings.MouseSensitivity.x,
-                (Input.mousePosition - this.lastMousePosition).y / Screen.height * Settings.MouseSensitivity.y);
-              HUD.UpdateCursor(this.cursor);
-        }
-        this.lastMousePosition = Input.mousePosition;
+        this.Turn(-Settings.Left.Interpolate(Controller.Cursor.x));
+        this.Turn(Settings.Right.Interpolate(Controller.Cursor.x));
 
         this.transform.position += this.transform.forward * this.velocity * Time.deltaTime;
     }
