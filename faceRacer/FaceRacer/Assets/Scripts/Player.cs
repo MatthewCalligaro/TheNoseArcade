@@ -27,6 +27,19 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (Menu.InPlay)
+        {
+            this.UpdateKinetics();
+        }
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenu.TogglePauseMenu();
+        }
+    }
+
+    private void UpdateKinetics()
+    {
         if (Settings.Accelerate.Interpolate(Controller.Cursor.y) > 0)
         {
             this.Accelerate(Settings.Accelerate.Interpolate(Controller.Cursor.y));

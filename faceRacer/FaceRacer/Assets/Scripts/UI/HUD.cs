@@ -37,7 +37,6 @@ public class HUD : UIElement
 
     public static void UpdateCursor(Vector2 position)
     {
-        Debug.Log(position);
         instance.raws[Raws.Cursor.GetHashCode()].rectTransform.anchorMax = position + cursorRadius;
         instance.raws[Raws.Cursor.GetHashCode()].rectTransform.anchorMin = position - cursorRadius;
         instance.raws[Raws.Cursor.GetHashCode()].rectTransform.offsetMin = new Vector2();

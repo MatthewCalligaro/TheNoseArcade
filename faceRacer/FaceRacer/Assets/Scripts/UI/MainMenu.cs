@@ -1,18 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class MainMenu : MonoBehaviour
+/// <summary>
+/// Controller for the main menu
+/// </summary>
+public class MainMenu : Menu
 {
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// Static reference to the one MainMenu object in the scene to enable static methods
+    /// </summary>
+    private static MainMenu instance;
+
+    protected override void Awake()
     {
-        
+
+        base.Awake();
+        this.defaultActive = true;
+
+        // Find the single MainMenu object by tag
+        instance = GameObject.FindGameObjectsWithTag("MainMenu")[0].GetComponent<MainMenu>();
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Start()
     {
-        
+        base.Start();
+        this.MenuOpen();
     }
 }
