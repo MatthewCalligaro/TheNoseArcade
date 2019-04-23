@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,10 +14,15 @@ public class Player : MonoBehaviour
 
     private bool drifting = false;
 
+    private DateTime startTime;
+
+    int laps = 0;
+
+
 
 	private void Start ()
     {
-
+        this.startTime = DateTime.Now;
 	}
 
     private void Update()
@@ -38,6 +44,10 @@ public class Player : MonoBehaviour
         this.Turn(Settings.Right.Interpolate(Controller.Cursor.x));
 
         this.transform.position += this.transform.forward * this.velocity * Time.deltaTime;
+
+        HUD.UpdateSpeed(this.velocity);
+        HUD.UpdateTime(DateTime.Now - this.startTime);
+        HUD.UpdateLaps(this.laps + 1, 3);
     }
 
     private void Accelerate(float magnitude)
