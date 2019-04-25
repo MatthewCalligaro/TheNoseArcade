@@ -58,7 +58,7 @@ public class Controller : MonoBehaviour, INoseController
     private float counter = initalWaitTime;
 
 
-    private Vector2 cursor = new Vector2(0.5f, 0.5f);
+    private Vector2 cursor = Settings.CursorStart;
     private Vector3 lastMousePosition;
 
 
@@ -117,7 +117,14 @@ public class Controller : MonoBehaviour, INoseController
 
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
-            UpdateFacePosition((((int)Input.mousePosition.x) & 0xFFFF) << 9 | ((((int)Input.mousePosition.y) & 0xFFFF) << 19));
+            UpdateFacePosition(
+                ((int)(Input.mousePosition.x / Settings.MouseSensitivityMultiplier.x) & 0xFFFF) << 9 
+                | (((int)(Input.mousePosition.y / Settings.MouseSensitivityMultiplier.y) & 0xFFFF) << 19));
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            this.ResetCursor();
         }
     }
 
@@ -135,5 +142,11 @@ public class Controller : MonoBehaviour, INoseController
             this.cursor.y = Mathf.Min(1, Mathf.Max(0, this.cursor.y + dy));
             HUD.UpdateCursor(this.cursor);
         }
+    }
+
+    public void ResetCursor()
+    {
+        this.cursor = Settings.CursorStart;
+        HUD.UpdateCursor(this.cursor);
     }
 }
