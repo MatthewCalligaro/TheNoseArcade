@@ -1,10 +1,8 @@
 var imported = document.createElement('script');
 document.head.appendChild(imported);
 
-// Model and output
+// Model
 var model;
-let noseX;
-let noseY;
 
 // Evaluating
 var interval;
@@ -17,7 +15,11 @@ let video;
 let vidWidth = 320;
 let vidHeight = 240;
 
-// Bounding box overlay coords
+// Nose coords (monitor frame)
+let noseX;
+let noseY;
+
+// Bounding box overlay coords (monitor frame)
 let boundX;
 let boundY;
 let boundWidth;
@@ -119,11 +121,11 @@ function processVideo() {
   // Record the result
   prediction.array().then(function(result) {
 
-    // Nose coordinates in monitor frame
+    // Nose coordinates
     noseX = ((result[0][0] * this.width / 96.0) + this.x) * vidWidth  / 240;
     noseY = ((result[0][1] * this.height / 96.0) + this.y) * vidHeight / 240;
 
-    // Bounding box overlay coords in monitor frame
+    // Bounding box overlay coords
     boundX = this.x * vidWidth / 240;
     boundY = this.y * vidHeight / 240;
     boundWidth = this.width * vidWidth  / 240;
@@ -176,7 +178,7 @@ function draw() {
   overlay.noFill();
   overlay.rect(boundX, boundY, boundWidth, boundHeight);
 
-  // Render bounding origin dot
+  // Render bounding box origin dot
   overlay.stroke(0, 0, 255); // Blue
   overlay.ellipse(boundX, boundY, 1, 1);
 }
