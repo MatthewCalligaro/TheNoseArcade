@@ -9,7 +9,7 @@ public abstract class Menu : UIElement
     {
         get
         {
-            return !PauseMenu.Paused;
+            return !PauseMenu.Paused && !WinMenu.GameOver;
         }
     }
 

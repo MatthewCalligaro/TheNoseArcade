@@ -5,12 +5,20 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private TimeSpan elapsedTime
+    {
+        get
+        {
+            return DateTime.Now - startTime - PauseMenu.TimePaused;
+        }
+    }
+
     private const float acceleration = 10;
     private const float decayAcceleration = 2;
     private const float brakeAcceleration = 30;
     private const float turnSpeed = 90;
 
-    private const int maxLaps = 3;
+    private const int maxLaps = 2;
 
     private float velocity = 0;
 
@@ -32,6 +40,9 @@ public class Player : MonoBehaviour
         if (Menu.InPlay)
         {
             this.UpdateKinetics();
+            HUD.UpdateSpeed(this.velocity);
+            HUD.UpdateTime(this.elapsedTime);
+            HUD.UpdateLaps(this.laps, maxLaps);
         }
         
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -47,7 +58,7 @@ public class Player : MonoBehaviour
             this.laps++;
             if (this.laps > maxLaps)
             {
-                // Handle Win;
+                WinMenu.HandleWin(this.elapsedTime);
             }
             else
             {
@@ -75,10 +86,6 @@ public class Player : MonoBehaviour
         this.Turn(Settings.Right.Interpolate(Controller.Cursor.x));
 
         this.transform.position += this.transform.forward * this.velocity * Time.deltaTime;
-
-        HUD.UpdateSpeed(this.velocity);
-        HUD.UpdateTime(DateTime.Now - this.startTime);
-        HUD.UpdateLaps(this.laps, maxLaps);
     }
 
     private void Accelerate(float magnitude)

@@ -45,6 +45,7 @@ public class WinMenu : Menu
         instance.gameOver = true;
         instance.gameObject.SetActive(true);
         instance.texts[Texts.Time.GetHashCode()].text = $"Time: {time.ToString(@"mm\:ss\.fff")}";
+        HUD.UpdateTime(time);
         instance.MenuOpen();
     }
 
@@ -53,7 +54,7 @@ public class WinMenu : Menu
         base.Awake();
         this.defaultActive = false;
 
-        // Find the single LossMenu object by tag
+        // Find the single WinMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("WinMenu")[0].GetComponent<WinMenu>();
     }
 }

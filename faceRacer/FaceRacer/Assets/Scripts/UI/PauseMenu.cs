@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Controller for the pause menu
@@ -16,6 +17,14 @@ public class PauseMenu : Menu
         }
     }
 
+    public static TimeSpan TimePaused
+    {
+        get
+        {
+            return instance.timePaused;
+        }
+    }
+
     /// <summary>
     /// Static reference to the one PauseMenu object in the scene to enable static methods
     /// </summary>
@@ -25,6 +34,10 @@ public class PauseMenu : Menu
     /// True if the game is currently paused
     /// </summary>
     private bool paused = false;
+
+    private TimeSpan timePaused = TimeSpan.Zero;
+
+    private DateTime enterPauseTime;
 
 
 
@@ -43,10 +56,12 @@ public class PauseMenu : Menu
         if (instance.paused)
         {
             instance.MenuOpen();
+            instance.enterPauseTime = DateTime.Now;
         }
         else
         {
             instance.MenuClose();
+            instance.timePaused += DateTime.Now - instance.enterPauseTime;
         }
     }
 
