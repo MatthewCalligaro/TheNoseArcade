@@ -14,14 +14,14 @@ var ticks = 0;
 let overlay;
 let video;
 
-let vidWidth = 240;
+let vidWidth = 320;
 let vidHeight = 240;
 
-// Bounding box overlay code
-// let boundX;
-// let boundY;
-// let boundWidth;
-// let boundHeight;
+// Bounding box overlay coords
+let boundX;
+let boundY;
+let boundWidth;
+let boundHeight;
 
 let src;
 let cap;
@@ -119,15 +119,15 @@ function processVideo() {
   // Record the result
   prediction.array().then(function(result) {
 
-    noseX = (result[0][0] * this.width / 93.0) + this.x;
-    // TODO This is pretty weird and I'm not sure if it jives with the coordinate system, but that is the nose.
-    noseY = this.height - (result[0][1] * this.height / 93.0) + this.y;
+    // Nose coordinates in monitor frame
+    noseX = ((result[0][0] * this.width / 96.0) + this.x) * vidWidth  / 240;
+    noseY = ((result[0][1] * this.height / 96.0) + this.y) * vidHeight / 240;
 
-    // Bounding box overlay code
-    // boundX = this.x;
-    // boundY = this.y;
-    // boundWidth = this.width;
-    // boundHeight = this.height;
+    // Bounding box overlay coords in monitor frame
+    boundX = this.x * vidWidth / 240;
+    boundY = this.y * vidHeight / 240;
+    boundWidth = this.width * vidWidth  / 240;
+    boundHeight = this.height * vidHeight / 240;
 
     sendCoords(noseX, noseY);
   }.bind(faceTransforms));
@@ -171,15 +171,14 @@ function draw() {
   overlay.strokeWeight(5);
   overlay.ellipse(noseX, noseY, 1, 1);
 
-  // Bounding box overlay code
-  // // Render bounding box
-  // overlay.stroke(255, 0, 0); // Red
-  // overlay.noFill();
-  // overlay.rect(boundX, boundY, boundWidth, boundHeight);
+  // Render bounding box
+  overlay.stroke(255, 0, 0); // Red
+  overlay.noFill();
+  overlay.rect(boundX, boundY, boundWidth, boundHeight);
 
-  // // Render bounding origin dot
-  // overlay.stroke(0, 0, 255); // Blue
-  // overlay.ellipse(boundX, boundY, 1, 1);
+  // Render bounding origin dot
+  overlay.stroke(0, 0, 255); // Blue
+  overlay.ellipse(boundX, boundY, 1, 1);
 }
 
 
