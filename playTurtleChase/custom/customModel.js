@@ -14,8 +14,36 @@ var ticks = 0;
 let overlay;
 let video;
 
-let vidWidth = 160;
-let vidHeight = 160;
+let vidWidth = 320;
+let vidHeight = 240;
+
+// Bounding box overlay coords
+let boundX;
+let boundY;
+let boundWidth;
+let boundHeight;
+
+let src;
+let dst;
+let cap;
+let gray;
+let face;
+let classifier;
+cv['onRuntimeInitialized']=()=>{
+  // Create desired matricies
+  src = new cv.Mat(webcamElement.height, webcamElement.width, cv.CV_8UC4);
+  cap = new cv.VideoCapture(webcam); 
+  gray = new cv.Mat();
+  face = new cv.Mat();
+
+  classifier = new cv.CascadeClassifier();  // initialize classifier
+  let utils = new Utils('errorMessage'); //use utils class
+  let faceCascadeFile = 'haarcascade_frontalface_default.xml'; // path to xml
+  // use createFileFromUrl to "pre-build" the xml
+  utils.createFileFromUrl(faceCascadeFile, faceCascadeFile, () => {
+    classifier.load(faceCascadeFile); // in the callback, load the cascade from file 
+  });
+}
 
 // Set up the webcam
 const webcamElement = document.getElementById('webcam');
@@ -44,8 +72,8 @@ imported.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1';
 imported.onload = async function(){
   // Set up
   await setupWebcam();
-  // model = await tf.loadLayersModel('https://matthewcalligaro.github.io/TheNoseArcade/playTurtleChase/custom/model.json');
-  model = await tf.loadLayersModel('https://giselleserate.github.io/nosearcade-sandbox/playTurtleChase/custom/model.json');
+  model = await tf.loadLayersModel('https://matthewcalligaro.github.io/TheNoseArcade/playTurtleChase/custom/model.json');
+  // model = await tf.loadLayersModel('https://giselleserate.github.io/nosearcade-sandbox/playTurtleChase/custom/model.json');
 
   // Process the video
   interval = window.setInterval(function () {
@@ -54,20 +82,56 @@ imported.onload = async function(){
 };
 
 function processVideo() {
-  // Create the array
-  const image = tf.browser.fromPixels(webcamElement);  // for example
-  const img = image.reshape([1, vidWidth, vidHeight, 3]);
+  // Capture the image as an OpenCV.js image
+  cap.read(src);
+
+  // Identify the face
+  cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+  
+  // Initialize bounding box
+  let faces = new cv.RectVector();
+
+  // Detect faces
+  let msize = new cv.Size(0, 0);
+  classifier.detectMultiScale(gray, faces, 1.1, 3, 0, msize, msize);
+
+  // If no faces detected, stop
+  if (faces.size() == 0) {
+    return;
+  }
+
+  let faceTransforms = faces.get(0);
+
+  // Get region of interest
+  let roiSrc = src.roi(faceTransforms);
+
+  let dsize = new cv.Size(96, 96);
+  cv.resize(roiSrc, face, dsize, 0, 0, cv.INTER_AREA);
+
+  // Convert to ImageData
+  let imgData = new ImageData(new Uint8ClampedArray(face.data),face.cols,face.rows);
+
+  const image = tf.browser.fromPixels(imgData);
+  const img = image.reshape([1, 96, 96, 3]);
 
   // Predict
   const prediction = model.predict(img);
 
   // Record the result
   prediction.array().then(function(result) {
-    noseX = result[0][1];
-    noseY = result[0][0];
+
+    // Nose coordinates in monitor frame
+    noseX = ((result[0][0] * this.width / 96.0) + this.x) * vidWidth  / 240;
+    noseY = ((result[0][1] * this.height / 96.0) + this.y) * vidHeight / 240;
+
+    // Bounding box overlay coords in monitor frame
+    boundX = this.x * vidWidth / 240;
+    boundY = this.y * vidHeight / 240;
+    boundWidth = this.width * vidWidth  / 240;
+    boundHeight = this.height * vidHeight / 240;
 
     sendCoords(noseX, noseY);
-  });
+  }.bind(faceTransforms));
 }
 
 /**
@@ -107,6 +171,15 @@ function draw() {
   overlay.stroke(0, 225, 0); // Green
   overlay.strokeWeight(5);
   overlay.ellipse(noseX, noseY, 1, 1);
+
+  // Render bounding box
+  overlay.stroke(255, 0, 0); // Red
+  overlay.noFill();
+  overlay.rect(boundX, boundY, boundWidth, boundHeight);
+
+  // Render bounding origin dot
+  overlay.stroke(0, 0, 255); // Blue
+  overlay.ellipse(boundX, boundY, 1, 1);
 }
 
 
