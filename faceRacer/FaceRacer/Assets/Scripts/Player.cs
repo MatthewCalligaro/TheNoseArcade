@@ -13,14 +13,11 @@ public class Player : MonoBehaviour
         }
     }
 
-    private const float acceleration = 10;
-    private const float decayAcceleration = 2;
-    private const float brakeAcceleration = 30;
-    private const float turnSpeed = 90;
+    private const float maxTorque = 400;
+    private const float maxBrakeTorque = 1000;
+    private const float maxSteerAngle = 20;
 
     private const int maxLaps = 2;
-
-    private float velocity = 0;
 
     private bool drifting = false;
 
@@ -28,19 +25,47 @@ public class Player : MonoBehaviour
 
     int laps = 0;
 
+    float brakeTorque = 0;
+    float motorTorque = 0;
+    float steerAngle = 0;
+
+    WheelCollider[] wheels;
+
 
 
 	private void Start ()
     {
         this.startTime = DateTime.Now;
+        this.wheels = this.GetComponentsInChildren<WheelCollider>();
+        this.GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.2f, -0.3f);
+        foreach (WheelCollider wheel in wheels)
+        {
+            wheel.ConfigureVehicleSubsteps(1, 15, 20);
+        }
 	}
+
+    private void FixedUpdate()
+    {
+        this.motorTorque = Mathf.Max(0, Settings.Accelerate.Interpolate(Controller.Cursor.y) * maxTorque);
+        this.brakeTorque = Mathf.Max(0, Settings.Brake.Interpolate(Controller.Cursor.y) * maxBrakeTorque);
+        this.steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle;
+
+        for (int i = 0; i < 2; i++)
+        {
+            wheels[i].motorTorque = this.motorTorque;
+            wheels[i].brakeTorque = this.brakeTorque;
+            wheels[i].steerAngle = this.steerAngle;
+        }
+
+        Debug.Log(steerAngle + " " + motorTorque + " " + brakeTorque);
+
+    }
 
     private void Update()
     {
         if (Menu.InPlay)
         {
-            this.UpdateKinetics();
-            HUD.UpdateSpeed(this.velocity);
+            HUD.UpdateSpeed(this.GetComponent<Rigidbody>().velocity.magnitude);
             HUD.UpdateTime(this.elapsedTime);
             HUD.UpdateLaps(this.laps, maxLaps);
         }
@@ -65,41 +90,5 @@ public class Player : MonoBehaviour
                 HUD.UpdateLaps(this.laps, maxLaps);
             }
         }
-    }
-
-    private void UpdateKinetics()
-    {
-        if (Settings.Accelerate.Interpolate(Controller.Cursor.y) > 0)
-        {
-            this.Accelerate(Settings.Accelerate.Interpolate(Controller.Cursor.y));
-        }
-        else if (Settings.Brake.Interpolate(Controller.Cursor.y) > 0)
-        {
-            this.Brake(Settings.Brake.Interpolate(Controller.Cursor.y));
-        }
-        else
-        {
-            this.velocity = Mathf.Max(0, this.velocity - decayAcceleration * Time.deltaTime);
-        }
-
-        this.Turn(-Settings.Left.Interpolate(Controller.Cursor.x));
-        this.Turn(Settings.Right.Interpolate(Controller.Cursor.x));
-
-        this.transform.position += this.transform.forward * this.velocity * Time.deltaTime;
-    }
-
-    private void Accelerate(float magnitude)
-    {
-        this.velocity += magnitude * acceleration * Time.deltaTime;
-    }
-
-    private void Brake(float magnitude)
-    {
-        this.velocity = Mathf.Max(0, this.velocity - magnitude * brakeAcceleration * Time.deltaTime);
-    }
-
-    private void Turn(float magnitude)
-    {
-        this.transform.Rotate(0, magnitude * turnSpeed * Time.deltaTime, 0);
     }
 }
