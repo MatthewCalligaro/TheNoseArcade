@@ -7,8 +7,10 @@ body {
   margin: 8px;
 }
 
-.content-block {
-  clear: left;
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
 }
 
 /* Nav bar */
