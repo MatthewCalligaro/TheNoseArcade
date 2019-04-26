@@ -28,7 +28,9 @@ public class HUD : UIElement
 
     private static readonly Vector2 cursorRadius = new Vector2(0.02f, 0.03f);
 
-    private const float velocityScale = 2.0f;
+    private const float velocityScale = 3.6f;
+
+    private const float minSpeed = 0.5f;
 
 
     ////////////////////////////////////////////////////////////////
@@ -45,6 +47,11 @@ public class HUD : UIElement
 
     public static void UpdateSpeed(float speed)
     {
+        if (speed < minSpeed)
+        {
+            speed = 0;
+        }
+
         instance.texts[Texts.Speed.GetHashCode()].text = $"{(speed * velocityScale).ToString("0.0")} km";
     }
 
