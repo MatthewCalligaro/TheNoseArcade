@@ -84,46 +84,34 @@ from sklearn import metrics
 
 linearModel = sklearn.linear_model.LinearRegression(n_jobs = -2)
 
+X_linear_df = df[["left_eye_center_x", "left_eye_center_y", "right_eye_center_x", "right_eye_center_y", "mouth_center_top_lip_x", "mouth_center_top_lip_y"]]
+y_linear_df = df[["nose_tip_x", "nose_tip_y"]]
+
 X_linear = []
 y_linear = []
-for i in range(0,7049):
-    tmp = [df[["left_eye_center_x", "left_eye_center_y", "right_eye_center_x", "right_eye_center_y", "mouth_center_top_lip_x", "mouth_center_top_lip_y"]][i]]
+
+for i in range(X_linear_df.shape[0]):
+    tmp = []
+    for col in X_linear_df.columns:
+        tmp.append(X_linear_df[col][i])
     X_linear.append(tmp)
-    tmp = df[["nose_tip_x", "nose_tip_y"]][i]
+
+for i in range(y_linear_df.shape[0]):
+    tmp = []
+    for col in y_linear_df.columns:
+        tmp.append(y_linear_df[col][i])
     y_linear.append(tmp)
 
 linearModel.fit(X_linear, y_linear)
 
 print("The linear model's coefficents are", linearModel.coef_)
 
+pred = linearModel.predict(X_linear)
+train_mae = sklearn.metrics.mean_absolute_error(y_linear,pred)
+train_mse = sklearn.metrics.mean_squared_error(y_linear, pred)
 
-
-from keras.layers import Conv2D,Dropout,Dense,Flatten
-from keras.models import Sequential
-
-model = Sequential([Flatten(input_shape=(6,)),
-                         Dense(6, activation="relu"),
-                         Dropout(0.1),
-                         Dense(6, activation="relu"),
-                         Dense(2)
-                         ])
-
-model.compile(optimizer='adam', 
-              loss='mse',
-              metrics=['mae','accuracy'])
-
-
-
-model.fit(X_linear,y_linear,epochs = 250,batch_size = 128,validation_split = 0.2)
-
-predictions = model.predict(X_linear)
-
-print(predictions[0])
-print(len(predictions))
-print("The length of predictions[0] is",len(predictions[0]))
-
-
-
+print("The linear model's training mean absolute value error is", train_mae)
+print("The linear model's training mean squared error is", train_mse)
 
 def show_image(X, Y):
     img = np.copy(X)
