@@ -22,20 +22,15 @@ public class God : MonoBehaviour
     private static int NumCheckers { get; set; }
     private static SlotType[,] checkers = new SlotType[numRows, numColumns];
     private static God instance;
+    private static GameObject canvas;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
-
-        NumCheckers = numRows * numColumns;
-
-        Instantiate(checkerPrefabs[0], checkerStartPos, Quaternion.Euler(90, 0, 0));
-    }
-
-    // Update is called once per frame
     void Awake()
     {
+        canvas = GameObject.Find("Canvas");
+        FindObject(canvas, "Winner1Panel").SetActive(false);
+        FindObject(canvas, "Winner2Panel").SetActive(false);
+        FindObject(canvas, "OutOfCheckersPanel").SetActive(false);
+
         for (int row = 0; row < numRows; row++)
         {
             for (int col = 0; col < numColumns; col++)
@@ -45,22 +40,31 @@ public class God : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        instance = GameObject.FindGameObjectsWithTag("GameController")[0].GetComponent<God>();
+
+        NumCheckers = numRows * numColumns;
+
+        Instantiate(checkerPrefabs[0], checkerStartPos, Quaternion.Euler(90, 0, 0));
+    }
+
     private static bool IsGameOver()
     {
         SlotType player = FourInARow();
         if (player == SlotType.Player1)
         {
-            Debug.Log("Player 1 won!");
+            FindObject(canvas, "Winner1Panel").SetActive(true);
             return true;
         }
         if (player == SlotType.Player2)
         {
-            Debug.Log("Player 2 won!");
+            FindObject(canvas, "Winner2Panel").SetActive(true);
             return true;
         }
         if (NumCheckers == 0)
         {
-            Debug.Log("Board has been filled!");
+            FindObject(canvas, "OutOfCheckersPanel").SetActive(true);
             return true;
         }
         return false;
@@ -108,8 +112,6 @@ public class God : MonoBehaviour
         float currentXPosition = checker.instance.transform.position.x;
         int col = (int)((currentXPosition - checkerStartPos.x) / deltaX);
 
-        Debug.Log("Player Number:");
-        Debug.Log(checker.playerNumber);
         for (int row = 0; row < numRows; row++)
         {
             if (checkers[row, col] == SlotType.Empty)
@@ -144,5 +146,18 @@ public class God : MonoBehaviour
             }
             Instantiate(prefab, checkerStartPos, Quaternion.Euler(90, 0, 0));
         }
+    }
+
+    public static GameObject FindObject(GameObject parent, string name)
+    {
+        Transform[] trs = parent.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in trs)
+        {
+            if (t.name == name)
+            {
+                return t.gameObject;
+            }
+        }
+        return null;
     }
 }
