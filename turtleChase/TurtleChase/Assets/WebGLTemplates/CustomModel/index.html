@@ -16,36 +16,47 @@
       var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
     </script>
 
+    <link rel="stylesheet" href="../../../../../styles.css">
+    <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="styles.css">
 
   </head>
   
   <body>
+    <!-- Navbar -->
+    <ul>
+      <li><a href="/TheNoseArcade/index.html">Play</a></li>
+      <li><a href="/TheNoseArcade/about.html">About</a></li>
+    </ul>
 
-    <!-- Webcam video loads here for the model to read from -->
-    <!-- Style to hide visually, but make sure it still plays -->
-    <video autoplay playsinline muted id="webcam" width="160" height="160"></video>
+    <div id="page-contents">
 
-    <div>
-      <!-- Unity loads game here -->
-      <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+      <!-- Webcam video loads here for the model to read from -->
+      <!-- Style to hide visually, but make sure it still plays -->
+      <video autoplay playsinline muted id="webcam" width="160" height="160"></video>
+
+      <div>
+        <!-- Unity loads game here -->
+        <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+      </div>
+
+      <br>
+
+      <!-- Video renders here -->
+      <div id="videoContainer"></div>
+
+      <br>
+
+  <!--     
+      <div>
+        <h1>How To Play</h1>
+        <p>
+          Tutorial coming soon. 
+        </p>
+      </div> -->
+      
     </div>
 
-    <br>
-
-    <!-- Video renders here -->
-    <div id="videoContainer"></div>
-
-    <br>
-
-<!--     
-    <div>
-      <h1>How To Play</h1>
-      <p>
-        Tutorial coming soon. 
-      </p>
-    </div> -->
-    
     <!-- Load customModel.js after the content of the page -->
     <script src='customModel.js'></script>
 

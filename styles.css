@@ -38,6 +38,7 @@ li a:hover {
   background-color: #111;
 }
 
+/* Left-aligned pictures in content */
 .profile-pic {
   float: left;
   margin-right: 8px
