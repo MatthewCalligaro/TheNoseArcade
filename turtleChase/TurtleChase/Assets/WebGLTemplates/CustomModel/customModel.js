@@ -1,13 +1,13 @@
-var imported = document.createElement('script');
+let imported = document.createElement('script');
 document.head.appendChild(imported);
 
 // Model
-var model;
+let model;
 
 // Evaluating
-var interval;
-var start = 0;
-var ticks = 0;
+let interval;
+let start = 0;
+let ticks = 0;
 
 let overlay;
 let video;
