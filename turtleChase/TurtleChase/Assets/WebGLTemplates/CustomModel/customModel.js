@@ -19,6 +19,11 @@ let vidHeight = 240;
 let noseX;
 let noseY;
 
+// Boxcar/moving average filter (face frame)
+let boxcarWidth = 5;
+let lastXReadings = [];
+let lastYReadings = [];
+
 // Bounding box overlay coords (monitor frame)
 let boundX;
 let boundY;
@@ -121,9 +126,19 @@ function processVideo() {
   // Record the result
   prediction.array().then(function(result) {
 
+    // Update boxcar average
+    lastXReadings.push(result[0][0]);
+    lastYReadings.push(result[0][1]);
+    if(lastXReadings.length > boxcarWidth) { // TODO I suppose I could check both arrays cause atomicity but do I care
+      lastXReadings.shift();
+      lastYReadings.shift();
+    }
+    let faceAvgX = lastXReadings.reduce((a,b) => (a+b)) / lastXReadings.length;
+    let faceAvgY = lastYReadings.reduce((a,b) => (a+b)) / lastYReadings.length;
+
     // Nose coordinates
-    noseX = ((result[0][0] * this.width / 96.0) + this.x) * vidWidth  / 240;
-    noseY = ((result[0][1] * this.height / 96.0) + this.y) * vidHeight / 240;
+    noseX = ((faceAvgX * this.width / 96.0) + this.x) * vidWidth  / 240;
+    noseY = ((faceAvgY * this.height / 96.0) + this.y) * vidHeight / 240;
 
     // Bounding box overlay coords
     boundX = this.x * vidWidth / 240;
