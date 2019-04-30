@@ -108,7 +108,7 @@ public class Controller : MonoBehaviour, INoseController
         float dy = (y - lastY) / ((float)(now - lastTime).TotalMilliseconds);
         Debug.Log(dy);
 
-        if (counter == 0)
+        if (counter == 0 && Mathf.Abs(dy) < Settings.IgnoreSensitivity && Mathf.Abs(dx) < Settings.IgnoreSensitivity * Settings.HorizontalSensitivityFactor)
         {
             if (dy > Settings.Sensitivity)
             {

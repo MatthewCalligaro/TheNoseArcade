@@ -98,14 +98,19 @@ public static class Settings
     public const float MaxJumpPower = 1.5f;
 
     /// <summary>
-    /// Minimum value for Sensitivity
+    /// Minimum value for Sensitivity (pixels per millisecond)
     /// </summary>
     public const float MinSensitivity = 0.01f;
 
     /// <summary>
-    /// Maximum value for Sensitivity
+    /// Maximum value for Sensitivity (pixels per millisecond)
     /// </summary>
     public const float MaxSensitivity = 0.25f;
+
+    /// <summary>
+    /// Sensitivity at which a change is assumed to be a sampling error (pixels per millisecond)
+    /// </summary>
+    public const float IgnoreSensitivity = 0.5f;
 
     /// <summary>
     /// Difference in sensitivity for horizontal vs. vertical movements
