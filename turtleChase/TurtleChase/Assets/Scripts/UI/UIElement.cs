@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -7,11 +6,6 @@ using UnityEngine.UI;
 /// </summary>
 public abstract class UIElement : MonoBehaviour
 {
-    /// <summary>
-    /// True if Settings have been inititialized this play session (only happens once)
-    /// </summary>
-    protected static bool initializedSettings = false;
-
     /// <summary>
     /// True if the UI element should be active when a scene loads
     /// </summary>
@@ -49,12 +43,6 @@ public abstract class UIElement : MonoBehaviour
         this.texts = this.GetComponentsInChildren<Text>();
         this.dropdowns = this.GetComponentsInChildren<Dropdown>();
         this.sliders = this.GetComponentsInChildren<Slider>();
-
-        if (!initializedSettings)
-        {
-            Settings.RestoreDefaults();
-            initializedSettings = true;
-        }
     }
 
     protected virtual void Start()

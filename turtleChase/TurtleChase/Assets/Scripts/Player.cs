@@ -6,10 +6,9 @@ using UnityEngine;
 /// </summary>
 public class Player : MonoBehaviour
 {
-    /// <summary>
-    /// Number of UI elements currently preventing pause
-    /// </summary>
-    public static int BlockingPause = 0;
+    ////////////////////////////////////////////////////////////////
+    // Properties
+    ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Property to set a new multiplier to the player's speed
@@ -30,8 +29,13 @@ public class Player : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Constants
+    // Fields
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Number of UI elements currently preventing pause
+    /// </summary>
+    public static int BlockingPause = 0;
 
     /// <summary>
     /// Upward velocity after jumping for JumpStyle.Velocity
@@ -62,12 +66,6 @@ public class Player : MonoBehaviour
     /// Gravity scale of player's Rigidbody2D when active
     /// </summary>
     private const float gravityScale = 1.2f;
-
-
-
-    ////////////////////////////////////////////////////////////////
-    // Private Fields
-    ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Current player score
