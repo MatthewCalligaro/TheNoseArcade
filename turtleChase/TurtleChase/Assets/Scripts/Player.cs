@@ -194,8 +194,8 @@ public class Player : MonoBehaviour
             // The player loses if they fall outside of the camera
             if (!God.InCamera(this.transform.position))
             {
-                Scoreboard.AddScore(new HighScore {Score = this.score, Distance = (int)this.transform.position.x, Date = DateTime.Now, Difficulty = Settings.Difficulty});
                 LossMenu.HandleLoss(this.score);
+                Scoreboard.AddScore(new HighScore { Score = this.score, Distance = (int)this.transform.position.x, Date = DateTime.Now, Difficulty = Settings.Difficulty });
             }
 
             // Tell the camera to skip ahead if the player surpasses maxScreenX

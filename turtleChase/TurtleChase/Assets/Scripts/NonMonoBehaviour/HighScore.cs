@@ -6,6 +6,11 @@
 public class HighScore : IComparable<HighScore>
 {
     /// <summary>
+    /// The minimum value for a HighScore object
+    /// </summary>
+    public static readonly HighScore MinValue = new HighScore { Score = 0, Distance = 0, Date = DateTime.MinValue, Difficulty = Difficulty.Easy };
+
+    /// <summary>
     /// Score achieved during the round
     /// </summary>
     public int Score { get; set; }
