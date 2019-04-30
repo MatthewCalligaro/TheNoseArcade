@@ -55,27 +55,19 @@ y_train = np.array(y_train,dtype = 'float')
 
 
 """
-
 from keras.layers import Conv2D,Dropout,Dense,Flatten
 from keras.models import Sequential
-
 model = Sequential([Flatten(input_shape=(96,96)),
                          Dense(128, activation="relu"),
                          Dropout(0.1),
                          Dense(64, activation="relu"),
                          Dense(30)
                          ])
-
 model.compile(optimizer='adam', 
               loss='mse',
               metrics=['mae','accuracy'])
-
-
-
 model.fit(X_train,y_train,epochs = 250,batch_size = 128,validation_split = 0.2)
-
 predictions = model.predict(X_train)
-
 """
 
 import sklearn.linear_model
@@ -123,4 +115,4 @@ def show_image(X, Y):
 # Preview results on test data
 def show_results(image_index):
     Ypred = model.predict(X_train[image_index:(image_index+1)])
-    show_image(X_train[image_index], Ypred[0])
+show_image(X_train[image_index], Ypred[0])
