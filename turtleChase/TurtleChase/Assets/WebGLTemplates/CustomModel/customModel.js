@@ -30,6 +30,12 @@ let cap;
 let gray;
 let face;
 let classifier;
+
+let xWeights = [0.013330983, 0.36554886, 0.005527861, -0.382274539, 1.01703989, 0.000242652];
+let xBias = -1.34480293;
+let yWeights = [0.44016716, 0.48229461, -0.22590793, 0.53768469, 0.01016914, -0.00998019];
+let yBias = 2.07304674;
+
 cv['onRuntimeInitialized']=()=>{
   // Create desired matricies
   src = new cv.Mat(webcamElement.height, webcamElement.width, cv.CV_8UC4);
@@ -125,10 +131,13 @@ function processVideo() {
 
   // Record the result
   prediction.array().then(function(result) {
+    // Face keypoint coordinates in face frame
+    let noseXInFace = math.dot(result[0], xWeights) + xBias;
+    let noseYInFace = math.dot(result[0], yWeights) + yBias;
 
     // Nose coordinates
-    noseX = ((result[0][0] * this.width / 96.0) + this.x) * vidWidth  / 240;
-    noseY = ((result[0][1] * this.height / 96.0) + this.y) * vidHeight / 240;
+    noseX = ((noseXInFace * this.width / 96.0) + this.x) * vidWidth  / 240;
+    noseY = ((noseYInFace * this.height / 96.0) + this.y) * vidHeight / 240;
 
     // Bounding box overlay coords
     boundX = this.x * vidWidth / 240;
