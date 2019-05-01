@@ -1,8 +1,8 @@
-body {
+#page-contents {
   text-align: center;
 }
 
-body > div {
+#page-contents > div {
   display: inline-block;
   text-align: left;
 }
