@@ -53,7 +53,17 @@ public class God : MonoBehaviour
     /// <summary>
     /// Prevents the camera from scrolling forward when true
     /// </summary>
-    public static bool Stopped { get; set; }
+    public static bool Stopped
+    {
+        get
+        {
+            return instance.stopped;
+        }
+        set
+        {
+            instance.stopped = value;
+        }
+    }
 
     /// <summary>
     /// The speed at which the camera scrolls in the positive X direction
@@ -311,6 +321,11 @@ public class God : MonoBehaviour
     /// Probability of spawning a consumable
     /// </summary>
     private float consumableProb = 0.25f / Settings.DifficultyMultipliers[Settings.Difficulty.GetHashCode()];
+
+    /// <summary>
+    /// Prevents the camera from scrolling forward when true
+    /// </summary>
+    private bool stopped = false;
 
     /// <summary>
     /// Reference to the Camera child of God
