@@ -30,7 +30,7 @@ public class Scoreboard : Menu
     {
         get
         {
-            return scores[0].Score;
+            return scores.Count > 0 ? scores[0].Score : 0;
         }
     }
 
@@ -47,7 +47,7 @@ public class Scoreboard : Menu
     /// <summary>
     /// Results of every completed game
     /// </summary>
-    private static List<HighScore> scores = new List<global::HighScore>();
+    private static List<HighScore> scores = new List<HighScore>();
 
 
 

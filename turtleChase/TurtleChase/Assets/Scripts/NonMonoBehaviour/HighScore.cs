@@ -5,6 +5,10 @@
 /// </summary>
 public class HighScore : IComparable<HighScore>
 {
+    ////////////////////////////////////////////////////////////////
+    // Properties
+    ////////////////////////////////////////////////////////////////
+
     /// <summary>
     /// Score achieved during the round
     /// </summary>
@@ -24,6 +28,23 @@ public class HighScore : IComparable<HighScore>
     /// Difficulty at which the round was played
     /// </summary>
     public Difficulty Difficulty { get; set; }
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Fields
+    ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// The minimum value for a HighScore object
+    /// </summary>
+    public static readonly HighScore MinValue = new HighScore { Score = 0, Distance = 0, Date = DateTime.MinValue, Difficulty = Difficulty.Easy };
+
+
+
+    ////////////////////////////////////////////////////////////////
+    // Methods
+    ////////////////////////////////////////////////////////////////
 
     public int CompareTo(HighScore other)
     {
