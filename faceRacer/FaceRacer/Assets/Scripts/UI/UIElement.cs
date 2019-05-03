@@ -8,11 +8,6 @@ using UnityEngine.UI;
 public abstract class UIElement : MonoBehaviour
 {
     /// <summary>
-    /// True if Settings have been inititialized this play session (only happens once)
-    /// </summary>
-    protected static bool initializedSettings = false;
-
-    /// <summary>
     /// True if the UI element should be active when a scene loads
     /// </summary>
     protected bool defaultActive;
@@ -55,12 +50,6 @@ public abstract class UIElement : MonoBehaviour
         this.dropdowns = this.GetComponentsInChildren<Dropdown>();
         this.sliders = this.GetComponentsInChildren<Slider>();
         this.raws = this.GetComponentsInChildren<RawImage>();
-
-        if (!initializedSettings)
-        {
-            //Settings.RestoreDefaults();
-            initializedSettings = true;
-        }
     }
 
     protected virtual void Start()

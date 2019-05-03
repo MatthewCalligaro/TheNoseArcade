@@ -97,9 +97,12 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        HUD.UpdateSpeed(this.GetComponent<Rigidbody>().velocity.magnitude);
-        HUD.UpdateTime(this.ElapsedTime);
-        HUD.UpdateLaps(this.laps, maxLaps);
+        if (Menu.InPlay)
+        {
+            HUD.UpdateSpeed(this.GetComponent<Rigidbody>().velocity.magnitude);
+            HUD.UpdateTime(this.ElapsedTime);
+            HUD.UpdateLaps(this.laps, maxLaps);
+        }
         
         if (Input.GetKeyDown(KeyCode.Escape))
         {
