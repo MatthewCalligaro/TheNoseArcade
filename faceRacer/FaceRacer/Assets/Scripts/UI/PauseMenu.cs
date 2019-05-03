@@ -57,11 +57,13 @@ public class PauseMenu : Menu
         {
             instance.MenuOpen();
             instance.enterPauseTime = DateTime.Now;
+            Time.timeScale = 0;
         }
         else
         {
             instance.MenuClose();
             instance.timePaused += DateTime.Now - instance.enterPauseTime;
+            Time.timeScale = 1;
         }
     }
 
@@ -83,6 +85,7 @@ public class PauseMenu : Menu
     {
         base.Awake();
         this.defaultActive = false;
+        Time.timeScale = 1;
 
         // Find the single PauseMenu object by tag
         instance = GameObject.FindGameObjectsWithTag("PauseMenu")[0].GetComponent<PauseMenu>();
