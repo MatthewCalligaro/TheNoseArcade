@@ -1,9 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Controls the game by processing nose coordinates from the ML model
+/// </summary>
 public class Controller : MonoBehaviour, INoseController
 {
+    /// <summary>
+    /// The current screen coordinates of the cursor in the [0, 1] range
+    /// </summary>
     public static Vector2 Cursor
     {
         get
@@ -38,17 +42,17 @@ public class Controller : MonoBehaviour, INoseController
     private static Controller instance;
 
     /// <summary>
-    /// The player object currently controlled by the Controller
+    /// Player object currently controlled by the Controller
     /// </summary>
     private Player player;
 
     /// <summary>
-    /// The X pixel position of the last recieved face position
+    /// X pixel position of the last recieved face position
     /// </summary>
     private int lastX;
 
     /// <summary>
-    /// The Y pixel position of the last recieved face position
+    /// Y pixel position of the last recieved face position
     /// </summary>
     private int lastY;
 
@@ -57,10 +61,10 @@ public class Controller : MonoBehaviour, INoseController
     /// </summary>
     private float counter = initalWaitTime;
 
-
+    /// <summary>
+    /// Current screen coordinates of the cursor in the [0, 1] range
+    /// </summary>
     private Vector2 cursor = Settings.CursorStart;
-    private Vector3 lastMousePosition;
-
 
 
 
@@ -86,10 +90,7 @@ public class Controller : MonoBehaviour, INoseController
         int x = (packed >> 9) & 0x3FF;
         int y = (packed >> 19) & 0x3FF;
 
-        float dx = (x - lastX) / Settings.Sensitivity.x;
-        float dy = (y - lastY) / Settings.Sensitivity.y;
-
-        this.UpdateCursor(dx, dy);
+        this.UpdateCursor(new Vector2((x - lastX) / Settings.Sensitivity.x, (y - lastY) / Settings.Sensitivity.y));
 
         this.lastX = x;
         this.lastY = y;
@@ -115,6 +116,7 @@ public class Controller : MonoBehaviour, INoseController
     {
         counter = Mathf.Max(counter - Time.deltaTime, 0);
 
+        // Use the mouse as a proxy for face position for debugging
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             UpdateFacePosition(
@@ -122,6 +124,7 @@ public class Controller : MonoBehaviour, INoseController
                 | (((int)(Input.mousePosition.y / Settings.MouseSensitivityMultiplier.y) & 0xFFFF) << 19));
         }
 
+        // Space resets the cursor
         if (Input.GetKeyDown(KeyCode.Space))
         {
             this.ResetCursor();
@@ -134,16 +137,23 @@ public class Controller : MonoBehaviour, INoseController
     // Private Methods
     ////////////////////////////////////////////////////////////////
 
-    private void UpdateCursor(float dx, float dy)
+    /// <summary>
+    /// Moves the cursor by a certain amount
+    /// </summary>
+    /// <param name="delta">Amount to move the cursor</param>
+    private void UpdateCursor(Vector2 delta)
     {
-        if (counter == 0 && dx < Settings.MaxMovement.x && dy < Settings.MaxMovement.y)
+        if (counter == 0 && delta.x < Settings.MaxMovement.x && delta.y < Settings.MaxMovement.y)
         {
-            this.cursor.x = Mathf.Min(1, Mathf.Max(0, this.cursor.x + dx));
-            this.cursor.y = Mathf.Min(1, Mathf.Max(0, this.cursor.y + dy));
+            this.cursor.x = Mathf.Min(1, Mathf.Max(0, this.cursor.x + delta.x));
+            this.cursor.y = Mathf.Min(1, Mathf.Max(0, this.cursor.y + delta.y));
             HUD.UpdateCursor(this.cursor);
         }
     }
 
+    /// <summary>
+    /// Resets the cursor to its starting position
+    /// </summary>
     public void ResetCursor()
     {
         this.cursor = Settings.CursorStart;

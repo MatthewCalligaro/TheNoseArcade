@@ -17,6 +17,9 @@ public class PauseMenu : Menu
         }
     }
 
+    /// <summary>
+    /// Amount of time spent paused in the current race
+    /// </summary>
     public static TimeSpan TimePaused
     {
         get
@@ -35,8 +38,14 @@ public class PauseMenu : Menu
     /// </summary>
     private bool paused = false;
 
+    /// <summary>
+    /// Amount of time spent paused in the current race
+    /// </summary>
     private TimeSpan timePaused = TimeSpan.Zero;
 
+    /// <summary>
+    /// Time at which the player most recently paused the game
+    /// </summary>
     private DateTime enterPauseTime;
 
 

@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private TimeSpan elapsedTime
+    /// <summary>
+    /// Total play time that has elapsed in the current race
+    /// </summary>
+    private TimeSpan ElapsedTime
     {
         get
         {
@@ -13,35 +14,61 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Maximum acceleration torque the engine can apply to each wheel
+    /// </summary>
     private const float maxTorque = 400;
+
+    /// <summary>
+    /// Maximum braking torque that the engine can apply to each wheel 
+    /// </summary>
     private const float maxBrakeTorque = 1000;
+
+    /// <summary>
+    /// Maximum angle which the front wheels can turn from straight
+    /// </summary>
     private const float maxSteerAngle = 20;
 
+    /// <summary>
+    /// The number of laps in the race
+    /// </summary>
     private const int maxLaps = 2;
 
-    private bool drifting = false;
-
+    /// <summary>
+    /// The time at the first frame of the race
+    /// </summary>
     private DateTime startTime;
 
-    int laps = 0;
+    /// <summary>
+    /// The lap which the player is currently on
+    /// </summary>
+    private int laps = 0;
 
-    float brakeTorque = 0;
-    float motorTorque = 0;
-    float steerAngle = 0;
-
+    /// <summary>
+    /// The WheelColliders defining the physics of the car's wheels
+    /// </summary>
     WheelCollider[] wheels;
 
+    /// <summary>
+    /// The game camera which follows the car
+    /// </summary>
     private Camera gameCamera;
 
 
 
-	private void Start ()
+    ////////////////////////////////////////////////////////////////
+    // Unity Methods
+    ////////////////////////////////////////////////////////////////
+
+    private void Start ()
     {
         this.gameCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0].GetComponent<Camera>();
 
         this.startTime = DateTime.Now;
         this.wheels = this.GetComponentsInChildren<WheelCollider>();
         this.GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.2f, -0.3f);
+
+        // Configure wheel settings to prevent car "jittering"
         foreach (WheelCollider wheel in wheels)
         {
             wheel.ConfigureVehicleSubsteps(1, 15, 20);
@@ -49,31 +76,30 @@ public class Player : MonoBehaviour
 	}
 
     private void FixedUpdate()
-    {
-        this.motorTorque = Mathf.Max(0, Settings.Accelerate.Interpolate(Controller.Cursor.y) * maxTorque);
-        this.brakeTorque = Mathf.Max(0, Settings.Brake.Interpolate(Controller.Cursor.y) * maxBrakeTorque);
-        this.steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle
+    { 
+        // Apply acceleration, braking, and turning to wheels
+        float motorTorque = Mathf.Max(0, Settings.Accelerate.Interpolate(Controller.Cursor.y) * maxTorque);
+        float brakeTorque = Mathf.Max(0, Settings.Brake.Interpolate(Controller.Cursor.y) * maxBrakeTorque);
+        float steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle
             / Math.Max(1, Settings.SteerVelocityFactor * this.GetComponent<Rigidbody>().velocity.magnitude);
 
         for (int i = 0; i < 2; i++)
         {
-            wheels[i].motorTorque = this.motorTorque;
-            wheels[i].brakeTorque = this.brakeTorque;
-            wheels[i].steerAngle = this.steerAngle;
+            wheels[i].motorTorque = motorTorque;
+            wheels[i].brakeTorque = brakeTorque;
+            wheels[i].steerAngle = steerAngle;
         }
 
+        // Have the game camera follow the car
         gameCamera.transform.position = this.transform.position + Settings.CameraOffset.z * this.transform.forward + Settings.CameraOffset.y * Vector3.up;
         gameCamera.transform.rotation = Quaternion.Euler(Settings.CameraRotationX, this.transform.rotation.eulerAngles.y, 0);
     }
 
     private void Update()
     {
-        if (Menu.InPlay)
-        {
-            HUD.UpdateSpeed(this.GetComponent<Rigidbody>().velocity.magnitude);
-            HUD.UpdateTime(this.elapsedTime);
-            HUD.UpdateLaps(this.laps, maxLaps);
-        }
+        HUD.UpdateSpeed(this.GetComponent<Rigidbody>().velocity.magnitude);
+        HUD.UpdateTime(this.ElapsedTime);
+        HUD.UpdateLaps(this.laps, maxLaps);
         
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -83,12 +109,13 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
+        // Handle when we complete a lap
         if (collider.GetComponent<FinishLine>() != null)
         {
             this.laps++;
             if (this.laps > maxLaps)
             {
-                WinMenu.HandleWin(this.elapsedTime);
+                WinMenu.HandleWin(this.ElapsedTime);
             }
             else
             {
