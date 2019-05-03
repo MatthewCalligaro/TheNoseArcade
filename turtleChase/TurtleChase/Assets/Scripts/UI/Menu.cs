@@ -79,6 +79,14 @@ public abstract class Menu : UIElement
     }
 
     /// <summary>
+    /// Handles when the Scoreboard button is pressed by opening the Scoreboard UI element
+    /// </summary>
+    public void HandleScoreboard()
+    {
+        Scoreboard.HandleOpen();
+    }
+
+    /// <summary>
     /// Handles when the user swipes their nose up by selecting the above item
     /// </summary>
     public void HandleUp()

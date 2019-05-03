@@ -23,11 +23,16 @@ public enum Difficulty
 /// <summary>
 /// Stores the current game settings
 /// </summary>
-public class Settings
+public static class Settings
 {
     ////////////////////////////////////////////////////////////////
     // Properties
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Current game difficulty
+    /// </summary>
+    public static Difficulty Difficulty { get; set; }
 
     /// <summary>
     /// Current player jump style
@@ -36,22 +41,7 @@ public class Settings
     {
         get
         {
-            return settableSettings.JumpStyle.Value;
-        }
-    }
-
-    /// <summary>
-    /// Current game difficulty
-    /// </summary>
-    public static Difficulty Difficulty
-    {
-        get
-        {
-            return settableSettings.Difficulty.Value;
-        }
-        set
-        {
-            settableSettings.Difficulty = value;
+            return settableSettings.JumpStyle;
         }
     }
 
@@ -62,7 +52,7 @@ public class Settings
     {
         get
         {
-            return settableSettings.JumpPower.Value;
+            return settableSettings.JumpPower;
         }
     }
 
@@ -73,11 +63,26 @@ public class Settings
     {
         get
         {
-            return settableSettings.Sensitivity.Value;
+            return settableSettings.Sensitivity;
         }
         set
         {
             settableSettings.Sensitivity = Mathf.Max(Mathf.Min(value, MaxSensitivity), MinSensitivity);
+        }
+    }
+
+    /// <summary>
+    /// Settings which can be set by the user
+    /// </summary>
+    public static SettableSettings Settable
+    {
+        get
+        {
+            return settableSettings;
+        }
+        set
+        {
+            settableSettings = value;
         }
     }
 
@@ -98,14 +103,19 @@ public class Settings
     public const float MaxJumpPower = 1.5f;
 
     /// <summary>
-    /// Minimum value for Sensitivity
+    /// Minimum value for Sensitivity (pixels per millisecond)
     /// </summary>
     public const float MinSensitivity = 0.01f;
 
     /// <summary>
-    /// Maximum value for Sensitivity
+    /// Maximum value for Sensitivity (pixels per millisecond)
     /// </summary>
     public const float MaxSensitivity = 0.25f;
+
+    /// <summary>
+    /// Sensitivity at which a change is assumed to be a sampling error (pixels per millisecond)
+    /// </summary>
+    public const float IgnoreSensitivity = 0.5f;
 
     /// <summary>
     /// Difference in sensitivity for horizontal vs. vertical movements
@@ -115,15 +125,14 @@ public class Settings
     /// <summary>
     /// Multiplier corresponding to each difficulty in Difficulty
     /// </summary>
-    public static readonly float[] difficultyMultipliers = { 1.0f, 1.5f, 2.0f };
+    public static readonly float[] DifficultyMultipliers = { 1.0f, 1.5f, 2.0f };
 
     /// <summary>
     /// Default values for the settable settings
     /// </summary>
-    private static readonly SettableSettings defaultSettings = new SettableSettings
+    public static readonly SettableSettings DefaultSettings = new SettableSettings
     {
         JumpStyle = JumpStyle.Velocity,
-        Difficulty = Difficulty.Medium,
         JumpPower = 1.0f,
         Sensitivity = 0.1f,
     };
@@ -131,44 +140,5 @@ public class Settings
     /// <summary>
     /// Current values of settable settings
     /// </summary>
-    private static SettableSettings settableSettings;
-
-
-
-    ////////////////////////////////////////////////////////////////
-    // Methods
-    ////////////////////////////////////////////////////////////////
-
-    /// <summary>
-    /// Restores all settings to default values
-    /// </summary>
-    public static void RestoreDefaults()
-    {
-        settableSettings = defaultSettings;
-    }
-
-    /// <summary>
-    /// Updates the current settable settings with new values
-    /// </summary>
-    /// <param name="newSettings">Encapsulates new settings values (null values will be ignored)</param>
-    public static void UpdateSettings(SettableSettings newSettings)
-    {
-        // Only take the non-null settings in newSettings
-        if (newSettings.JumpStyle.HasValue)
-        {
-            settableSettings.JumpStyle = newSettings.JumpStyle;
-        }
-        if (newSettings.Difficulty.HasValue)
-        {
-            settableSettings.Difficulty = newSettings.Difficulty;
-        }
-        if (newSettings.JumpPower.HasValue)
-        {
-            settableSettings.JumpPower = newSettings.JumpPower;
-        }
-        if (newSettings.Sensitivity.HasValue)
-        {
-            settableSettings.Sensitivity = newSettings.Sensitivity;
-        }
-    }
+    private static SettableSettings settableSettings = DefaultSettings;
 }

@@ -3,7 +3,7 @@
 /// <summary>
 /// Implements math functions not in Mathf
 /// </summary>
-public class Utilities
+public static class Utilities
 {
     /// <summary>
     /// Generates a Gaussian variable with a given mean and standard deviation

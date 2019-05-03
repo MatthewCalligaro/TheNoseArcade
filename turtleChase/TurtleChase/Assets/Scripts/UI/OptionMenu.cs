@@ -46,43 +46,8 @@ public class OptionMenu : Menu
         Player.BlockingPause++;
         instance.gameObject.SetActive(true);
         instance.curSettings = new SettableSettings();
-        instance.ResetUIValues();
+        instance.ResetUIValues(Settings.Settable);
         instance.MenuOpen();
-    }
-
-    /// <summary>
-    /// Handles when the Sensitivity slider is changed by updating the relevant setting
-    /// </summary>
-    public void ChangeSensitivity()
-    {
-        if (this.sliders.Length > 0)
-        {
-            // The highest sensitivity slider value produces the minimum settingns sensitivity value and vice versa, 
-            // since a "higher sensitivity" from the user's perspective means a smaller minimum pixel change
-            curSettings.Sensitivity = Settings.MaxSensitivity - this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.MaxSensitivity - Settings.MinSensitivity);
-        }
-    }
-
-    /// <summary>
-    /// Handles when the JumpPower slider is changed by updating the relevant setting
-    /// </summary>
-    public void ChangeJumpPower()
-    {
-        if (this.sliders.Length > 0)
-        {
-            curSettings.JumpPower = Settings.MinJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.MaxJumpPower - Settings.MinJumpPower);
-        }
-    }
-
-    /// <summary>
-    /// Handles when the JumpStyle dropdown is changed by updating the relevant setting
-    /// </summary>
-    public void ChangeJumpStyle()
-    {
-        if (curSettings != null)
-        {
-            curSettings.JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value;
-        }
     }
 
     /// <summary>
@@ -90,8 +55,7 @@ public class OptionMenu : Menu
     /// </summary>
     public void HandleRestoreDefaults()
     {
-        Settings.RestoreDefaults();
-        ResetUIValues();
+        ResetUIValues(Settings.DefaultSettings);
     }
 
     /// <summary>
@@ -109,7 +73,12 @@ public class OptionMenu : Menu
     /// </summary>
     public void HandleSave()
     {
-        Settings.UpdateSettings(this.curSettings);
+        Settings.Settable = new SettableSettings()
+        {
+            JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value,
+            JumpPower = Settings.MinJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.MaxJumpPower - Settings.MinJumpPower),
+            Sensitivity = Settings.MaxSensitivity - this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.MaxSensitivity - Settings.MinSensitivity),
+        };
         this.HandleQuit();
     }
 
@@ -137,10 +106,10 @@ public class OptionMenu : Menu
     /// <summary>
     /// Reset all UI dropdowns and sliders to reflect current Settings
     /// </summary>
-    private void ResetUIValues()
+    private void ResetUIValues(SettableSettings settings)
     {
-        this.sliders[Sliders.Sensitivity.GetHashCode()].value = ((float)(Settings.MaxSensitivity - Settings.Sensitivity)) / (Settings.MaxSensitivity - Settings.MinSensitivity);
-        this.sliders[Sliders.JumpPower.GetHashCode()].value = (Settings.JumpPower - Settings.MinJumpPower) / (Settings.MaxJumpPower - Settings.MinJumpPower);
-        this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = Settings.JumpStyle.GetHashCode();
+        this.sliders[Sliders.Sensitivity.GetHashCode()].value = ((float)(Settings.MaxSensitivity - settings.Sensitivity)) / (Settings.MaxSensitivity - Settings.MinSensitivity);
+        this.sliders[Sliders.JumpPower.GetHashCode()].value = (settings.JumpPower - Settings.MinJumpPower) / (Settings.MaxJumpPower - Settings.MinJumpPower);
+        this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = settings.JumpStyle.GetHashCode();
     }
 }

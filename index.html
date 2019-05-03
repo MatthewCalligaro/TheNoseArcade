@@ -5,26 +5,46 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>The Nose Arcade</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Barlow" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="shortcut icon" type="image/png" href="favicon.ico"/>
+
   </head>
   
   <body>
-    <a href="playTurtleChase/poseNet/index.html"><h2>Turtle Chase</h2></a>
-    <p>
-      Use your nose to guide a flying turtle as he chases his dreams. <br>
-      (This <a href="playTurtleChase/custom/index.html">alternate version</a> integrates our custom model, but our model doesn't work quite well enough to render the game playable.)
-    </p>
-    <br>
+    <!-- Navbar -->
+    <ul>
+      <li><a href="/TheNoseArcade/index.html">Play</a></li>
+      <li><a href="/TheNoseArcade/about.html">About</a></li>
+    </ul>
 
-<!--     <h2>Connect Four (coming soon)</h2>
-    <p>
-      Follow your nose to a four in a row. 
-    </p>
-    <br>
+    <div id="page-contents">
+      <h1>The Nose Arcade</h1>
 
-    <h2>Face Racer</h2>
-    <p>
-      Use your face. Win the race. 
-    </p> -->
+      <!-- Turtle Chase -->
+      <div class="clearfix">
+        <img src="turtleChase.png" class="profile-pic" height="200px"/>
+        <a href="playTurtleChase/poseNet/index.html"><h2>Turtle Chase</h2></a>
+        <p>
+          Use your nose to guide a flying turtle as he chases his dreams. <br>
+          (<a href="playTurtleChase/custom/index.html">Alternate version</a> integrating our custom model)
+        </p>
+      </div>
+
+      <!-- Face Racer -->
+      <div class="clearfix">
+        <img src="faceRacer.png" class="profile-pic" height="200px"/>
+        <a href="playFaceRacer/poseNet/index.html"><h2>Face Racer</h2></a>
+        <p>
+          Use your face. Win the race. <br>
+          (<a href="playFaceRacer/custom/index.html">Alternate version</a> integrating our custom model)
+        </p>
+      </div>
+
+    </div>
 
   </body>
   

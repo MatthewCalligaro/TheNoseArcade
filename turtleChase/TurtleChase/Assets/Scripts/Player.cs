@@ -1,14 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Controls the player and player score
 /// </summary>
 public class Player : MonoBehaviour
 {
-    /// <summary>
-    /// Number of UI elements currently preventing pause
-    /// </summary>
-    public static int BlockingPause = 0;
+    ////////////////////////////////////////////////////////////////
+    // Properties
+    ////////////////////////////////////////////////////////////////
 
     /// <summary>
     /// Property to set a new multiplier to the player's speed
@@ -29,8 +29,13 @@ public class Player : MonoBehaviour
 
 
     ////////////////////////////////////////////////////////////////
-    // Private Constants
+    // Fields
     ////////////////////////////////////////////////////////////////
+
+    /// <summary>
+    /// Number of UI elements currently preventing pause
+    /// </summary>
+    public static int BlockingPause = 0;
 
     /// <summary>
     /// Upward velocity after jumping for JumpStyle.Velocity
@@ -62,12 +67,6 @@ public class Player : MonoBehaviour
     /// </summary>
     private const float gravityScale = 1.2f;
 
-
-
-    ////////////////////////////////////////////////////////////////
-    // Private Fields
-    ////////////////////////////////////////////////////////////////
-
     /// <summary>
     /// Current player score
     /// </summary>
@@ -87,6 +86,11 @@ public class Player : MonoBehaviour
     /// Time remaining for the current speed multiplier
     /// </summary>
     private float speedCounter = 0;
+
+    /// <summary>
+    /// The player's velocity just before pausing
+    /// </summary>
+    private Vector2 lastVelocity;
 
 
 
@@ -133,6 +137,10 @@ public class Player : MonoBehaviour
         if (BlockingPause <= 0)
         {
             PauseMenu.TogglePauseMenu();
+            if (PauseMenu.Paused)
+            {
+                this.lastVelocity = this.GetComponent<Rigidbody2D>().velocity;
+            }
         }
     }
 
@@ -194,6 +202,7 @@ public class Player : MonoBehaviour
             if (!God.InCamera(this.transform.position))
             {
                 LossMenu.HandleLoss(this.score);
+                Scoreboard.AddScore(new HighScore { Score = this.score, Distance = (int)this.transform.position.x, Date = DateTime.Now, Difficulty = Settings.Difficulty });
             }
 
             // Tell the camera to skip ahead if the player surpasses maxScreenX
@@ -217,7 +226,18 @@ public class Player : MonoBehaviour
             }
         }
 
-        this.GetComponent<Rigidbody2D>().bodyType = Menu.InPlay ? RigidbodyType2D.Dynamic : RigidbodyType2D.Static;
+        // Set the player to static when not in play and dynamic when in play
+        if (this.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Static && Menu.InPlay)
+        {
+            this.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+
+            // Upon exiting pause, restore the previous velocity
+            this.GetComponent<Rigidbody2D>().velocity = this.lastVelocity;
+        }
+        else if (this.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic && !Menu.InPlay)
+        {
+            this.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
