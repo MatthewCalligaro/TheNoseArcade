@@ -53,7 +53,7 @@ public abstract class Menu : UIElement
     /// </summary>
     public void HandleOptions()
     {
-        // OptionMenu.HandleOpen();
+        OptionMenu.HandleOpen();
     }
 
 
