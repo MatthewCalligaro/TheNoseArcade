@@ -1,0 +1,8 @@
+#page-contents {
+  text-align: center;
+}
+
+#page-contents > div {
+  display: inline-block;
+  text-align: left;
+}
