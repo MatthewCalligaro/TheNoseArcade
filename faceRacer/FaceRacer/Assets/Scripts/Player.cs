@@ -31,10 +31,14 @@ public class Player : MonoBehaviour
 
     WheelCollider[] wheels;
 
+    private Camera gameCamera;
+
 
 
 	private void Start ()
     {
+        this.gameCamera = GameObject.FindGameObjectsWithTag("MainCamera")[0].GetComponent<Camera>();
+
         this.startTime = DateTime.Now;
         this.wheels = this.GetComponentsInChildren<WheelCollider>();
         this.GetComponent<Rigidbody>().centerOfMass = new Vector3(0, -0.2f, -0.3f);
@@ -49,7 +53,7 @@ public class Player : MonoBehaviour
         this.motorTorque = Mathf.Max(0, Settings.Accelerate.Interpolate(Controller.Cursor.y) * maxTorque);
         this.brakeTorque = Mathf.Max(0, Settings.Brake.Interpolate(Controller.Cursor.y) * maxBrakeTorque);
         this.steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle
-            / Math.Max(1, Settings.steerVelocityFactor * this.GetComponent<Rigidbody>().velocity.magnitude);
+            / Math.Max(1, Settings.SteerVelocityFactor * this.GetComponent<Rigidbody>().velocity.magnitude);
 
         for (int i = 0; i < 2; i++)
         {
@@ -58,8 +62,8 @@ public class Player : MonoBehaviour
             wheels[i].steerAngle = this.steerAngle;
         }
 
-        Debug.Log(steerAngle + " " + motorTorque + " " + brakeTorque);
-
+        gameCamera.transform.position = this.transform.position + Settings.CameraOffset.z * this.transform.forward + Settings.CameraOffset.y * Vector3.up;
+        gameCamera.transform.rotation = Quaternion.Euler(Settings.CameraRotationX, this.transform.rotation.eulerAngles.y, 0);
     }
 
     private void Update()

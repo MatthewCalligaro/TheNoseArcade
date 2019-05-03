@@ -2,7 +2,7 @@
 
 public static class Settings
 {
-    public const float steerVelocityFactor = 0.1f;
+    public const float SteerVelocityFactor = 0.1f;
 
     public static readonly Vector2 MaxMovement = new Vector2(0.25f, 0.25f);
     public static Vector2 MouseSensitivityMultiplier = new Vector2(2, 4);
@@ -16,6 +16,9 @@ public static class Settings
     public static readonly Vector2 MaxSensitivity = new Vector2(800, 200);
 
     public static readonly Vector2 CursorStart = new Vector2(0.5f, 0.35f);
+
+    public static readonly Vector3 CameraOffset = new Vector3(0, 2.5f, -3.5f);
+    public static readonly float CameraRotationX = 20;
 
     public static Vector2 Sensitivity
     {
