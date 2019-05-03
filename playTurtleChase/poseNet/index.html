@@ -19,32 +19,36 @@
     
     <script src="controller.js"></script>
 
+    <link rel="stylesheet" href="../../styles.css">
     <link rel="stylesheet" href="styles.css">
 
   </head>
   
   <body>
+    <!-- Navbar -->
+    <ul>
+      <li><a href="/TheNoseArcade/index.html">Play</a></li>
+      <li><a href="/TheNoseArcade/about.html">About</a></li>
+    </ul>
 
-    <div>
-      <!-- Unity loads game here -->
-      <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+    <div id="page-contents">
+
+      <div>
+        <!-- Unity loads game here -->
+        <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
+      </div>
+
+      <!-- Video renders here -->
+      <div id="videoContainer"></div>
+      
+  <!--     
+      <div>
+        <h1>How To Play</h1>
+        <p>
+          Tutorial coming soon. 
+        </p>
+      </div> -->
     </div>
-
-    <br>
-
-    <!-- (Sometimes) invisible container for videos -->
-    <div id="videoContainer"></div>
-    
-    <br>
-
-<!--     
-    <div>
-      <h1>How To Play</h1>
-      <p>
-        Tutorial coming soon. 
-      </p>
-    </div> -->
-
   </body>
   
 </html>
