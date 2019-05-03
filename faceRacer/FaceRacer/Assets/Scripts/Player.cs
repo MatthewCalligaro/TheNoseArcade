@@ -48,7 +48,8 @@ public class Player : MonoBehaviour
     {
         this.motorTorque = Mathf.Max(0, Settings.Accelerate.Interpolate(Controller.Cursor.y) * maxTorque);
         this.brakeTorque = Mathf.Max(0, Settings.Brake.Interpolate(Controller.Cursor.y) * maxBrakeTorque);
-        this.steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle;
+        this.steerAngle = (Settings.Right.Interpolate(Controller.Cursor.x) - Settings.Left.Interpolate(Controller.Cursor.x)) * maxSteerAngle
+            / Math.Max(1, Settings.steerVelocityFactor * this.GetComponent<Rigidbody>().velocity.magnitude);
 
         for (int i = 0; i < 2; i++)
         {

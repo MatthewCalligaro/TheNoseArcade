@@ -2,6 +2,8 @@
 
 public static class Settings
 {
+    public const float steerVelocityFactor = 0.1f;
+
     public static readonly Vector2 MaxMovement = new Vector2(0.25f, 0.25f);
     public static Vector2 MouseSensitivityMultiplier = new Vector2(2, 4);
 
