@@ -22,8 +22,8 @@ public class Calibration : MonoBehaviour, INoseController
     /// </summary>
     private static readonly string[] messages = 
     {
-        "Please move your face within 12 inches of your webcam and center your nose in the webcam feed below.  A green dot should appear over your nose.\nPress space to continue.",
-        "In Turtle Chase, you jump by raising your nose.  This works best if you face directly towards the webcame at all times and change the position of your face rather than rotating it.\nPress space when you are ready to begin calibration.",
+        "Please move your face within 12 inches of your webcam and center your nose in the webcam feed to the right.  A green dot should appear over your nose.\nPress space to continue.",
+        "In Turtle Chase, you jump by raising your nose.  This works best if you face directly towards the webcam at all times and change the position of your face rather than rotating it.\nPress space when you are ready to begin calibration.",
         "Please perform one jump by raising your nose, then press the space bar (0/3 complete).",
         "Please perform another jump, then press the space bar (1/3 complete).",
         "Please perform another jump, then press the space bar (2/3 complete)."
@@ -111,7 +111,6 @@ public class Calibration : MonoBehaviour, INoseController
         {
             // Update the Sensitivity with the average of the three calibration trials (scaled by calibrationFactor)
             Settings.Sensitivity = (this.maxDyTotal / 3) * calibrationFactor;
-            Debug.Log("Calibrated Sensitivity:" + Settings.Sensitivity);
             SceneManager.LoadScene("MainMenu");
         }
         else
