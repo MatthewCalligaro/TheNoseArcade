@@ -75,7 +75,7 @@ public class OptionMenu : Menu
     {
         Settings.Settable = new SettableSettings()
         {
-            JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value,
+            // JumpStyle = (JumpStyle)this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value,
             JumpPower = Settings.MinJumpPower + this.sliders[Sliders.JumpPower.GetHashCode()].value * (Settings.MaxJumpPower - Settings.MinJumpPower),
             Sensitivity = Settings.MaxSensitivity - this.sliders[Sliders.Sensitivity.GetHashCode()].value * (Settings.MaxSensitivity - Settings.MinSensitivity),
         };
@@ -110,6 +110,6 @@ public class OptionMenu : Menu
     {
         this.sliders[Sliders.Sensitivity.GetHashCode()].value = ((float)(Settings.MaxSensitivity - settings.Sensitivity)) / (Settings.MaxSensitivity - Settings.MinSensitivity);
         this.sliders[Sliders.JumpPower.GetHashCode()].value = (settings.JumpPower - Settings.MinJumpPower) / (Settings.MaxJumpPower - Settings.MinJumpPower);
-        this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = settings.JumpStyle.GetHashCode();
+        // this.dropdowns[Dropdowns.JumpStyle.GetHashCode()].value = settings.JumpStyle.GetHashCode();
     }
 }
